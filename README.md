@@ -13,17 +13,17 @@ Mach is a better way to build web servers in Node.js and other JavaScript platfo
 
 Here's what an asynchronous request might look like:
 
-  function (request) {
-      // start processing request
-      return Q.when(someAsyncOperation(request), function(data) {
-          // finish processing request
-          return {
-              status: 200,
-              headers: { "Content-Type": "text/plain" },
-              body: /* TBD  */
-          };
-      });
-  }
+    function (request) {
+        // start processing request
+        return Q.when(someAsyncOperation(request), function(data) {
+            // finish processing request
+            return {
+                status: 200,
+                headers: { "Content-Type": "text/plain" },
+                body: /* TBD  */
+            };
+        });
+    }
 
 The `request` and `response` objects are defined [in the spec](https://github.com/machjs/mach/blob/master/SPEC.md)
 
