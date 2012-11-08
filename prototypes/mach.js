@@ -5,37 +5,45 @@ var BufferedStream = require("bufferedstream");
 
 var MACH = exports;
 
-MACH.Server = function Server(app) {
-    return HTTP.createServer(function(nodeRequest, nodeResponse) {
-        var request = nodeRequest;
-        MACH.call(app, request).then(function(response) {
+MACH.Server = Server;
+function Server(app) {
+    return HTTP.createServer(function (nodeRequest, nodeResponse) {
+        var request = makeRequest(nodeRequest);
+        request.call(app).then(function (response) {
             nodeResponse.writeHead(response.status, response.headers);
             response.content.pipe(nodeResponse);
             response.content.resume();
-        }, function(error) {
-            console.log(error);
+        }, function (error) {
+            console.log(error.stack || error);
             nodeResponse.writeHead(500);
             nodeResponse.end();
         });
     });
-};
+}
 
-// We should include a "lint" module like Rack does to check for compliant apps/middleware
-// Should we hook it into MACH.call if enabled?
-// MACH.Lint = function(app) {
-//     return function(request) {
-//         return app(request);
-//     };
-// }
+// This method coerces a node HTTP ServerRequest to a mach.Request. This way
+// we're decoupled from the core node API and more resilient to change.
+function makeRequest(nodeRequest) {
+    var params = {};
+    params.method = nodeRequest.method;
+    params.path = nodeRequest.url;
+    params.headers = nodeRequest.headers;
+    params.content = nodeRequest;
+    return new Request(params);
+}
 
-// Simple MACH.call for handling immediate responses
-MACH.call = function(app, request) {
-    return Q.fcall(app, request);
-};
+// The Request object is a generic wrapper for any HTTP request, incoming
+// or outgoing.
+MACH.Request = Request;
+function Request(params) {
+    this.method = (params.method || 'GET').toUpperCase();
+    this.path = params.path || '/';
+    this.headers = params.headers || {};
+    this.content = params.content;
+}
 
-// More coersion features for different response types
-MACH.call = function(app, request) {
-    return Q.when(app(request), function(response) {
+Request.prototype.call = function (app) {
+    return Q.when(app(this), function (response) {
         if (typeof response === "object") {
             if (Array.isArray(response)) {
                 response = {
@@ -70,20 +78,40 @@ MACH.call = function(app, request) {
     });
 };
 
-MACH.Log = function(app) {
-    return function(request) {
-        console.log(request.url);
-        return app(request);
-    }
+Request.prototype.send = function (params) {
+    // This could be used to make a request to some URL, like http.request.
+};
+
+// We should include a "lint" module like Rack does to check for compliant apps/middleware
+// Should we hook it into MACH.call if enabled?
+// MACH.Lint = function (app) {
+//     return function (request) {
+//         return app(request);
+//     };
+// }
+
+MACH.Favicon = Favicon;
+function Favicon(app) {
+    return function (request) {
+        if (request.path === '/favicon.ico') return 404;
+        return request.call(app);
+    };
 }
 
-MACH.URLMap = function(map) {
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    return function(request) {
-        if (hasOwnProperty.call(map, request.url)) {
-            return MACH.call(map[request.url], request);
-        } else {
-            return 404;
-        }
+MACH.Log = Log;
+function Log(app) {
+    return function (request) {
+        return request.call(app).then(function (response) {
+            console.log(request.method, request.path, response.status, response.headers);
+            return response;
+        });
+    };
+}
+
+MACH.URLMap = URLMap;
+function URLMap(map) {
+    return function (request) {
+        var app = map[request.path];
+        return app ? request.call(app) : 404;
     };
 }

@@ -1,6 +1,6 @@
 mach = require "./mach"
 
-server = mach.Server mach.Log mach.URLMap
+server = mach.Server mach.Favicon mach.Log mach.URLMap
 
     "/": -> '<a href="/foo">Foo</a>'
 
@@ -11,7 +11,7 @@ server = mach.Server mach.Log mach.URLMap
         headers: "content-type": "application/json"
         content: JSON.stringify
             method: req.method
-            url: req.url
+            path: req.path
             headers: req.headers
             , null, 2
 
