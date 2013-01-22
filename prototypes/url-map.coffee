@@ -1,6 +1,6 @@
-mach = require "./mach"
+mach = require "../lib"
 
-server = mach.Server mach.Favicon mach.Log mach.URLMap
+server = mach.Server mach.commonLogger mach.urlMap
 
     "/": -> '<a href="/foo">Foo</a>'
 
