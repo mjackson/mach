@@ -23,4 +23,4 @@ app.get('/c/:id', function (request) {
 
 app = mach.commonLogger(app);
 
-mach.Server(app).listen(3333);
+mach.serve(app);
