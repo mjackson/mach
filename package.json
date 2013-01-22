@@ -1,0 +1,29 @@
+{
+  "name": "mach",
+  "version": "0.0.0",
+  "description": "A tiny, fast web server for JavaScript",
+  "main": "lib/index.js",
+  "dependencies": {
+    "bufferedstream": "~1.4.1",
+    "mime": "~1.2.9",
+    "q": "~0.8.12",
+    "strftime": "~0.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/machjs/mach.git"
+  },
+  "keywords": [
+    "web",
+    "server",
+    "http",
+    "strata",
+    "jsgi"
+  ],
+  "author": "mach.js authors",
+  "license": "BSD"
+}
