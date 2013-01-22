@@ -7,7 +7,7 @@ Mach is a better way to build web servers in Node.js and other JavaScript platfo
 * Simplicity: straightforward mapping of HTTP requests to JavaScript function calls
 * Asynchronous: responses can be deferred using a standard Promises/A compatible promise
 * Streaming: request and response bodies can be streamed
-* Composability: middleware composes easily  using promises
+* Composability: middleware composes easily using promises
 
 ## Apps
 
@@ -36,13 +36,29 @@ The convention for middleware is a JavaScript function, which typically takes a 
 For example, this middleware logs request URLs:
 
     function Logger(app) {
+      return function (request) {
+        console.log(request.url);
+        return request.call(app);
+      }
+    }
+
+    function Logger(app) {
         return function(request) {
             console.log(request.url);
             return app(request);
         }
     }
-    
+
 If we wanted to modify this to log the response status code we could do that easily:
+
+    function Logger(app) {
+      return function (request) {
+        return request.call(app).then(function (response) {
+          console.log(request.url, response.status);
+          return response;
+        });
+      }
+    }
 
     function Logger(app) {
         return function(request) {
