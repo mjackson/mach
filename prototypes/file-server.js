@@ -1,7 +1,8 @@
-var mach = require('../lib'), app;
+var mach = require('../lib');
+var app = mach.stack();
 
-app = mach.file(__dirname + '/..');
-app = mach.commonLogger(app);
-app = mach.gzip(app);
+app.use(mach.gzip);
+app.use(mach.commonLogger);
+app.use(mach.file, __dirname + '/..');
 
 mach.serve(app);
