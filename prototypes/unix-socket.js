@@ -1,4 +1,3 @@
-var fs = require('fs');
 var mach = require('../lib');
 var app = mach.stack();
 
