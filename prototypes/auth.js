@@ -1,13 +1,13 @@
-var mach = require('../lib'), app;
+var mach = require('../lib')
+var app = mach.stack();
 
-app = function (request) {
-  return 'Hello world!';
-};
-
-app = mach.basicAuth(app, function (user, pass) {
+app.use(mach.commonLogger);
+app.use(mach.basicAuth, function (user, pass) {
   return user == 'user' && pass == 'pass';
 });
 
-app = mach.commonLogger(app);
+app.run(function (request) {
+  return 'Hello world!';
+});
 
-mach.Server(app).listen(3333);
+mach.serve(app, 3333);
