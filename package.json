@@ -9,9 +9,12 @@
     "q": "~0.8.12",
     "strftime": "~0.5.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "1.8.1",
+    "mocha-as-promised": "1.2.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha spec"
   },
   "repository": {
     "type": "git",
