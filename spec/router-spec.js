@@ -3,10 +3,10 @@ var router = mach.router;
 
 describe('mach.router', function () {
   var app = router();
-
-  var innerApp = function (env, callback) {
-    var route = env.route;
+  var innerApp = function (request) {
+    var route = request.route;
     assert.ok(route);
+
     return {
       headers: {
         'X-Route': JSON.stringify(route),
