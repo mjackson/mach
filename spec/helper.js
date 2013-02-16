@@ -1,6 +1,7 @@
 assert = require('assert');
-var q = require('q');
+var Stream = require('stream');
 mach = require('../lib');
+var utils = mach.utils;
 
 // Override mocha's built-in methods with promise-aware versions.
 require('mocha-as-promised')();
@@ -11,27 +12,30 @@ lastResponse = null;
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
   var request = new mach.Request(options);
-
   return request.call(app).then(function (response) {
     lastResponse = response;
-
-    var content = response.content;
-    var buffers = [];
-    var deferred = q.defer();
-
-    content.on('data', function (chunk) {
-      buffers.push(Buffer.isBuffer(chunk) ? chunk : new Buffer(chunk));
-    });
-
-    content.on('end', function () {
-      var buffer = Buffer.concat(buffers);
+    return utils.bufferStream(response.content).then(function (buffer) {
       if (!leaveBuffer) buffer = buffer.toString();
       lastResponse.buffer = buffer;
-      deferred.resolve(lastResponse);
+      return lastResponse;
     });
-
-    content.resume();
-
-    return deferred.promise;
   });
+}
+
+fakeStream = function (target) {
+  target.data = '';
+
+  var stream = Object.create(Stream.prototype);
+  stream.writable = true;
+  stream.write = function (chunk, encoding) {
+    if (typeof chunk === 'string') {
+      target.data += chunk;
+    } else if (encoding) {
+      target.data += chunk.toString(encoding);
+    } else {
+      target.data += chunk.toString();
+    }
+  };
+
+  return stream;
 }
