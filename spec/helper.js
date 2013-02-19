@@ -14,6 +14,9 @@ callApp = function (app, options, leaveBuffer) {
   var request = new mach.Request(options);
   return request.call(app).then(function (response) {
     lastResponse = response;
+
+    // Automatically buffer response streams for convenience in tests that
+    // need to test the response content.
     return utils.bufferStream(response.content).then(function (buffer) {
       if (!leaveBuffer) buffer = buffer.toString();
       lastResponse.buffer = buffer;
