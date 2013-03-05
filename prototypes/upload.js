@@ -2,7 +2,7 @@ var mach = require('../lib');
 var stack = mach.stack();
 
 stack.use(mach.contentType, 'text/html');
-stack.use(mach.requestParams, __dirname + '/uploads');
+stack.use(mach.requestParams);
 
 var app = mach.router();
 

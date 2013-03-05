@@ -272,8 +272,6 @@ describe('multipart', function () {
 var q = require('q');
 var path = require('path');
 var fs = require('fs');
-var tmpdir = path.join(__dirname, 'tmp');
-var prefix = 'multipart-';
 
 function parseFixture(name, boundary) {
   boundary = boundary || 'AaB03x';
@@ -282,7 +280,7 @@ function parseFixture(name, boundary) {
   var deferred = q.defer();
 
   // Setup a new parser with the given boundary.
-  var parser = new multipart.Parser(boundary, tmpdir, prefix);
+  var parser = new multipart.Parser(boundary);
 
   var params = {};
   parser.onParam = function (name, value) {
@@ -304,15 +302,4 @@ function parseFixture(name, boundary) {
   });
 
   return deferred.promise;
-}
-
-if (!process.env.DIRTY) {
-  process.on('exit', function () {
-    var files = fs.readdirSync(tmpdir);
-    for (var i = 0; i < files.length; ++i) {
-      if (files[i].substring(0, prefix.length) === prefix) {
-        fs.unlinkSync(path.join(tmpdir, files[i]));
-      }
-    }
-  });
 }
