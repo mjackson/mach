@@ -23,7 +23,7 @@ callApp = function (app, options, leaveBuffer) {
       return lastResponse;
     });
   });
-}
+};
 
 fakeStream = function (target) {
   target.data = '';
@@ -41,4 +41,4 @@ fakeStream = function (target) {
   };
 
   return stream;
-}
+};
