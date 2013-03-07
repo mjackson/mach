@@ -1,12 +1,12 @@
 {
   "name": "mach",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "A tiny, fast web server for JavaScript",
   "main": "lib/index.js",
   "dependencies": {
+    "q": "~0.9.0",
     "bufferedstream": "~1.5.0",
     "mime": "~1.2.9",
-    "q": "~0.9.0",
     "strftime": "~0.5.0"
   },
   "devDependencies": {
@@ -25,8 +25,11 @@
     "server",
     "http",
     "strata",
-    "jsgi"
+    "jsgi",
+    "then",
+    "promise",
+    "promises"
   ],
   "author": "mach.js authors",
-  "license": "BSD"
+  "license": "MIT"
 }
