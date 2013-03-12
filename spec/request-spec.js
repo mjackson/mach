@@ -1,5 +1,6 @@
 require('./helper');
 var qs = require('querystring');
+var errors = mach.errors;
 var Request = mach.Request;
 
 describe('A mach.Request', function () {
@@ -65,12 +66,12 @@ describe('A mach.Request', function () {
           request.maxContentLength = 1;
         });
 
-        it('throws a 413', function () {
-          return request.parseContent().then(function () {
+        it('throws errors.MaxLengthExceededError', function () {
+          return request.parseContent(1).then(function () {
             assert(false, 'successfully parsed a content stream that is too large');
           }, function (error) {
             assert(error);
-            assert.equal(error.status, 413);
+            assert.strictEqual(error.constructor, errors.MaxLengthExceededError);
           });
         });
       });
@@ -100,15 +101,14 @@ describe('A mach.Request', function () {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             content: 'a=b'
           });
-          request.maxContentLength = 1;
         });
 
-        it('throws a 413', function () {
-          return request.parseContent().then(function () {
+        it('throws errors.MaxLengthExceededError', function () {
+          return request.parseContent(1).then(function () {
             assert(false, 'successfully parsed a content stream that is too large');
           }, function (error) {
             assert(error);
-            assert.equal(error.status, 413);
+            assert.strictEqual(error.constructor, errors.MaxLengthExceededError);
           });
         });
       });
