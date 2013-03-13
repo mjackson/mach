@@ -270,14 +270,13 @@ describe('multipart', function () {
 });
 
 var q = require('q');
-var path = require('path');
 var fs = require('fs');
 
 function parseFixture(name, boundary) {
   boundary = boundary || 'AaB03x';
   params = {};
 
-  var deferred = q.defer();
+  var value = q.defer();
 
   // Setup a new parser with the given boundary.
   var parser = new multipart.Parser(boundary);
@@ -289,17 +288,17 @@ function parseFixture(name, boundary) {
 
   var ended = false;
   parser.onEnd = function () {
-    assert.ok(!ended); // onEnd should only be called once
+    assert(!ended, 'parser.onEnd called more than once');
     ended = true;
-    deferred.resolve(params);
+    value.resolve(params);
   };
 
   // Write the contents of the fixture to the parser.
-  var buffer = fs.readFileSync(path.join(__dirname, '_files', name));
+  var buffer = fs.readFileSync(specFile(name));
   assert.equal(parser.write(buffer), buffer.length);
   assert.doesNotThrow(function () {
     parser.end();
   });
 
-  return deferred.promise;
+  return value.promise;
 }

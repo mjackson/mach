@@ -5,7 +5,7 @@ var file = mach.file;
 
 describe('mach.file', function () {
   describe('when a large file is requested', function () {
-    var fullPath = __dirname + '/_files/jquery-1.8.3.js';
+    var fullPath = specFile('jquery-1.8.3.js');
     var filename = path.basename(fullPath);
     var contents = fs.readFileSync(fullPath, 'utf8');
     var app = file(path.dirname(fullPath));
