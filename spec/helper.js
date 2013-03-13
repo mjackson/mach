@@ -11,7 +11,37 @@ lastResponse = null;
 
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
+  options = options || {};
+
+  // If options is a string it specifies a URL.
+  if (typeof options === 'string') {
+    var parsedUrl = utils.parseUrl(options);
+    options = {
+      protocol: parsedUrl.protocol,
+      serverName: parsedUrl.hostname,
+      serverPort: parsedUrl.port,
+      pathInfo: parsedUrl.pathname,
+      queryString: parsedUrl.query
+    };
+  }
+
+  // Params may be given as an object.
+  if (options.params) {
+    var encodedParams = utils.stringifyQueryString(options.params);
+
+    if (options.method === 'POST' || options.method === 'PUT') {
+      options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      options.content = encodedParams;
+    } else {
+      options.queryString = encodedParams;
+      options.content = '';
+    }
+
+    delete options.params;
+  }
+
   var request = new mach.Request(options);
+
   return request.call(app).then(function (response) {
     lastResponse = response;
 
