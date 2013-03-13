@@ -37,7 +37,7 @@ describe('methodOverride', function () {
       });
 
       it('writes to the error stream', function () {
-        assert.equal(error.data, 'Need to use requestParams in front of methodOverride\n');
+        assert.equal(error.data, 'No request params. Use requestParams in front of methodOverride\n');
       });
     });
   });
