@@ -1,5 +1,4 @@
 assert = require('assert');
-var Stream = require('stream');
 mach = require('../lib');
 var utils = mach.utils;
 
@@ -8,6 +7,10 @@ require('mocha-as-promised')();
 
 // This global holds the response to the last request made via callApp.
 lastResponse = null;
+
+beforeEach(function () {
+  lastResponse = null;
+});
 
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
@@ -54,6 +57,8 @@ callApp = function (app, options, leaveBuffer) {
     });
   });
 };
+
+var Stream = require('stream');
 
 fakeStream = function (target) {
   target.data = '';
