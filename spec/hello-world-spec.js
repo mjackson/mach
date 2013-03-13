@@ -1,10 +1,13 @@
 require('./helper');
 
 describe('A request to hello world', function () {
+  var content = 'Hello world!';
+  function app(request) {
+    return content;
+  }
+
   beforeEach(function () {
-    return callApp(function (request) {
-      return 'hello world';
-    });
+    return callApp(app);
   });
 
   it('returns 200', function () {
@@ -14,6 +17,6 @@ describe('A request to hello world', function () {
 
   it('returns "hello world"', function () {
     assert(lastResponse);
-    assert.equal(lastResponse.buffer, 'hello world');
+    assert.equal(lastResponse.buffer, content);
   });
 });
