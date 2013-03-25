@@ -269,14 +269,14 @@ describe('multipart', function () {
   });
 });
 
-var rsvp = require('rsvp');
 var fs = require('fs');
+var when = require('when');
 
 function parseFixture(name, boundary) {
   boundary = boundary || 'AaB03x';
   params = {};
 
-  var value = rsvp.defer();
+  var value = when.defer();
 
   // Setup a new parser with the given boundary.
   var parser = new multipart.Parser(boundary);
