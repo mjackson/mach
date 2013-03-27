@@ -4,13 +4,13 @@ describe('mach.modified', function () {
   var etag, lastModified, app;
   beforeEach(function () {
     etag = 'abc';
-    lastModified = new Date;
+    lastModified = 'Tue, 26 Mar 2013 00:58:16 GMT';
     app = mach.modified(function (request) {
       return {
         status: 200,
         headers: {
           'ETag': etag,
-          'Last-Modified': lastModified.toUTCString()
+          'Last-Modified': lastModified
         },
         content: ''
       };
@@ -44,11 +44,11 @@ describe('mach.modified', function () {
   });
 
   describe('when a request uses the If-Modified-Since header', function () {
-    describe('that is less than the Last-Modified response header', function () {
+    describe('with a value less than the Last-Modified response header', function () {
       beforeEach(function () {
         return callApp(app, {
           headers: {
-            'If-Modified-Since': (new Date(lastModified.getTime() - 1000)).toUTCString()
+            'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:15 GMT'
           }
         });
       });
@@ -58,25 +58,25 @@ describe('mach.modified', function () {
       });
     });
 
-    describe('that is equal to the Last-Modified response header', function () {
+    describe('with a value equal to the Last-Modified response header', function () {
       beforeEach(function () {
         return callApp(app, {
           headers: {
-            'If-Modified-Since': (new Date(lastModified.getTime() - 0)).toUTCString()
+            'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:16 GMT'
           }
         });
       });
 
-      it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+      it('returns 304', function () {
+        assert.equal(lastResponse.status, 304);
       });
     });
 
-    describe('that is greater than the Last-Modified response header', function () {
+    describe('with a value greater than the Last-Modified response header', function () {
       beforeEach(function () {
         return callApp(app, {
           headers: {
-            'If-Modified-Since': (new Date(lastModified.getTime() + 1000)).toUTCString()
+            'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:17 GMT'
           }
         });
       });
