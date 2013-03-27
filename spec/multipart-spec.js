@@ -2,6 +2,16 @@ require('./helper');
 var multipart = mach.multipart;
 var utils = mach.utils;
 
+var fs = require('fs');
+var parts;
+function parseFixtureBeforeEach(fixtureName, boundary) {
+  boundary = boundary || 'AaB03x';
+  beforeEach(function () {
+    var buffer = fs.readFileSync(specFile(fixtureName));
+    parts = multipart.parse(buffer, boundary);
+  });
+}
+
 describe('multipart', function () {
   describe('Parser', function () {
 
@@ -14,20 +24,12 @@ describe('multipart', function () {
       });
     });
 
-    var params;
-    function parseFixtureBeforeEach(fixtureName, boundary) {
-      beforeEach(function () {
-        return parseFixture(fixtureName, boundary).then(function (newParams) {
-          params = newParams;
-        });
-      });
-    }
-
     describe('for a message with a content type and no filename', function () {
       parseFixtureBeforeEach('content_type_no_filename');
 
       it('correctly parses the text contents', function () {
-        assert.equal('contents', params.text);
+        assert(parts.text);
+        assert.equal(parts.text.buffer, 'contents');
       });
     });
 
@@ -35,10 +37,10 @@ describe('multipart', function () {
       parseFixtureBeforeEach('webkit', '----WebKitFormBoundaryWLHCs9qmcJJoyjKR');
 
       it('correctly parses', function () {
-        assert.equal(params._method, 'put');
-        assert.equal(params['profile[blog]'], '');
-        assert.equal(params.media, '');
-        assert.equal(params.commit, 'Save');
+        assert.equal(parts._method.buffer, 'put');
+        assert.equal(parts['profile[blog]'].buffer, '');
+        assert.equal(parts.media.buffer, '');
+        assert.equal(parts.commit.buffer, 'Save');
       });
     });
 
@@ -46,25 +48,23 @@ describe('multipart', function () {
       parseFixtureBeforeEach('binary');
 
       it('correctly parses the text parameters', function () {
-        assert.equal('Larry', params['submit-name']);
+        assert.equal(parts['submit-name'].buffer, 'Larry');
       });
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal('rack-logo.png', file.name);
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'rack-logo.png');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(file.type, 'image/png');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'image/png');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(fs.readFileSync(file.path).length, 26473);
+        assert(parts.files);
+        assert(parts.files.buffer);
+        assert.equal(parts.files.buffer.length, 26473);
       });
     });
 
@@ -72,26 +72,23 @@ describe('multipart', function () {
       parseFixtureBeforeEach('text');
 
       it('correctly parses the text parameters', function () {
-        assert.equal(params['submit-name'], 'Larry');
-        assert.equal(params['submit-name-with-content'], 'Berry');
+        assert.equal(parts['submit-name'].buffer, 'Larry');
+        assert.equal(parts['submit-name-with-content'].buffer, 'Berry');
       });
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(file.name, 'file1.txt');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'file1.txt');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(file.type, 'text/plain');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'text/plain');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -99,21 +96,18 @@ describe('multipart', function () {
       parseFixtureBeforeEach('text_ie');
 
       it('correctly parses and clean up the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(file.name, 'file1.txt');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'file1.txt');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(file.type, 'text/plain');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'text/plain');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -121,13 +115,13 @@ describe('multipart', function () {
       parseFixtureBeforeEach('mixed_files');
 
       it('correctly parses a text field', function () {
-        assert.equal(params.foo, 'bar');
+        assert(parts.foo);
+        assert.equal(parts.foo.buffer, 'bar');
       });
 
       it('correctly parses a nested multipart message', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.equal(252, file.length);
+        assert(parts.files);
+        assert.equal(parts.files.buffer.length, 252);
       });
     });
 
@@ -135,9 +129,8 @@ describe('multipart', function () {
       parseFixtureBeforeEach('none');
 
       it('returns the field as an empty string', function () {
-        var file = params.files;
-        assert.ok(typeof file !== 'undefined');
-        assert.equal(file, '');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, '');
       });
     });
 
@@ -145,24 +138,18 @@ describe('multipart', function () {
       parseFixtureBeforeEach('filename_with_escaped_quotes');
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.name);
-        assert.equal(file.name, 'escape "quotes');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'escape "quotes');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.type);
-        assert.equal(file.type, 'application/octet-stream');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.path);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -170,24 +157,18 @@ describe('multipart', function () {
       parseFixtureBeforeEach('filename_with_unescaped_quotes');
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.name);
-        assert.equal(file.name, 'escape "quotes');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'escape "quotes');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.type);
-        assert.equal(file.type, 'application/octet-stream');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.path);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -195,24 +176,18 @@ describe('multipart', function () {
       parseFixtureBeforeEach('filename_with_percent_escaped_quotes');
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.name);
-        assert.equal(file.name, 'escape "quotes');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'escape "quotes');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.type);
-        assert.equal(file.type, 'application/octet-stream');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.path);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -220,24 +195,18 @@ describe('multipart', function () {
       parseFixtureBeforeEach('filename_and_modification_param');
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.name);
-        assert.equal(file.name, 'genome.jpeg');
+        assert(parts.files);
+        assert.equal(parts.files.filename, 'genome.jpeg');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.type);
-        assert.equal(file.type, 'image/jpeg');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'image/jpeg');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.path);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
@@ -245,60 +214,20 @@ describe('multipart', function () {
       parseFixtureBeforeEach('filename_with_unescaped_quotes_and_modification_param');
 
       it('correctly parses the file name', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.name);
-        assert.equal(file.name, '"human" genome.jpeg');
+        assert(parts.files);
+        assert.equal(parts.files.filename, '"human" genome.jpeg');
       });
 
       it('correctly parses the file content type', function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.type);
-        assert.equal(file.type, 'image/jpeg');
+        assert(parts.files);
+        assert.equal(parts.files.type, 'image/jpeg');
       });
 
       it("correctly parses the file's contents", function () {
-        var file = params.files;
-        assert.ok(file);
-        assert.ok(file.path);
-        assert.equal(fs.readFileSync(file.path, 'utf8'), 'contents');
+        assert(parts.files);
+        assert.equal(parts.files.buffer, 'contents');
       });
     });
 
   });
 });
-
-var fs = require('fs');
-var when = require('when');
-
-function parseFixture(name, boundary) {
-  boundary = boundary || 'AaB03x';
-  params = {};
-
-  var value = when.defer();
-
-  // Setup a new parser with the given boundary.
-  var parser = new multipart.Parser(boundary);
-
-  var params = {};
-  parser.onParam = function (name, value) {
-    params[name] = value;
-  };
-
-  var ended = false;
-  parser.onEnd = function () {
-    assert(!ended, 'parser.onEnd called more than once');
-    ended = true;
-    value.resolve(params);
-  };
-
-  // Write the contents of the fixture to the parser.
-  var buffer = fs.readFileSync(specFile(name));
-  assert.equal(parser.write(buffer), buffer.length);
-  assert.doesNotThrow(function () {
-    parser.end();
-  });
-
-  return value.promise;
-}

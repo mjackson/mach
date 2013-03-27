@@ -85,3 +85,9 @@ specFile = function () {
   var pieces = Array.prototype.slice.call(arguments, 0);
   return path.join.apply(path, [ _files ].concat(pieces));
 };
+
+var util = require('util');
+
+debug = function (object) {
+  console.log(util.inspect(object, { depth: null, colors: true }))
+};
