@@ -21,7 +21,7 @@ describe('mach.modified', function () {
     describe('that does not match the ETag response header', function () {
       beforeEach(function () {
         return callApp(app, {
-          headers: { 'If-None-Match': 'def' }
+          headers: { 'If-None-Match': '"def"' }
         });
       });
 
@@ -33,7 +33,7 @@ describe('mach.modified', function () {
     describe('that matches the ETag response header', function () {
       beforeEach(function () {
         return callApp(app, {
-          headers: { 'If-None-Match': etag }
+          headers: { 'If-None-Match': '"' + etag + '"' }
         });
       });
 
