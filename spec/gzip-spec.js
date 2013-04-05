@@ -4,20 +4,20 @@ var gzip = mach.gzip;
 
 describe('gzip', function () {
   var testFile = specFile('test.txt');
-  var content = fs.readFileSync(testFile, 'utf8');
+  var content = fs.readFileSync(testFile);
   var gzipContent = fs.readFileSync(testFile + '.gz');
 
-  var app = gzip(function (request) {
-    return {
-      headers: { 'Content-Type': 'text/plain' },
-      content: content
-    };
-  });
-
   describe('when the client accepts gzip encoding', function () {
-    beforeEach(function (callback) {
+    var app = gzip(function (request) {
+      return {
+        headers: { 'Content-Type': 'text/plain' },
+        content: content
+      };
+    });
+
+    beforeEach(function () {
       return callApp(app, {
-        headers: { 'Accept-Encoding': 'gzip, *' }
+        headers: { 'Accept-Encoding': 'gzip' }
       }, true);
     });
 
@@ -35,11 +35,24 @@ describe('gzip', function () {
   });
 
   describe('when the client does not accept gzip encoding', function () {
-    beforeEach(function (callback) {
-      callApp(app);
+    it('does not encode the content');
+  });
+
+  describe('when the response is a text/event-stream', function () {
+    var app = gzip(function (request) {
+      return {
+        headers: { 'Content-Type': 'text/event-stream' },
+        content: content
+      };
     });
 
-    it('does not gzip-encode the body');
+    beforeEach(function () {
+      return callApp(app, '/', true);
+    });
+
+    it('does not encode the content', function () {
+      compareBuffers(lastResponse.buffer, content);
+    });
   });
 });
 
