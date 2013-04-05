@@ -10,8 +10,7 @@
   },
   "devDependencies": {
     "mocha": "~1.8.2",
-    "mocha-as-promised": "~1.2.1",
-    "buffertools": "1.1.0"
+    "mocha-as-promised": "~1.2.1"
   },
   "scripts": {
     "test": "mocha spec"

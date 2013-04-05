@@ -43,7 +43,6 @@ describe('gzip', function () {
   });
 });
 
-require('buffertools');
 function compareBuffers(one, two) {
-  assert.equal(one.compare(two), 0, 'buffers are not equal');
+  assert.deepEqual(one, two, 'buffers are not equal');
 }
