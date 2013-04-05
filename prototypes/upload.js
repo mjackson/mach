@@ -1,10 +1,8 @@
 var mach = require('../lib');
-var stack = mach.stack();
-
-stack.use(mach.contentType, 'text/html');
-stack.use(mach.requestParams);
-
 var app = mach.router();
+
+app.use(mach.contentType, 'text/html');
+app.use(mach.requestParams);
 
 app.get('/', function (request) {
   return [
@@ -24,6 +22,4 @@ app.post('/', function (request) {
   };
 });
 
-stack.run(app);
-
-mach.serve(stack);
+mach.serve(app);

@@ -1,6 +1,7 @@
-var mach = require('../lib'), app;
+var mach = require('../lib');
+var app = mach.router();
 
-app = mach.router();
+app.use(mach.commonLogger);
 
 app.get('/', function (request) {
   return '<a href="/b">go to b</a>';
@@ -20,7 +21,5 @@ app.get('/c/:id', function (request) {
     id: id
   }, null, 2);
 });
-
-app = mach.commonLogger(app);
 
 mach.serve(app);
