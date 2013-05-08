@@ -1,5 +1,5 @@
 var mach = require('../lib');
-var app = mach.router();
+var app = mach.stack();
 
 app.use(mach.gzip);
 app.use(mach.commonLogger);

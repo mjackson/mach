@@ -1,7 +1,7 @@
 require('./helper');
 
-describe('mach.matcher', function () {
-  var app = mach.matcher();
+describe('mach.router', function () {
+  var app = mach.router();
   var innerApp = function (request) {
     var route = request.route;
     assert.ok(route);
