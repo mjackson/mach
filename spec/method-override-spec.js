@@ -42,6 +42,22 @@ describe('methodOverride', function () {
     });
   });
 
+  describe('when the request method is given in a request parameter with multiple values', function () {
+    describe('and the requestParams middleware is in front', function () {
+      var innerApp = requestParams(app);
+
+      beforeEach(function () {
+        return callApp(innerApp, {
+          params: { '_method': [ 'PUT', 'DELETE' ] }
+        });
+      });
+
+      it('sets the request method to the last given value', function () {
+        assert.equal(lastResponse.buffer, 'DELETE');
+      });
+    });
+  });
+
   describe('when the request method is given in an HTTP header', function () {
     beforeEach(function () {
       return callApp(app, {
