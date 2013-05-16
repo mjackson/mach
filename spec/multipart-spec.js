@@ -4,7 +4,7 @@ var utils = mach.utils;
 
 var fs = require('fs');
 var parts;
-function parseFixtureBeforeEach(fixtureName, boundary) {
+function beforeEachParseFixture(fixtureName, boundary) {
   boundary = boundary || 'AaB03x';
   beforeEach(function () {
     var buffer = fs.readFileSync(specFile(fixtureName));
@@ -25,7 +25,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a content type and no filename', function () {
-      parseFixtureBeforeEach('content_type_no_filename');
+      beforeEachParseFixture('content_type_no_filename');
 
       it('correctly parses the text contents', function () {
         assert(parts.text);
@@ -34,7 +34,7 @@ describe('multipart', function () {
     });
 
     describe('for a webkit style message boundary', function () {
-      parseFixtureBeforeEach('webkit', '----WebKitFormBoundaryWLHCs9qmcJJoyjKR');
+      beforeEachParseFixture('webkit', '----WebKitFormBoundaryWLHCs9qmcJJoyjKR');
 
       it('correctly parses', function () {
         assert.equal(parts._method.buffer, 'put');
@@ -45,7 +45,7 @@ describe('multipart', function () {
     });
 
     describe('for a binary file upload', function () {
-      parseFixtureBeforeEach('binary');
+      beforeEachParseFixture('binary');
 
       it('correctly parses the text parameters', function () {
         assert.equal(parts['submit-name'].buffer, 'Larry');
@@ -69,7 +69,7 @@ describe('multipart', function () {
     });
 
     describe('for a text file upload', function () {
-      parseFixtureBeforeEach('text');
+      beforeEachParseFixture('text');
 
       it('correctly parses the text parameters', function () {
         assert.equal(parts['submit-name'].buffer, 'Larry');
@@ -93,7 +93,7 @@ describe('multipart', function () {
     });
 
     describe('for a text file upload using IE-style filename', function () {
-      parseFixtureBeforeEach('text_ie');
+      beforeEachParseFixture('text_ie');
 
       it('correctly parses and clean up the file name', function () {
         assert(parts.files);
@@ -112,7 +112,7 @@ describe('multipart', function () {
     });
 
     describe('for a multipart/mixed message', function () {
-      parseFixtureBeforeEach('mixed_files');
+      beforeEachParseFixture('mixed_files');
 
       it('correctly parses a text field', function () {
         assert(parts.foo);
@@ -126,7 +126,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with no file selected', function () {
-      parseFixtureBeforeEach('none');
+      beforeEachParseFixture('none');
 
       it('returns the field as an empty string', function () {
         assert(parts.files);
@@ -135,7 +135,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a filename with escaped quotes', function () {
-      parseFixtureBeforeEach('filename_with_escaped_quotes');
+      beforeEachParseFixture('filename_with_escaped_quotes');
 
       it('correctly parses the file name', function () {
         assert(parts.files);
@@ -154,7 +154,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a filename with unescaped quotes', function () {
-      parseFixtureBeforeEach('filename_with_unescaped_quotes');
+      beforeEachParseFixture('filename_with_unescaped_quotes');
 
       it('correctly parses the file name', function () {
         assert(parts.files);
@@ -173,7 +173,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a filename with percent escaped quotes', function () {
-      parseFixtureBeforeEach('filename_with_percent_escaped_quotes');
+      beforeEachParseFixture('filename_with_percent_escaped_quotes');
 
       it('correctly parses the file name', function () {
         assert(parts.files);
@@ -192,7 +192,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a filename and modification-date param', function () {
-      parseFixtureBeforeEach('filename_and_modification_param');
+      beforeEachParseFixture('filename_and_modification_param');
 
       it('correctly parses the file name', function () {
         assert(parts.files);
@@ -211,7 +211,7 @@ describe('multipart', function () {
     });
 
     describe('for a message with a filename with unescaped quotes and modification-date param', function () {
-      parseFixtureBeforeEach('filename_with_unescaped_quotes_and_modification_param');
+      beforeEachParseFixture('filename_with_unescaped_quotes_and_modification_param');
 
       it('correctly parses the file name', function () {
         assert(parts.files);
