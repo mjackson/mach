@@ -1,4 +1,5 @@
 require('./helper');
+var fs = require('fs');
 var qs = require('querystring');
 var errors = mach.errors;
 var Request = mach.Request;
@@ -113,6 +114,32 @@ describe('A mach.Request', function () {
         });
       });
     }); // application/x-www-form-urlencoded
+
+    describe('when using the multipart/form-data Content-Type', function () {
+      describe('when the content is encoded properly', function () {
+        var content;
+        beforeEach(function () {
+          content = fs.readFileSync(specFile('content_type_no_filename'));
+          request = new Request({
+            headers: { 'Content-Type': 'multipart/form-data; boundary=AaB03x' },
+            content: content
+          });
+        });
+
+        it('parses the content', function () {
+          return request.parseContent().then(function (params) {
+            assert(params);
+            assert(params.text);
+          });
+        });
+
+        it('returns strings for non-file values', function () {
+          return request.parseContent().then(function (params) {
+            assert.equal(typeof params.text, 'string');
+          });
+        });
+      });
+    }); // multipart/form-data
 
   }); // parseContent
 });
