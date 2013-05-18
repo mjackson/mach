@@ -21,6 +21,24 @@ describe('mach.requestParams', function () {
       assert.equal(params.c, 'd');
     });
   });
+
+  describe('when the request content length exceeds the maximum allowed length', function () {
+    var app = requestParams(stringifyParams, {
+      maxLength: 100
+    });
+
+    beforeEach(function () {
+      return callApp(app, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        content: 'q=' + Array(100).join('a')
+      });
+    });
+
+    it('returns 413', function () {
+      assert.equal(lastResponse.status, 413);
+    });
+  });
 });
 
 function stringifyParams(request) {
