@@ -33,6 +33,7 @@ callApp = function (app, options, leaveBuffer) {
     var encodedParams = utils.stringifyQueryString(options.params);
 
     if (options.method === 'POST' || options.method === 'PUT') {
+      if (!options.headers) options.headers = {};
       options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       options.content = encodedParams;
     } else {
