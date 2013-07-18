@@ -2,12 +2,27 @@
 // I've tested it with node 0.11.2 like this:
 //   node --harmony prototypes/generators.js
 
-var q = require('q');
 var mach = require('../lib');
+var app  = mach.stack();
+var Q    = require('q');
 
-var app = q.async(function* (request) {
-  var params = yield request.parseContent();
-  return JSON.stringify(params);
-});
+function sleep(millis, answer) {
+  const deferredResult = Q.defer();
+  setTimeout(function() {
+    deferredResult.resolve(answer);
+  }, millis);
+  return deferredResult.promise;
+};
 
-mach.serve(app, 3000);
+app.use(mach.logger);
+
+app.run(Q.async(function*(request) {
+  var body = yield request.parseContent();
+
+  console.log('Sleeping');
+  yield sleep(200);
+
+  return JSON.stringify(body);
+}));
+
+mach.serve(app);
