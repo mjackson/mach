@@ -1,3 +1,4 @@
+var when = require('when');
 var mach = require('../lib');
 
 mach.serve(function (request) {
@@ -5,5 +6,15 @@ mach.serve(function (request) {
     throw new Error('boom!');
   }
 
-  return 'Hello world!';
+  var value = when.defer();
+
+  setTimeout(function () {
+    if (Math.random() > 0.8) {
+      value.reject(new Error('deferred boom!'));
+    }
+
+    value.resolve('Hello world!');
+  }, 100);
+
+  return value.promise;
 });
