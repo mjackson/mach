@@ -1,11 +1,11 @@
 require('./helper');
 
-describe('mach.commonLogger', function () {
+describe('mach.logger', function () {
   describe('when a response has Content-Length of 0', function () {
     var app, log;
     beforeEach(function () {
       log = {};
-      app = mach.commonLogger(function (request) {
+      app = mach.logger(function (request) {
         return { 'Content-Length': 0 };
       }, fakeStream(log));
 

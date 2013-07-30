@@ -4,7 +4,7 @@ var router = mach.router();
 
 app.run(router);
 
-app.use(mach.commonLogger);
+app.use(mach.logger);
 app.use(mach.file, __dirname + '/..');
 app.map('/protos', function (app) {
   app.use(mach.file, __dirname);

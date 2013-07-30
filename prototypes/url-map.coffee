@@ -1,6 +1,6 @@
 mach = require "../lib"
 
-server = mach.serve mach.commonLogger mach.urlMap
+server = mach.serve mach.logger mach.urlMap
 
     "/": -> '<a href="/foo">Foo</a>'
 

@@ -4,7 +4,7 @@ var router = mach.router();
 
 stack.run(router);
 
-stack.use(mach.commonLogger);
+stack.use(mach.logger);
 
 router.get('/', function (request) {
   return '<a href="/b">go to b</a>';
