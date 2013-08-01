@@ -3,7 +3,7 @@ var when = require('when');
 var delay = require('when/delay');
 module.exports = describeSessionStore;
 
-function describeSessionStore(store) {
+function describeSessionStore(store, skip) {
   beforeEach(function () {
     return store.purge();
   });
@@ -12,7 +12,9 @@ function describeSessionStore(store) {
     return store.destroy();
   });
 
-  describe('when there is no session with a given value', function () {
+  var desc = skip ? describe.skip : describe;
+
+  desc('when there is no session with a given value', function () {
     var session;
     beforeEach(function () {
       return when(store.load('fake-value'), function (newSession) {
@@ -25,7 +27,7 @@ function describeSessionStore(store) {
     });
   });
 
-  describe('when a session is saved', function () {
+  desc('when a session is saved', function () {
     var value;
     beforeEach(function () {
       var session = { count: 1 };
@@ -42,7 +44,7 @@ function describeSessionStore(store) {
     });
   });
 
-  describe('when it has a TTL', function () {
+  desc('when it has a TTL', function () {
     beforeEach(function () {
       store.ttl = 10;
     });

@@ -6,5 +6,5 @@ describe('mach.session.RedisStore', function () {
     expireAfter: 1
   });
 
-  describeSessionStore(store);
+  describeSessionStore(store, process.env.WITH_REDIS !== '1');
 });
