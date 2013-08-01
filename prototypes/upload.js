@@ -1,13 +1,10 @@
 var mach = require('../lib');
-var stack = mach.stack();
-var router = mach.router();
+var app = mach.stack();
 
-stack.run(router);
+app.use(mach.contentType, 'text/html');
+app.use(mach.requestParams);
 
-stack.use(mach.contentType, 'text/html');
-stack.use(mach.requestParams);
-
-router.get('/', function (request) {
+app.get('/', function (request) {
   return [
     '<form method="POST" action="/" enctype="multipart/form-data">',
     '  <label for="file1">File 1:</label> <input type="file" name="file1" id="file1"><br>',
@@ -18,11 +15,11 @@ router.get('/', function (request) {
   ].join('\n');
 });
 
-router.post('/', function (request) {
+app.post('/', function (request) {
   return {
     headers: { 'Content-Type': 'text/plain' },
     content: JSON.stringify(request.params, null, 2)
   };
 });
 
-mach.serve(stack);
+mach.serve(app);

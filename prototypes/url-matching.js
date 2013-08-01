@@ -1,20 +1,17 @@
 var mach = require('../lib');
-var stack = mach.stack();
-var router = mach.router();
+var app = mach.stack();
 
-stack.run(router);
+app.use(mach.logger);
 
-stack.use(mach.logger);
-
-router.get('/', function (request) {
+app.get('/', function (request) {
   return '<a href="/b">go to b</a>';
 });
 
-router.get('/b', function (request) {
+app.get('/b', function (request) {
   return '<a href="/c/' + Date.now() + '">go to c</a>';
 });
 
-router.get('/c/:id', function (request) {
+app.get('/c/:id', function (request) {
   var id = request.route.id;
   return JSON.stringify({
     method: request.method,
@@ -25,4 +22,4 @@ router.get('/c/:id', function (request) {
   }, null, 2);
 });
 
-mach.serve(stack);
+mach.serve(app);
