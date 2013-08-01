@@ -4,13 +4,15 @@ var delay = require('when/delay');
 module.exports = describeSessionStore;
 
 function describeSessionStore(store, skip) {
-  beforeEach(function () {
-    return store.purge();
-  });
+  if (!skip) {
+    beforeEach(function () {
+      return store.purge();
+    });
 
-  after(function () {
-    return store.destroy();
-  });
+    after(function () {
+      return store.destroy();
+    });
+  }
 
   var desc = skip ? describe.skip : describe;
 
