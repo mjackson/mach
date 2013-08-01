@@ -1,9 +1,8 @@
 require('./helper');
-var requestParams = mach.requestParams;
 
-describe('mach.requestParams', function () {
+describe('mach.params', function () {
   describe('when both query and content parameters are present', function () {
-    var app = requestParams(stringifyParams);
+    var app = mach.params(stringifyParams);
     beforeEach(function () {
       return callApp(app, {
         method: 'POST',
@@ -23,7 +22,7 @@ describe('mach.requestParams', function () {
   });
 
   describe('when the request content length exceeds the maximum allowed length', function () {
-    var app = requestParams(stringifyParams, {
+    var app = mach.params(stringifyParams, {
       maxLength: 100
     });
 

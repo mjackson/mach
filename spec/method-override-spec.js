@@ -1,15 +1,14 @@
 require('./helper');
-var methodOverride = mach.methodOverride;
-var requestParams = mach.requestParams;
+var makeParams = mach.params;
 
 describe('methodOverride', function () {
-  var app = methodOverride(function (request) {
+  var app = mach.methodOverride(function (request) {
     return request.method;
   });
 
   describe('when the request method is given in a request parameter', function () {
-    describe('and the requestParams middleware is in front', function () {
-      var innerApp = requestParams(app);
+    describe('and the params middleware is in front', function () {
+      var innerApp = makeParams(app);
 
       beforeEach(function () {
         return callApp(innerApp, {
@@ -22,7 +21,7 @@ describe('methodOverride', function () {
       });
     });
 
-    describe('but the requestParams middleware is not in front', function () {
+    describe('but the params middleware is not in front', function () {
       var error;
       beforeEach(function () {
         error = {};
@@ -37,14 +36,14 @@ describe('methodOverride', function () {
       });
 
       it('writes to the error stream', function () {
-        assert.equal(error.data, 'No request params. Use mach.requestParams in front of mach.methodOverride\n');
+        assert.equal(error.data, 'No request params. Use mach.params in front of mach.methodOverride\n');
       });
     });
   });
 
   describe('when the request method is given in a request parameter with multiple values', function () {
-    describe('and the requestParams middleware is in front', function () {
-      var innerApp = requestParams(app);
+    describe('and the params middleware is in front', function () {
+      var innerApp = makeParams(app);
 
       beforeEach(function () {
         return callApp(innerApp, {

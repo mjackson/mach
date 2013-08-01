@@ -3,7 +3,7 @@ require('./helper');
 describe('mach.token', function () {
   var app = mach.stack();
   app.use(mach.session, { secret: 'foo' });
-  app.use(mach.requestParams);
+  app.use(mach.params);
   app.use(mach.token);
   app.run(function (request) {
     return request.session._token;

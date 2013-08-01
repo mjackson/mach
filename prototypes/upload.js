@@ -2,7 +2,7 @@ var mach = require('../lib');
 var app = mach.stack();
 
 app.use(mach.contentType, 'text/html');
-app.use(mach.requestParams);
+app.use(mach.params);
 
 app.get('/', function (request) {
   return [
