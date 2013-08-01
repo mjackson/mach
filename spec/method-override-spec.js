@@ -37,7 +37,7 @@ describe('methodOverride', function () {
       });
 
       it('writes to the error stream', function () {
-        assert.equal(error.data, 'No params. Use mach.requestParams in front of mach.methodOverride\n');
+        assert.equal(error.data, 'No request params. Use mach.requestParams in front of mach.methodOverride\n');
       });
     });
   });
