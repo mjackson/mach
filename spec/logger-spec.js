@@ -15,7 +15,7 @@ describe('mach.logger', function () {
     it('logs a content length of 0', function () {
       assert(log.data);
       var entries = log.data.split('\n');
-      var match = entries[0].match(/\b(\d+)\b$/);
+      var match = entries[0].match(/\b(\d+) ([0-9\.]+)\b$/);
       assert(match);
       var contentLength = match[1];
       assert.equal(contentLength, '0');
