@@ -7,6 +7,7 @@
     "when": "2.0.x",
     "mime": "1.2.9",
     "strftime": "0.5.0",
+    "microtime", "0.4.0",
     "then-redis": "0.3.x"
   },
   "devDependencies": {
