@@ -12,6 +12,8 @@ beforeEach(function () {
   lastResponse = null;
 });
 
+var queryString = require('querystring');
+
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
   options = options || {};
@@ -30,7 +32,7 @@ callApp = function (app, options, leaveBuffer) {
 
   // Params may be given as an object.
   if (options.params) {
-    var encodedParams = utils.stringifyQueryString(options.params);
+    var encodedParams = queryString.stringify(options.params);
 
     if (options.method === 'POST' || options.method === 'PUT') {
       if (!options.headers) options.headers = {};
