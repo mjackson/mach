@@ -55,6 +55,9 @@ app.post('/posts/:post_id/comments', function (request) {
   // ...
   return 201;
 });
+
+// Serve the app, listening on port 3000.
+mach.serve(app, 3000);
 ```
 
 Please [checkout the docs](https://github.com/machjs/mach/wiki) for more information and lots of usage examples.
