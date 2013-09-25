@@ -1,13 +1,12 @@
 ## Mach
 
-__WORK IN PROGRESS__
-
-Mach is a better way to build web servers in node.js.
+Mach is a better way to build web servers in node.js. It has the following goals:
 
   * Simplicity: straightforward mapping of HTTP requests to JavaScript function calls
   * Asynchronous: responses can be deferred using a standard Promises/A compatible promise
   * Streaming: request and response bodies can be streamed
   * Composability: middleware composes easily using promises
+  * Robust: Promises propagate errors up the call stack, simplifying error handling
 
 "Hello world" in Mach is simple.
 
