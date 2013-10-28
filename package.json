@@ -1,6 +1,6 @@
 {
   "name": "mach",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "HTTP for JavaScript",
   "main": "lib/index.js",
   "dependencies": {
