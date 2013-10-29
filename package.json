@@ -4,7 +4,7 @@
   "description": "HTTP for JavaScript",
   "main": "lib/index.js",
   "dependencies": {
-    "when": "2.0.x",
+    "when": "2.5.x",
     "mime": "1.2.9",
     "strftime": "0.5.0",
     "microtime": "0.4.0",
