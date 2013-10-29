@@ -3,6 +3,7 @@
   * Added `Request#apply` and made `Request#call` accept extra arguments
   * Removed `route` request variable in favor of extra arguments to `Request#apply`
   * Removed support for arrays as a response
+  * `mach.bind` returns the request handler function
 
 ### 0.5.4 / 2013-10-28
 
