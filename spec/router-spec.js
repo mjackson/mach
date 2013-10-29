@@ -1,22 +1,23 @@
 require('./helper');
+var utils = mach.utils;
 
 describe('mach.router', function () {
   var app = mach.router();
   var innerApp = function (request) {
-    var route = request.route;
-    assert.ok(route);
+    var extraArgs = utils.slice(arguments, 1);
 
     return {
       headers: {
-        'X-Route': JSON.stringify(route),
-        'X-Id': String(route.id)
+        'X-Args': JSON.stringify(extraArgs)
       }
     };
   };
 
   app.route(/\/users\/(\d+)/i, innerApp);
   app.route('/posts/:id', innerApp, 'GET');
-  app.route('/posts/:id', innerApp, ['POST', 'DELETE']);
+  app.route('/posts/:id', innerApp, [ 'POST', 'DELETE' ]);
+  app.route('/feeds/:id.?:format?', innerApp);
+  app.route('/files/*.*', innerApp);
 
   describe('when a match cannot be made', function () {
     beforeEach(function () {
@@ -34,13 +35,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Route']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Route']), ['/users/1', '1']);
-    });
-
-    it('does not set the id route parameter', function () {
-      assert.ok(lastResponse.headers['X-Id']);
-      assert.equal(lastResponse.headers['X-Id'], 'undefined');
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '1' ]);
     });
   });
 
@@ -50,13 +46,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Route']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Route']), ['/posts/1', '1']);
-    });
-
-    it('sets the id route parameter', function () {
-      assert.ok(lastResponse.headers['X-Id']);
-      assert.equal(lastResponse.headers['X-Id'], '1');
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '1' ]);
     });
   });
 
@@ -66,34 +57,79 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Route']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Route']), ['/posts/2', '2']);
-    });
-
-    it('sets the id route parameter', function () {
-      assert.ok(lastResponse.headers['X-Id']);
-      assert.equal(lastResponse.headers['X-Id'], '2');
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '2' ]);
     });
   });
 
   describe('DELETE /posts/3', function () {
-    beforeEach(function (callback) {
+    beforeEach(function () {
       return callApp(app, { method: 'DELETE', path: '/posts/3' });
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Route']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Route']), ['/posts/3', '3']);
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '3' ]);
+    });
+  });
+
+  describe('GET /feeds/5', function () {
+    beforeEach(function () {
+      return callApp(app, '/feeds/5');
     });
 
-    it('sets the id route parameter', function () {
-      assert.ok(lastResponse.headers['X-Id']);
-      assert.equal(lastResponse.headers['X-Id'], '3');
+    it('calls the correct app', function () {
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '5', null ]);
+    });
+  });
+
+  describe('GET /feeds/5.html', function () {
+    beforeEach(function () {
+      return callApp(app, '/feeds/5.html');
+    });
+
+    it('calls the correct app', function () {
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '5', 'html' ]);
+    });
+  });
+
+  describe('GET /files/feed.xml', function () {
+    beforeEach(function () {
+      return callApp(app, '/files/feed.xml');
+    });
+
+    it('calls the correct app', function () {
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ 'feed', 'xml' ]);
+    });
+  });
+
+  describe('GET /files/feed.', function () {
+    beforeEach(function () {
+      return callApp(app, '/files/feed.');
+    });
+
+    it('calls the correct app', function () {
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ 'feed', '' ]);
+    });
+  });
+
+  describe('GET /files/.xml', function () {
+    beforeEach(function () {
+      return callApp(app, '/files/.xml');
+    });
+
+    it('calls the correct app', function () {
+      assert.ok(lastResponse.headers['X-Args']);
+      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '', 'xml' ]);
     });
   });
 
   describe('PUT /posts/1', function () {
-    beforeEach(function (callback) {
+    beforeEach(function () {
       return callApp(app, { method: 'PUT', path: '/posts/1' });
     });
 

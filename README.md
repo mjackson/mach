@@ -42,8 +42,7 @@ app.get('/', function (request) {
 });
 
 // GET /posts/123.json
-app.get('/posts/:post_id.json', function (request) {
-  var postId = request.route.post_id;
+app.get('/posts/:post_id.json', function (request, postId) {
   return query('SELECT * FROM posts WHERE id=?', postId).then(JSON.stringify);
 });
 

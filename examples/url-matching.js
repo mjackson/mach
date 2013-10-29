@@ -11,8 +11,7 @@ app.get('/b', function (request) {
   return '<a href="/c/' + Date.now() + '">go to c</a>';
 });
 
-app.get('/c/:id', function (request) {
-  var id = request.route.id;
+app.get('/c/:id', function (request, id) {
   return JSON.stringify({
     method: request.method,
     path: request.path,
