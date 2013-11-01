@@ -1,3 +1,7 @@
+### HEAD
+
+  * Renamed `Request#parseParams` => `Request#getParams`
+
 ### 0.6.0 / 2013-10-29
 
   * Added `Request#apply` and made `Request#call` accept extra arguments
