@@ -1,5 +1,7 @@
-### HEAD
+### 0.6.1 / 2013-12-17
 
+  * Added `mach.send`, `mach.text`, `mach.html`, `mach.json`, `mach.redirect`,
+    and `mach.back` response helpers
   * Renamed `Request#parseParams` => `Request#getParams`
 
 ### 0.6.0 / 2013-10-29
