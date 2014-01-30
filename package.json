@@ -1,6 +1,6 @@
 {
   "name": "mach",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "HTTP for JavaScript",
   "main": "modules/index.js",
   "dependencies": {

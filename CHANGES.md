@@ -1,4 +1,4 @@
-### HEAD
+### 0.6.2 / 2014-01-30
 
   * Use timer.unref() instead of clearTimeout when shutting down
 

@@ -6,7 +6,7 @@ var Request = require('./request');
 /**
  * The current version of mach.
  */
-exports.version = '0.6.1';
+exports.version = '0.6.2';
 
 /**
  * The default port to use in mach.serve.
