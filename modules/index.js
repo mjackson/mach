@@ -103,15 +103,15 @@ function makeRequest(nodeRequest, serverName, serverPort) {
  *   - timeout  The timeout to use when gracefully shutting down servers when
  *              SIGINT or SIGTERM are received. If a server doesn't close within
  *              this time (probably because it has open persistent connections)
- *              it is forecefully stopped when the process exits. Defaults to 0,
- *              meaning that servers shut down immediately
+ *              it is forecefully stopped when the process exits. Defaults to 100,
+ *              meaning that servers forcefully shutdown after 100ms
  *   - key      Private key to use for SSL (HTTPS only)
  *   - cert     Public X509 certificate to use (HTTPS only)
  *
  * Note: When setting the timeout, be careful not to exceed any hard timeouts
- * specified by your PaaS. For example, on Heroku the dyno manager will not
- * permit a timeout longer than ten seconds.
- * See https://devcenter.heroku.com/articles/dynos#graceful-shutdown-with-sigterm
+ * specified by your PaaS. For example, Heroku's dyno manager will not permit
+ * a timeout longer than ten seconds. See
+ * https://devcenter.heroku.com/articles/dynos#graceful-shutdown-with-sigterm
  *
  * Returns the newly created HTTP server instance.
  */
@@ -132,16 +132,24 @@ exports.serve = function (app, options) {
   }
 
   function shutdown() {
-    if (!options.quiet) console.log('>> Shutting down...');
+    if (!options.quiet) {
+      console.log('>> Shutting down...');
+    }
 
+    // Force the process to exit if the server doesn't
+    // close all connections within the given timeout.
     var timer = setTimeout(function () {
-      if (!options.quiet) console.log('>> Exiting');
-      process.exit(0);
-    }, options.timeout || 0);
+      if (!options.quiet) {
+        console.log('>> Exiting');
+      }
 
-    nodeServer.close(function () {
-      clearTimeout(timer);
-    });
+      process.exit(0);
+    }, options.timeout || 100);
+
+    // Don't let this timer keep the event loop running.
+    timer.unref();
+
+    nodeServer.close();
   }
 
   nodeServer.once('listening', function () {
@@ -158,7 +166,10 @@ exports.serve = function (app, options) {
         message += '>> Listening on ' + address;
       } else {
         message += '>> Listening on ' + address.address;
-        if (address.port) message += ':' + address.port;
+
+        if (address.port) {
+          message += ':' + address.port;
+        }
       }
 
       message += ', use CTRL+C to stop';

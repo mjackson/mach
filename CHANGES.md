@@ -1,3 +1,7 @@
+### HEAD
+
+  * Use timer.unref() instead of clearTimeout when shutting down
+
 ### 0.6.1 / 2013-12-17
 
   * Added `mach.send`, `mach.text`, `mach.html`, `mach.json`, `mach.redirect`,
