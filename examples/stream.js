@@ -11,7 +11,7 @@ function ContentStream() {
 
 util.inherits(ContentStream, Readable);
 
-var mach = require('../lib');
+var mach = require('../modules');
 
 mach.serve(function (request) {
   var response = {

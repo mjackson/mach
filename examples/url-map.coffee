@@ -1,4 +1,4 @@
-mach = require "../lib"
+mach = require "../modules"
 
 server = mach.serve mach.logger mach.urlMap
 

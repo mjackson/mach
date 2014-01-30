@@ -1,5 +1,5 @@
 var when = require('when');
-var mach = require('../lib');
+var mach = require('../modules');
 
 mach.serve(function (request) {
   if (Math.random() > 0.5) {

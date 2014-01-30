@@ -1,4 +1,4 @@
-var mach = require('../lib');
+var mach = require('../modules');
 var app = mach.stack();
 
 app.use(mach.contentType, 'text/html');

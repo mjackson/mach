@@ -1,5 +1,5 @@
 assert = require('assert');
-mach = require('../lib');
+mach = require('../modules');
 var utils = mach.utils;
 
 // Override mocha's built-in methods with promise-aware versions.

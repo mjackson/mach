@@ -2,7 +2,7 @@
 // I've tested it with node 0.11.2 like this:
 //   node --harmony prototypes/generators.js
 
-var mach = require('../lib');
+var mach = require('../modules');
 var app  = mach.stack();
 var Q    = require('q');
 
