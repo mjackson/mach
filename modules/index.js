@@ -58,7 +58,7 @@ exports.bind = function (app, nodeServer) {
         content.pipe(nodeResponse);
       }
     }, function (error) {
-      request.error.write((error.stack || error) + '\n');
+      request.error.write(utils.stringifyError(error) + '\n');
       nodeResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       nodeResponse.end('Internal Server Error');
     });

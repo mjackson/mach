@@ -1,3 +1,4 @@
+var util = require('util');
 var crypto = require('crypto');
 var path = require('path');
 var fs = require('fs');
@@ -8,6 +9,21 @@ var mime = require('mime');
 var errors = require('./errors');
 var _slice = Array.prototype.slice;
 var _toString = Object.prototype.toString;
+
+exports.stringifyError = function (error) {
+  if (error) {
+    if (typeof error.stack === 'string') {
+      return error.stack;
+    }
+
+    if (typeof error === 'string') {
+      return error;
+    }
+  }
+
+  // This is some other object posing as an Error.
+  return 'Error: ' + util.inspect(error);
+};
 
 exports.STATUS_CODES = {
   100: 'Continue',
