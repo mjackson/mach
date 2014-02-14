@@ -499,17 +499,24 @@ Request.prototype.filterParams = function (filterMap, maxLength, uploadPrefix) {
   return this.getParams(maxLength, uploadPrefix).then(function (params) {
     var filteredParams = {};
 
+    var filter;
     for (var paramName in filterMap) {
-      if (filterMap.hasOwnProperty(paramName) && params.hasOwnProperty(paramName)) {
-        filteredParams[paramName] = filterMap[paramName](params[paramName]);
+      filter = filterMap[paramName];
+
+      if (isFunction(filter) && params.hasOwnProperty(paramName)) {
+        filteredParams[paramName] = filter(params[paramName]);
       }
     }
 
-    return when(filteredParams);
+    return filteredParams;
   });
 };
 
 /* helpers */
+
+function isFunction(object) {
+  return typeof object === 'function';
+}
 
 function parseJson(content, maxLength) {
   return utils.bufferStream(content, maxLength).then(function (buffer) {
