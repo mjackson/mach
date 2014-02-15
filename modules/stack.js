@@ -111,7 +111,7 @@ function makeStack(defaultApp) {
     });
   };
 
-  [ 'run', 'route', 'get', 'post', 'put', 'delete', 'head', 'options' ].forEach(function (method) {
+  [ 'run', 'route', 'get', 'post', 'put', 'patch', 'delete', 'head', 'options' ].forEach(function (method) {
     stack[method] = function () {
       if (typeof defaultApp[method] !== 'function') {
         // By default, defaultApp is a mach.router, so this should only ever happen
