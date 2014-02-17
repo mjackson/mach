@@ -14,8 +14,8 @@ describe('mach.router', function () {
   };
 
   app.route(/\/users\/(\d+)/i, innerApp);
-  app.route('/posts/:id', innerApp, 'GET');
-  app.route('/posts/:id', innerApp, [ 'POST', 'DELETE' ]);
+  app.route('/posts/:id', 'GET', innerApp);
+  app.route('/posts/:id', [ 'POST', 'DELETE' ], innerApp);
   app.route('/feeds/:id.?:format?', innerApp);
   app.route('/files/*.*', innerApp);
 

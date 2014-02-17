@@ -1,3 +1,8 @@
+### HEAD
+
+  * Add PATCH support to the router
+  * HTTP methods are 2nd argument to router.route
+
 ### 0.6.2 / 2014-01-30
 
   * Use timer.unref() instead of clearTimeout when shutting down

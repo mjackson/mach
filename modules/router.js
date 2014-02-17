@@ -61,7 +61,12 @@ module.exports = function (defaultApp) {
    * path used in the request. If the pattern is a string, it is automatically
    * compiled (see utils.compileRoute).
    */
-  router.route = function (pattern, app, methods) {
+  router.route = function (pattern, methods, app) {
+    if (typeof methods === 'function') {
+      app = methods;
+      methods = null;
+    }
+
     if (typeof methods === 'string') {
       methods = [ methods ];
     } else {
@@ -105,7 +110,7 @@ module.exports = function (defaultApp) {
 
   Object.keys(methodVerbs).forEach(function (method) {
     router[method] = function (pattern, app) {
-      return router.route(pattern, app, methodVerbs[method]);
+      return router.route(pattern, methodVerbs[method], app);
     };
   });
 
