@@ -52,8 +52,12 @@ module.exports = function (app, options) {
     throw new Error('"' + root + '" is not a directory');
   }
 
-  if (index && typeof index === 'string') {
-    index = [ index ];
+  if (index) {
+    if (typeof index === 'string') {
+      index = [ index ];
+    } else if (!Array.isArray(index)) {
+      index = [ 'index.html' ];
+    }
   }
 
   function fileServer(request) {

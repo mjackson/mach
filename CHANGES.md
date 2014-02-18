@@ -2,6 +2,7 @@
 
   * Add PATCH support to the router
   * HTTP methods are 2nd argument to router.route
+  * Use index:true in mach.file to automatically serve index.html
 
 ### 0.6.2 / 2014-01-30
 
