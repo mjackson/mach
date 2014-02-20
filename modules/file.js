@@ -34,22 +34,18 @@ module.exports = function (app, options) {
   } else if (options) {
     root = options.root;
     index = options.index;
+
     if ('useLastModified' in options) {
       useLastModified = !!options.useLastModified;
     } else {
       useLastModified = true;
     }
+    
     useEtag = !!options.useEtag;
   }
 
-  if (typeof root !== 'string') {
-    throw new Error('Invalid root directory');
-  }
-  if (!fs.existsSync(root)) {
-    throw new Error('Directory "' + root + '" does not exist');
-  }
-  if (!fs.statSync(root).isDirectory()) {
-    throw new Error('"' + root + '" is not a directory');
+  if (typeof root !== 'string' || !fs.existsSync(root) || !fs.statSync(root).isDirectory()) {
+    throw new Error('Invalid root directory: ' + root);
   }
 
   if (index) {
