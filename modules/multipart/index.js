@@ -1,3 +1,14 @@
+var submodules = {
+  Parser:   './parser',
+  Part:     './part'
+};
+
+Object.keys(submodules).forEach(function (name) {
+  module.exports.__defineGetter__(name, function () {
+    return require(submodules[name]);
+  });
+});
+
 var assert = require('assert');
 
 /**
@@ -33,14 +44,3 @@ exports.parse = function (buffer, boundary) {
 
   return parts;
 };
-
-var submodules = {
-  Parser:   './parser',
-  Part:     './part'
-};
-
-Object.keys(submodules).forEach(function (name) {
-  module.exports.__defineGetter__(name, function () {
-    return require(submodules[name]);
-  });
-});

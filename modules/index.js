@@ -1,7 +1,37 @@
+var submodules = {
+  basicAuth:      './middleware/basic-auth',
+  catch:          './middleware/catch',
+  contentType:    './middleware/content-type',
+  errors:         './errors',
+  favicon:        './middleware/favicon',
+  file:           './middleware/file',
+  gzip:           './middleware/gzip',
+  logger:         './middleware/logger',
+  mapper:         './middleware/mapper',
+  matcher:        './middleware/matcher',
+  methodOverride: './middleware/method-override',
+  modified:       './middleware/modified',
+  multipart:      './multipart',
+  params:         './middleware/params',
+  Request:        './request',
+  router:         './middleware/router',
+  session:        './middleware/session',
+  stack:          './middleware/stack',
+  token:          './middleware/token',
+  urlMap:         './middleware/url-map',
+  utils:          './utils'
+};
+
+Object.keys(submodules).forEach(function (name) {
+  module.exports.__defineGetter__(name, function () {
+    return require(submodules[name]);
+  });
+});
+
 var http = require('http');
 var https = require('https');
-var utils = require('./utils');
-var Request = require('./request');
+var utils = exports.utils;
+var Request = exports.Request;
 
 /**
  * The current version of mach.
@@ -273,33 +303,3 @@ exports.redirect = function (location, status, headers) {
 exports.back = function (request, defaultLocation) {
   return exports.redirect(request.headers.referer || defaultLocation || '/');
 };
-
-var submodules = {
-  basicAuth:      './middleware/basic-auth',
-  catch:          './middleware/catch',
-  contentType:    './middleware/content-type',
-  errors:         './errors',
-  favicon:        './middleware/favicon',
-  file:           './middleware/file',
-  gzip:           './middleware/gzip',
-  logger:         './middleware/logger',
-  mapper:         './middleware/mapper',
-  matcher:        './middleware/matcher',
-  methodOverride: './middleware/method-override',
-  modified:       './middleware/modified',
-  multipart:      './multipart',
-  params:         './middleware/params',
-  Request:        './request',
-  router:         './middleware/router',
-  session:        './middleware/session',
-  stack:          './middleware/stack',
-  token:          './middleware/token',
-  urlMap:         './middleware/url-map',
-  utils:          './utils'
-};
-
-Object.keys(submodules).forEach(function (name) {
-  module.exports.__defineGetter__(name, function () {
-    return require(submodules[name]);
-  });
-});

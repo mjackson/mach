@@ -1,6 +1,6 @@
 var when = require('when');
-var utils = require('../utils');
-var CookieStore = require('./session/cookie-store');
+var utils = require('../../utils');
+var CookieStore = require('./cookie-store');
 
 /**
  * A middleware that provides light-weight HTTP sessions. Accepts the following
@@ -96,10 +96,10 @@ module.exports = function (app, options) {
 };
 
 var submodules = {
-  CookieStore:    './session/cookie-store',
-  MemoryStore:    './session/memory-store',
-  RedisStore:     './session/redis-store',
-  Store:          './session/store'
+  CookieStore:    './cookie-store',
+  MemoryStore:    './memory-store',
+  RedisStore:     './redis-store',
+  Store:          './store'
 };
 
 Object.keys(submodules).forEach(function (name) {
