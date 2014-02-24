@@ -7,18 +7,14 @@ var url = require('url');
 var when = require('when');
 var mime = require('mime');
 var errors = require('./errors');
-var _slice = Array.prototype.slice;
-var _toString = Object.prototype.toString;
 
 exports.stringifyError = function (error) {
   if (error) {
-    if (typeof error.stack === 'string') {
+    if (typeof error.stack === 'string')
       return error.stack;
-    }
 
-    if (typeof error === 'string') {
+    if (typeof error === 'string')
       return error;
-    }
   }
 
   // This is some other object posing as an Error.
@@ -106,9 +102,15 @@ exports.isSafeRequestMethod = function (method) {
   return exports.SAFE_REQUEST_METHODS[method.toUpperCase()] === true;
 };
 
+exports.isApp = function (object) {
+  return object && (typeof object === 'function' || typeof object.apply === 'function');
+};
+
 exports.defaultApp = function (request) {
   return textResponse(404, 'Not Found: ' + request.method + ' ' + request.path);
 };
+
+var _slice = Array.prototype.slice;
 
 exports.slice = function (object) {
   return _slice.apply(object, _slice.call(arguments, 1));
@@ -116,13 +118,14 @@ exports.slice = function (object) {
 
 exports.mergeProperties = function (object, extension) {
   for (var property in extension) {
-    if (extension.hasOwnProperty(property)) {
+    if (extension.hasOwnProperty(property))
       object[property] = extension[property];
-    }
   }
 
   return object;
 };
+
+var _toString = Object.prototype.toString;
 
 exports.isRegExp = function (object) {
   return _toString.call(object) === '[object RegExp]';
@@ -167,9 +170,8 @@ exports.decodeBase64 = function (string) {
 exports.encodeCookie = function (name, options) {
   options = options || {};
 
-  if (typeof options === 'string') {
+  if (typeof options === 'string')
     options = { value: options };
-  }
 
   var cookie = encodeURIComponent(name) + '=';
 

@@ -35,12 +35,12 @@ exports.parse = function (buffer, boundary) {
 };
 
 var submodules = {
-  Parser:   './multipart/parser',
-  Part:     './multipart/part'
+  Parser:   './parser',
+  Part:     './part'
 };
 
 Object.keys(submodules).forEach(function (name) {
-  exports.__defineGetter__(name, function () {
+  module.exports.__defineGetter__(name, function () {
     return require(submodules[name]);
   });
 });

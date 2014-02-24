@@ -1,5 +1,5 @@
 var util = require('util');
-var utils = require('../utils');
+var utils = require('../../utils');
 var SessionStore = require('./store');
 module.exports = MemoryStore;
 

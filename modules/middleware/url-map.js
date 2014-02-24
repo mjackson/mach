@@ -1,5 +1,5 @@
-var utils = require('./utils');
-var makeMapper = require('./mapper');
+var utils = require('../utils');
+var Mapper = require('./mapper');
 
 /**
  * A middleware that provides host and/or location-based routing using a
@@ -19,17 +19,16 @@ var makeMapper = require('./mapper');
  *   });
  */
 module.exports = function (app, map) {
-  if (typeof app !== 'function') {
+  if (!utils.isApp(app)) {
     map = app;
     app = utils.defaultApp;
   }
 
-  var mapper = makeMapper(app);
+  var mapper = new Mapper(app);
 
   for (var location in map) {
-    if (map.hasOwnProperty(location)) {
+    if (map.hasOwnProperty(location))
       mapper.map(location, map[location]);
-    }
   }
 
   return mapper;

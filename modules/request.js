@@ -122,9 +122,8 @@ Request.parseMediaTypes = Request.formMediaTypes.concat([
 Request.prototype.apply = function (app, extraArgs) {
   var args = [ this ];
 
-  if (extraArgs) {
+  if (extraArgs)
     args.push.apply(args, extraArgs);
-  }
 
   try {
     var value = app.apply(this, args);
@@ -133,9 +132,8 @@ Request.prototype.apply = function (app, extraArgs) {
   }
 
   return when(value, function (response) {
-    if (response == null) {
+    if (response == null)
       throw new Error('No response returned from app: ' + app);
-    }
 
     var responseType = typeof response;
     if (responseType === 'string' || Buffer.isBuffer(response)) {
@@ -144,15 +142,14 @@ Request.prototype.apply = function (app, extraArgs) {
       response = { status: response };
     }
 
-    if (!response.status) {
+    if (!response.status)
       response.status = 200;
-    }
-    if (!response.headers) {
+
+    if (!response.headers)
       response.headers = {};
-    }
-    if (!response.content) {
+
+    if (!response.content)
       response.content = NO_CONTENT;
-    }
 
     if (!(response.content instanceof Readable)) {
       var content = makeReadable(response.content);
@@ -172,11 +169,8 @@ Request.prototype.apply = function (app, extraArgs) {
  * Note: The `content` will always be a Readable stream.
  */
 Request.prototype.call = function (app) {
-  var extraArgs = utils.slice(arguments, 1);
-
-  if (extraArgs.length) {
-    return this.apply(app, extraArgs);
-  }
+  if (arguments.length > 1)
+    return this.apply(app, utils.slice(arguments, 1));
 
   return this.apply(app);
 };

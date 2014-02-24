@@ -1,5 +1,5 @@
 var when = require('when');
-var utils = require('./utils');
+var utils = require('../utils');
 
 /**
  * A middleware that performs basic auth on the incoming request before passing

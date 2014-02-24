@@ -1,5 +1,5 @@
-var errors = require('./errors');
-var utils = require('./utils');
+var errors = require('../errors');
+var utils = require('../utils');
 
 /**
  * Automatically parses all request parameters and stores them in the `params`

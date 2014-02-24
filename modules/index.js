@@ -275,31 +275,31 @@ exports.back = function (request, defaultLocation) {
 };
 
 var submodules = {
-  basicAuth:      './basic-auth',
-  catch:          './catch',
-  contentType:    './content-type',
+  basicAuth:      './middleware/basic-auth',
+  catch:          './middleware/catch',
+  contentType:    './middleware/content-type',
   errors:         './errors',
-  favicon:        './favicon',
-  file:           './file',
-  gzip:           './gzip',
-  logger:         './logger',
-  mapper:         './mapper',
-  matcher:        './matcher',
-  methodOverride: './method-override',
-  modified:       './modified',
+  favicon:        './middleware/favicon',
+  file:           './middleware/file',
+  gzip:           './middleware/gzip',
+  logger:         './middleware/logger',
+  mapper:         './middleware/mapper',
+  matcher:        './middleware/matcher',
+  methodOverride: './middleware/method-override',
+  modified:       './middleware/modified',
   multipart:      './multipart',
-  params:         './params',
+  params:         './middleware/params',
   Request:        './request',
-  router:         './router',
-  session:        './session',
-  stack:          './stack',
-  token:          './token',
-  urlMap:         './url-map',
+  router:         './middleware/router',
+  session:        './middleware/session',
+  stack:          './middleware/stack',
+  token:          './middleware/token',
+  urlMap:         './middleware/url-map',
   utils:          './utils'
 };
 
 Object.keys(submodules).forEach(function (name) {
-  exports.__defineGetter__(name, function () {
+  module.exports.__defineGetter__(name, function () {
     return require(submodules[name]);
   });
 });

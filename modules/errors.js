@@ -1,7 +1,8 @@
 var util = require('util');
-var errors = module.exports;
 
-errors.Error = MachError;
+exports.Error = MachError;
+exports.MaxLengthExceededError = MaxLengthExceededError;
+
 function MachError(message) {
   Error.call(this);
   Error.captureStackTrace(this, this.constructor);
@@ -11,7 +12,6 @@ function MachError(message) {
 
 util.inherits(MachError, Error);
 
-errors.MaxLengthExceededError = MaxLengthExceededError;
 function MaxLengthExceededError(maxLength) {
   MachError.call(this, 'Maximum length exceeded');
   this.maxLength = maxLength;

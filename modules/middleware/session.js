@@ -1,5 +1,5 @@
 var when = require('when');
-var utils = require('./utils');
+var utils = require('../utils');
 var CookieStore = require('./session/cookie-store');
 
 /**

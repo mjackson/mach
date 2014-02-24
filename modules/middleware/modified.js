@@ -8,15 +8,13 @@ module.exports = function (app) {
   return function (request) {
     var checkEtag;
     var ifNoneMatch = request.headers['if-none-match'];
-    if (ifNoneMatch) {
+    if (ifNoneMatch)
       checkEtag = stripQuotes(ifNoneMatch);
-    }
 
     var checkLastModified;
     var ifModifiedSince = request.headers['if-modified-since'];
-    if (ifModifiedSince) {
+    if (ifModifiedSince)
       checkLastModified = Date.parse(ifModifiedSince);
-    }
 
     return request.call(app).then(function (response) {
       if (checkEtag) {
@@ -33,9 +31,8 @@ module.exports = function (app) {
         var lastModified = response.headers['Last-Modified'];
 
         if (lastModified) {
-          if (typeof lastModified === 'string') {
+          if (typeof lastModified === 'string')
             lastModified = Date.parse(lastModified);
-          }
 
           if (lastModified <= checkLastModified) {
             response.status = 304;

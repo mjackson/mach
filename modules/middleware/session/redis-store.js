@@ -1,6 +1,6 @@
 var util = require('util');
 var redis = require('then-redis');
-var utils = require('../utils');
+var utils = require('../../utils');
 var SessionStore = require('./store');
 module.exports = RedisStore;
 

@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var utils = require('./utils');
+var utils = require('../utils');
 
 /**
  * A middleware that helps to prevent Cross-site Request Forgery attacks by

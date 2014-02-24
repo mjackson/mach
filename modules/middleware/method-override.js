@@ -36,14 +36,12 @@ module.exports = function (app, paramName, headerName) {
       method = request.params[paramName];
 
       // If multiple _method parameters were used, use the last one.
-      if (Array.isArray(method)) {
+      if (Array.isArray(method))
         method = method[method.length - 1];
-      }
     }
 
-    if (method) {
+    if (method)
       request.method = method.toUpperCase();
-    }
 
     return request.call(app);
   };

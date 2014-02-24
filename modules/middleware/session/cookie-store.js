@@ -1,6 +1,6 @@
 var util = require('util');
 var when = require('when');
-var utils = require('../utils');
+var utils = require('../../utils');
 var SessionStore = require('./store');
 module.exports = CookieStore;
 
