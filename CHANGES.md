@@ -3,6 +3,8 @@
   * Add PATCH support to the router
   * HTTP methods are 2nd argument to router.route
   * Use index:true in mach.file to automatically serve index.html
+  * Converted stack, mapper, router, file, gzip, and logger middleware to be proper
+    classes instead of overloaded functions
 
 ### 0.6.2 / 2014-01-30
 
