@@ -29,19 +29,18 @@ module.exports = function (app, options) {
   var uploadPrefix = options.uploadPrefix;
 
   return function (request) {
-    if (request.params) {
+    if (request.params)
       return request.call(app); // Don't overwrite existing params.
-    }
 
-    return request.getParams(maxLength, uploadPrefix).then(function (params) {
-      request.params = params;
-      return request.call(app);
-    }, function (error) {
-      if (error instanceof errors.MaxLengthExceededError) {
-        return utils.requestEntityTooLarge();
-      }
+    return request.getParams(maxLength, uploadPrefix)
+      .then(function (params) {
+        request.params = params;
+        return request.call(app);
+      }, function (error) {
+        if (error instanceof errors.MaxLengthExceededError)
+          return utils.requestEntityTooLarge();
 
-      throw error;
-    });
+        throw error;
+      });
   };
 };
