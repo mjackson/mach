@@ -1,7 +1,5 @@
-var util = require('util');
 var RSVP = require('rsvp');
 var utils = require('../../utils');
-var SessionStore = require('./store');
 module.exports = CookieStore;
 
 /**
@@ -9,11 +7,8 @@ module.exports = CookieStore;
  *
  * Accepts the following options:
  *
- * - secret         A secret key that will be used to verify the integrity of
- *                  session data that is received from the client. This should
- *                  always be set when using this storage strategy
- * - expireAfter    The time (in seconds) after which sessions expire. Defaults
- *                  to 0 (no expiration)
+ * - expireAfter      The number of seconds after which sessions expire.
+ *                    Defaults to 0 (no expiration)
  *
  * Note: Cookies are only able to reliably store about 4k of data. Also, sending
  * and receiving large cookies can have a significant impact on overall server
@@ -24,60 +19,31 @@ module.exports = CookieStore;
 function CookieStore(options) {
   options = options || {};
 
-  SessionStore.call(this, options);
-
-  this.secret = options.secret;
-  if (!this.secret) {
-    console.warn([
-      'WARNING: There was no "secret" option provided to mach.session.CookieStore!',
-      'This poses a security vulnerability because session data will be stored on',
-      'clients without any server-side verification that it has not been tampered',
-      'with. It is strongly recommended that you set a secret to prevent exploits',
-      'that may be attempted using carefully crafted cookies.'
-    ].join('\n'));
-  }
+  this._ttl = options.expireAfter
+    ? (1000 * options.expireAfter) // expireAfter is given in seconds
+    : 0;
 }
 
-util.inherits(CookieStore, SessionStore);
-
 CookieStore.prototype.load = function (value) {
-  var cookie = utils.decodeBase64(value);
-  var index = cookie.lastIndexOf('--');
-  var data = cookie.substring(0, index);
-  var hash = cookie.substring(index + 2);
-
-  if (hash !== makeHash(data, this.secret))
-    return {};
-
-  try {
-    var session = JSON.parse(data);
+  try {    
+    var session = JSON.parse(value);
   } catch (error) {
-    // The cookie does not contain valid JSON. Ignore it.
-    return {};
+    // Ignore invalid JSON data.
+    return RSVP.resolve({});
   }
 
-  if (!session._expiry || session._expiry > Date.now())
-    return session;
+  // Verify the session is not expired.
+  if (session._expiry && session._expiry <= Date.now())
+    return RSVP.resolve({});
 
-  return {};
+  return RSVP.resolve(session);
 };
 
 CookieStore.prototype.save = function (session) {
-  this.touch(session);
+  if (this._ttl)
+    session._expiry = Date.now() + this._ttl;
 
-  var data = JSON.stringify(session);
-  var hash = makeHash(data, this.secret);
-  var value = utils.encodeBase64(data + '--' + hash);
-
-  if (value.length > 4096)
-    return RSVP.reject('Cookie data size exceeds 4k; content dropped');
-
-  return value;
-};
-
-CookieStore.prototype.touch = function (session) {
-  if (this.ttl)
-    session._expiry = Date.now() + this.ttl;
+  return RSVP.resolve(JSON.stringify(session));
 };
 
 function makeHash(data, secret) {

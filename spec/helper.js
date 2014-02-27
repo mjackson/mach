@@ -1,4 +1,5 @@
 assert = require('assert');
+expect = require('expect');
 mach = require('../modules');
 var utils = mach.utils;
 

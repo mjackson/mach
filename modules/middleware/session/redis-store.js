@@ -1,7 +1,6 @@
-var util = require('util');
 var redis = require('then-redis');
+var RSVP = require('rsvp');
 var utils = require('../../utils');
-var SessionStore = require('./store');
 module.exports = RedisStore;
 
 /**
@@ -16,74 +15,73 @@ module.exports = RedisStore;
  * Accepts the following options:
  *
  * - url              The URL of the Redis instance
- * - expireAfter      The time (in seconds) after which sessions expire.
- *                    Defaults to 0 (no expiration)
  * - keyLength        The length that will be used for unique cache keys.
  *                    Defaults to 32
+ * - expireAfter      The number of seconds after which sessions expire.
+ *                    Defaults to 0 (no expiration)
  */
 function RedisStore(options) {
   options = options || {};
 
-  SessionStore.call(this, options);
-
-  this.redis = redis.createClient(options.url);
-  this.keyLength = options.keyLength || 32;
+  this._redisClient = redis.createClient(options.url);
+  this._keyLength = options.keyLength || 32;
+  this._ttl = options.expireAfter
+    ? (1000 * options.expireAfter) // expireAfter is given in seconds
+    : 0;
 }
 
-util.inherits(RedisStore, SessionStore);
-
 RedisStore.prototype.load = function (value) {
-  return this.redis.get(value).then(function (json) {
-    if (!json) return {};
+  var client = this._redisClient;
+
+  return client.get(value).then(function (json) {
+    if (!json)
+      return {};
+
     return JSON.parse(json);
   });
 };
 
 RedisStore.prototype.save = function (session) {
-  var key = session._id;
-  if (!key) {
-    var self = this;
-    return makeUniqueKey(this).then(function (uniqueKey) {
-      session._id = uniqueKey;
-      return self.save(session);
+  var client = this._redisClient;
+  var ttl = this._ttl;
+
+  return RSVP.resolve(session._id || _makeUniqueKey(this._redisClient, this._keyLength)).then(function (key) {
+    session._id = key;
+
+    var json = JSON.stringify(session);
+
+    var promise;
+    if (ttl) {
+      promise = client.psetex(key, ttl, json);
+    } else {
+      promise = client.set(key, json);
+    }
+
+    return promise.then(function () {
+      return key;
     });
-  }
-
-  var json = JSON.stringify(session);
-
-  var promise;
-  if (this.ttl) {
-    promise = this.redis.psetex(key, this.ttl, json);
-  } else {
-    promise = this.redis.set(key, json);
-  }
-
-  return promise.then(function () {
-    return key;
   });
 };
 
-RedisStore.prototype.touch = function (session) {
-  if (this.ttl && session._id) {
-    return this.redis.pexpire(session._id, this.ttl);
-  }
-};
-
 RedisStore.prototype.purge = function (key) {
-  if (key) return this.redis.del(key);
-  return this.redis.flushdb();
+  if (key)
+    return this._redisClient.del(key);
+
+  return this._redisClient.flushdb();
 };
 
 RedisStore.prototype.destroy = function () {
-  return this.redis.quit();
+  return this._redisClient.quit();
 };
 
-function makeUniqueKey(store) {
-  var key = utils.makeKey(store.keyLength);
+function _makeUniqueKey(redisClient, keyLength) {
+  var key = utils.makeKey(keyLength);
 
   // Try to set an empty string to reserve the key.
-  return store.redis.setnx(key, '').then(function (result) {
-    if (result === 1) return key; // The key was available.
-    return makeUniqueKey(store); // Try again.
+  return redisClient.setnx(key, '').then(function (result) {
+    if (result === 1)
+      return key; // The key was available.
+
+    return _makeUniqueKey(redisClient, keyLength); // Try again.
   });
 }

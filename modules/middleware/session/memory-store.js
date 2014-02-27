@@ -1,6 +1,5 @@
-var util = require('util');
+var RSVP = require('rsvp');
 var utils = require('../../utils');
-var SessionStore = require('./store');
 module.exports = MemoryStore;
 
 /**
@@ -10,53 +9,47 @@ module.exports = MemoryStore;
  *
  * Accepts the following options:
  *
- * - expireAfter      The time (in seconds) after which sessions expire.
- *                    Defaults to 0 (no expiration)
  * - keyLength        The length that will be used for unique cache keys.
  *                    Defaults to 32
- * - interval         The interval (in milliseconds) at which the cache is
+ * - purgeInterval    The interval (in milliseconds) at which the cache is
  *                    purged of expired sessions. Defaults to 5000
+ * - expireAfter      The number of seconds after which sessions expire.
+ *                    Defaults to 0 (no expiration)
  */
 function MemoryStore(options) {
   options = options || {};
 
-  SessionStore.call(this, options);
-
   this.sessions = {};
   this.expires = {};
-  this.timer = pruneStore(this, options.interval || 5000);
-  this.keyLength = options.keyLength || 32;
-}
 
-util.inherits(MemoryStore, SessionStore);
+  this._keyLength = options.keyLength || 32;
+  this._timer = _pruneStore(this, options.purgeInterval || 5000);
+  this._ttl = options.expireAfter
+    ? (1000 * options.expireAfter) // expireAfter is given in seconds
+    : 0;
+}
 
 MemoryStore.prototype.load = function (value) {
   var expiry = this.expires[value];
 
-  if (!expiry || expiry > Date.now()) {
-    return this.sessions[value] || {};
-  }
+  // Verify the session is not expired.
+  if (expiry && expiry <= Date.now())
+    return RSVP.resolve({});
 
-  return {};
+  return RSVP.resolve(this.sessions[value] || {});
 };
 
 MemoryStore.prototype.save = function (session) {
   var key = session._id;
-  if (!key) {
-    key = session._id = makeUniqueKey(this);
-  }
+  if (!key)
+    key = session._id = _makeUniqueKey(this.sessions, this._keyLength);
 
   this.sessions[key] = session;
-  this.touch(session);
 
-  return key;
-};
+  if (this._ttl)
+    this.expires[key] = Date.now() + this._ttl;
 
-MemoryStore.prototype.touch = function (session) {
-  var key = session._id;
-  if (this.ttl && key && this.sessions[key]) {
-    this.expires[key] = Date.now() + this.ttl;
-  }
+  return RSVP.resolve(key);
 };
 
 MemoryStore.prototype.purge = function (key) {
@@ -73,31 +66,31 @@ MemoryStore.prototype.destroy = function () {
   delete this.sessions;
   delete this.expires;
 
-  if (this.timer) {
-    clearInterval(this.timer);
-    delete this.timer;
+  if (this._timer) {
+    clearInterval(this._timer);
+    delete this._timer;
   }
 };
 
-function makeUniqueKey(store) {
+function _makeUniqueKey(sessions, keyLength) {
   var key;
   do {
-    key = utils.makeKey(store.keyLength);
-  } while (store.sessions[key]);
+    key = utils.makeKey(keyLength);
+  } while (sessions[key]);
 
   return key;
 }
 
-function pruneStore(store, interval) {
+function _pruneStore(store, interval) {
   var timer = setInterval(function () {
     var now = Date.now();
 
     var expiry;
     for (var key in store.expires) {
       expiry = store.expires[key];
-      if (expiry && expiry < now) {
+
+      if (expiry && expiry < now)
         store.purge(key);
-      }
     }
   }, interval);
 
