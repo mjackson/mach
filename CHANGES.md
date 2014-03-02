@@ -1,4 +1,4 @@
-### HEAD
+### 0.6.3 / 2014-03-01
 
   * Add PATCH support to the router
   * HTTP methods are 2nd argument to router.route
