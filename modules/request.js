@@ -49,9 +49,8 @@ function Request(options) {
   this.date = options.date || new Date;
 
   // Make sure pathInfo is at least '/'.
-  if (this.scriptName === '' && this.pathInfo === '') {
+  if (this.scriptName === '' && this.pathInfo === '')
     this.pathInfo = '/';
-  }
 
   this.headers = {};
   if (options.headers) {
@@ -179,13 +178,11 @@ Request.prototype.call = function (app) {
  * The protocol used in the request (i.e. "http:" or "https:").
  */
 Request.prototype.__defineGetter__('protocol', function () {
-  if (this.headers['x-forwarded-ssl'] === 'on') {
+  if (this.headers['x-forwarded-ssl'] === 'on')
     return 'https:';
-  }
 
-  if (this.headers['x-forwarded-proto']) {
+  if (this.headers['x-forwarded-proto'])
     return this.headers['x-forwarded-proto'].split(',')[0] + ':';
-  }
 
   return this._protocol;
 });
@@ -222,13 +219,11 @@ Request.prototype.__defineGetter__('hostWithPort', function () {
     return parts[parts.length - 1];
   }
 
-  if (this.headers.host) {
+  if (this.headers.host)
     return this.headers.host;
-  }
 
-  if (this.serverPort) {
+  if (this.serverPort)
     return this.serverName + ':' + this.serverPort;
-  }
 
   return this.serverName;
 });
@@ -245,9 +240,16 @@ Request.prototype.__defineGetter__('host', function () {
  */
 Request.prototype.__defineGetter__('port', function () {
   var port = this.hostWithPort.split(':')[1] || this.headers['x-forwarded-port'];
-  if (port) return parseInt(port, 10);
-  if (this.isSsl) return 443;
-  if (this.headers['x-forwarded-host']) return 80;
+
+  if (port)
+    return parseInt(port, 10);
+
+  if (this.isSsl)
+    return 443;
+
+  if (this.headers['x-forwarded-host'])
+    return 80;
+
   return this.serverPort;
 });
 
@@ -260,9 +262,8 @@ Request.prototype.__defineGetter__('baseUrl', function () {
   var base = protocol + '//' + this.host;
   var port = this.port;
 
-  if ((protocol === 'https:' && port !== 443) || (protocol === 'http:' && port !== 80)) {
+  if ((protocol === 'https:' && port !== 443) || (protocol === 'http:' && port !== 80))
     base += ':' + port;
-  }
 
   return base;
 });
@@ -293,9 +294,8 @@ Request.prototype.__defineGetter__('url', function () {
  * the query string.
  */
 Request.prototype.__defineGetter__('query', function () {
-  if (!this._query) {
+  if (!this._query)
     this._query = utils.parseQueryString(this.queryString);
-  }
 
   return this._query;
 });
@@ -314,9 +314,8 @@ Request.prototype.__defineGetter__('cookies', function () {
       // precede those with less specific. Ordering with respect to other
       // attributes (e.g., Domain) is unspecified.
       for (var cookieName in cookies) {
-        if (Array.isArray(cookies[cookieName])) {
+        if (Array.isArray(cookies[cookieName]))
           cookies[cookieName] = cookies[cookieName][0] || '';
-        }
       }
 
       this._cookies = cookies;
@@ -346,11 +345,10 @@ Request.prototype.__defineGetter__('mediaType', function () {
 Request.prototype.__defineGetter__('isForm', function () {
   var mediaType = this.mediaType;
 
-  if (Request.formMediaTypes.indexOf(mediaType) !== -1) {
+  if (Request.formMediaTypes.indexOf(mediaType) !== -1)
     return true;
-  }
 
-  return (!mediaType && this.method === 'POST');
+  return !mediaType && this.method === 'POST';
 });
 
 /**
@@ -358,7 +356,7 @@ Request.prototype.__defineGetter__('isForm', function () {
  * otherwise.
  */
 Request.prototype.__defineGetter__('canParseContent', function () {
-  return (Request.parseMediaTypes.indexOf(this.mediaType) !== -1) || this.isForm;
+  return Request.parseMediaTypes.indexOf(this.mediaType) !== -1 || this.isForm;
 });
 
 /**
@@ -379,18 +377,16 @@ Request.prototype.__defineGetter__('canParseContent', function () {
  * It defaults to the value of Request.defaultUploadPrefix.
  */
 Request.prototype.parseContent = function (maxLength, uploadPrefix) {
-  if (this._parsedContent) {
+  if (this._parsedContent)
     return this._parsedContent;
-  }
 
   if (typeof maxLength !== 'number') {
     uploadPrefix = maxLength;
     maxLength = Request.maxContentLength;
   }
 
-  if (typeof uploadPrefix !== 'string') {
+  if (typeof uploadPrefix !== 'string')
     uploadPrefix = Request.defaultUploadPrefix;
-  }
 
   if (!this.canParseContent) {
     this._parsedContent = when.resolve({});
@@ -424,9 +420,8 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
  * for multipart data, such as streaming it directly to a network file storage.
  */
 Request.prototype.handlePart = function (uploadPrefix, part) {
-  if (part.isFile) {
+  if (part.isFile)
     return utils.streamToDisk(part, uploadPrefix);
-  }
 
   return utils.bufferStream(part).then(function (buffer) {
     return buffer.toString();
@@ -449,9 +444,8 @@ Request.prototype.handlePart = function (uploadPrefix, part) {
  * Note: Content parameters overwrite query parameters with the same name.
  */
 Request.prototype.getParams = function (maxLength, uploadPrefix) {
-  if (this._parsedParams) {
+  if (this._parsedParams)
     return this._parsedParams;
-  }
 
   var queryParams = utils.mergeProperties({}, this.query);
 
@@ -497,9 +491,8 @@ Request.prototype.filterParams = function (filterMap, maxLength, uploadPrefix) {
     for (var paramName in filterMap) {
       filter = filterMap[paramName];
 
-      if (isFunction(filter) && params.hasOwnProperty(paramName)) {
+      if (isFunction(filter) && params.hasOwnProperty(paramName))
         filteredParams[paramName] = filter(params[paramName]);
-      }
     }
 
     return filteredParams;
@@ -580,13 +573,11 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
 }
 
 function makeReadable(content) {
-  if (typeof content === 'string') {
+  if (typeof content === 'string')
     content = new Buffer(content, arguments[1]);
-  }
 
-  if (!Buffer.isBuffer(content)) {
+  if (!Buffer.isBuffer(content))
     throw new Error('Content must be Buffer or string');
-  }
 
   var stream = new Readable;
   stream.length = content.length;

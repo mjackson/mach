@@ -55,9 +55,8 @@ exports.defaultPort = 3333;
 exports.bind = function (app, nodeServer) {
   var address = nodeServer.address();
 
-  if (!address) {
+  if (!address)
     throw new Error('Cannot bind to server that is not listening');
-  }
 
   var serverName, serverPort;
   if (typeof address === 'string') {
@@ -76,9 +75,8 @@ exports.bind = function (app, nodeServer) {
       var isEmpty = isHead || !utils.statusHasContent(response.status);
 
       // Preserve the Content-Length header on HEAD requests.
-      if (isEmpty && !isHead) {
+      if (isEmpty && !isHead)
         response.headers['Content-Length'] = 0;
-      }
 
       nodeResponse.writeHead(response.status, response.headers);
 
@@ -86,9 +84,9 @@ exports.bind = function (app, nodeServer) {
 
       if (isEmpty) {
         nodeResponse.end();
-        if (typeof content.destroy === 'function') {
+
+        if (typeof content.destroy === 'function')
           content.destroy();
-        }
       } else {
         content.pipe(nodeResponse);
       }
@@ -167,16 +165,14 @@ exports.serve = function (app, options) {
   }
 
   function shutdown() {
-    if (!options.quiet) {
+    if (!options.quiet)
       console.log('>> Shutting down...');
-    }
 
     // Force the process to exit if the server doesn't
     // close all connections within the given timeout.
     var timer = setTimeout(function () {
-      if (!options.quiet) {
+      if (!options.quiet)
         console.log('>> Exiting');
-      }
 
       process.exit(0);
     }, options.timeout || 100);
@@ -202,9 +198,8 @@ exports.serve = function (app, options) {
       } else {
         message += '>> Listening on ' + address.address;
 
-        if (address.port) {
+        if (address.port)
           message += ':' + address.port;
-        }
       }
 
       message += ', use CTRL+C to stop';

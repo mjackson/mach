@@ -12,7 +12,9 @@
 module.exports = function (app) {
   return function (request) {
     return request.call(app).then(null, function (reason) {
-      if (reason instanceof Error) throw reason;
+      if (reason instanceof Error)
+        throw reason;
+      
       return reason;
     });
   };

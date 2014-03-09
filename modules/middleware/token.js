@@ -49,9 +49,8 @@ module.exports = function (app, paramName, sessionKey, byteLength) {
 
     // If the request is not a POST we assume it's not a form submission
     // and therefore not modifying anything. Pass it downstream.
-    if (utils.isSafeRequestMethod(request.method)) {
+    if (utils.isSafeRequestMethod(request.method))
       return request.call(app);
-    }
 
     var params = request.params;
     if (!params) {

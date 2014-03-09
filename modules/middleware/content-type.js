@@ -9,9 +9,8 @@ module.exports = function (app, defaultType) {
     return request.call(app).then(function (response) {
       var headers = response.headers;
 
-      if (!headers['Content-Type']) {
+      if (!headers['Content-Type'])
         headers['Content-Type'] = defaultType;
-      }
 
       return response;
     });

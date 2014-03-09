@@ -29,37 +29,33 @@ var utils = require('../utils');
 module.exports = function (app, validate, realm) {
   realm = realm || 'Authorization Required';
 
-  if (typeof validate !== 'function') {
+  if (typeof validate !== 'function')
     throw new Error('Missing validation function for basic auth');
-  }
 
   function basicAuth(request) {
-    if (request.remoteUser) {
+    if (request.remoteUser)
       return request.call(app); // Don't overwrite existing remoteUser.
-    }
 
     var authorization = request.headers.authorization;
-    if (!authorization) {
+    if (!authorization)
       return unauthorized(realm);
-    }
 
     var parts = authorization.split(' ');
     var scheme = parts[0];
-    if (scheme.toLowerCase() !== 'basic') {
+    if (scheme.toLowerCase() !== 'basic')
       return utils.badRequest();
-    }
 
     var params = utils.decodeBase64(parts[1]).split(':');
     var username = params[0];
     var password = params[1];
 
     return when(validate(username, password), function (user) {
-      if (user) {
-        request.remoteUser = (user === true) ? username : user;
-        return request.call(app);
-      }
+      if (!user)
+        return unauthorized(realm);
 
-      return unauthorized(realm);
+      request.remoteUser = (user === true) ? username : user;
+
+      return request.call(app);
     });
   }
 
