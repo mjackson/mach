@@ -1,7 +1,7 @@
 {
   "name": "mach",
   "version": "0.6.3",
-  "description": "HTTP for JavaScript",
+  "description": "A better way to build web servers",
   "main": "modules/index.js",
   "dependencies": {
     "when": "2.5.x",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/machjs/mach.git"
+    "url": "git://github.com/mjijackson/mach.git"
   },
   "keywords": [
     "web",
@@ -34,6 +34,9 @@
   "engines": {
     "node": "0.10.x"
   },
-  "author": "mach authors",
-  "license": "MIT"
+  "author": "Michael Jackson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mjijackson/mach/issues"
+  }
 }
