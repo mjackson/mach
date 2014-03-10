@@ -15,7 +15,7 @@
     "mocha-as-promised": "1.3.x"
   },
   "scripts": {
-    "test": "mocha specs/*-spec.js"
+    "test": "mocha spec"
   },
   "repository": {
     "type": "git",
