@@ -58,6 +58,10 @@ mach.serve(app, 3000);
 
 Please [checkout the docs](https://github.com/machjs/mach/wiki) for more information and lots of usage examples.
 
+### Installation
+
+    $ npm install mach
+
 ### Issues
 
 Please file issues on the [issue tracker on GitHub](https://github.com/machjs/mach/issues).
