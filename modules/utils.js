@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var qs = require('qs');
 var url = require('url');
-var when = require('when');
+var RSVP = require('rsvp');
 var mime = require('mime');
 var errors = require('./errors');
 
@@ -227,7 +227,7 @@ exports.compileRoute = function (route) {
 exports.makeChecksum = function (file, algorithm) {
   algorithm = algorithm || 'md5';
 
-  var value = when.defer();
+  var deferred = RSVP.defer();
   var hash = crypto.createHash(algorithm);
   var stream = fs.createReadStream(file);
 
@@ -236,14 +236,14 @@ exports.makeChecksum = function (file, algorithm) {
   });
 
   stream.on('end', function () {
-    value.resolve(hash.digest('hex'));
+    deferred.resolve(hash.digest('hex'));
   });
 
   stream.on('error', function (error) {
-    value.reject(error);
+    deferred.reject(error);
   });
 
-  return value.promise;
+  return deferred.promise;
 };
 
 /**
@@ -251,7 +251,7 @@ exports.makeChecksum = function (file, algorithm) {
  * the given maximum length.
  */
 exports.bufferStream = function (stream, maxLength) {
-  var value = when.defer();
+  var deferred = RSVP.defer();
   var chunks = [];
   var length = 0;
 
@@ -259,21 +259,21 @@ exports.bufferStream = function (stream, maxLength) {
     length += chunk.length;
 
     if (maxLength && length > maxLength) {
-      value.reject(new errors.MaxLengthExceededError(maxLength));
+      deferred.reject(new errors.MaxLengthExceededError(maxLength));
     } else {
       chunks.push(chunk);
     }
   });
 
   stream.on('end', function () {
-    value.resolve(Buffer.concat(chunks));
+    deferred.resolve(Buffer.concat(chunks));
   });
 
   stream.on('error', function (error) {
-    value.reject(error);
+    deferred.reject(error);
   });
 
-  return value.promise;
+  return deferred.promise;
 };
 
 exports.streamToDisk = function (part, filePrefix) {
@@ -286,7 +286,7 @@ exports.streamToDisk = function (part, filePrefix) {
   };
 
   var stream = fs.createWriteStream(info.path);
-  var value = when.defer();
+  var deferred = RSVP.defer();
 
   part.on('data', function (chunk) {
     info.size += chunk.length;
@@ -297,15 +297,15 @@ exports.streamToDisk = function (part, filePrefix) {
 
   part.on('end', function () {
     stream.end(function () {
-      value.resolve(info);
+      deferred.resolve(info);
     });
   });
 
   part.on('error', function (error) {
-    value.reject(error);
+    deferred.reject(error);
   });
 
-  return value.promise;
+  return deferred.promise;
 };
 
 var os = require('os');

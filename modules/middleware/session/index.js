@@ -1,4 +1,4 @@
-var when = require('when');
+var RSVP = require('rsvp');
 var utils = require('../../utils');
 var CookieStore = require('./cookie-store');
 
@@ -42,32 +42,27 @@ module.exports = function (app, options) {
   var store = options.store || new CookieStore(options);
 
   return function (request) {
-    if (request.session) {
+    if (request.session)
       return request.call(app); // Don't overwrite existing session.
-    }
 
     var originalValue = request.cookies[name];
 
     var session;
-    if (originalValue) {
+    if (originalValue)
       session = store.load(originalValue);
-    }
 
-    return when(session, function (session) {
+    return RSVP.resolve(session).then(function (session) {
       request.session = session || {};
 
       return request.call(app).then(function (response) {
         var value;
-        if (request.session) {
+        if (request.session)
           value = store.save(request.session);
-        }
 
-        return when(value, function (value) {
+        return RSVP.resolve(value).then(function (value) {
           var expires;
-          if (expireAfter) {
-            // expireAfter is given in seconds.
+          if (expireAfter)
             expires = new Date(Date.now() + (expireAfter * 1000));
-          }
 
           // Don't bother setting the cookie if its value
           // hasn't changed and there is no expires date.

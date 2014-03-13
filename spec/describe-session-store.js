@@ -1,6 +1,5 @@
 require('./helper');
-var when = require('when');
-var delay = require('when/delay');
+var RSVP = require('rsvp');
 module.exports = describeSessionStore;
 
 function describeSessionStore(store, skip) {
@@ -19,7 +18,7 @@ function describeSessionStore(store, skip) {
   desc('when there is no session with a given value', function () {
     var session;
     beforeEach(function () {
-      return when(store.load('fake-value'), function (newSession) {
+      return RSVP.resolve(store.load('fake-value')).then(function (newSession) {
         session = newSession;
       });
     });
@@ -33,13 +32,13 @@ function describeSessionStore(store, skip) {
     var value;
     beforeEach(function () {
       var session = { count: 1 };
-      return when(store.save(session), function (newValue) {
+      return RSVP.resolve(store.save(session)).then(function (newValue) {
         value = newValue;
       });
     });
 
     it('can be retrieved using the opaque return value', function () {
-      return when(store.load(value), function (session) {
+      return RSVP.resolve(store.load(value)).then(function (session) {
         assert(session);
         assert.equal(session.count, 1);
       });
@@ -59,13 +58,13 @@ function describeSessionStore(store, skip) {
       var value;
       beforeEach(function () {
         var session = { count: 1 };
-        return when(store.save(session), function (newValue) {
+        return RSVP.resolve(store.save(session)).then(function (newValue) {
           value = newValue;
         });
       });
 
       it('loads the session', function () {
-        return when(store.load(value), function (session) {
+        return RSVP.resolve(store.load(value)).then(function (session) {
           assert(session);
           assert.equal(session.count, 1);
         });
@@ -76,14 +75,14 @@ function describeSessionStore(store, skip) {
       var value;
       beforeEach(function () {
         var session = { count: 1 };
-        return when(store.save(session), function (newValue) {
+        return RSVP.resolve(store.save(session)).then(function (newValue) {
           value = newValue;
           return delay(store.ttl);
         });
       });
 
       it('loads a new session', function () {
-        return when(store.load(value), function (session) {
+        return RSVP.resolve(store.load(value)).then(function (session) {
           assert(session);
           assert.deepEqual(session, {});
         });
@@ -94,10 +93,10 @@ function describeSessionStore(store, skip) {
       var value;
       beforeEach(function () {
         var session = { count: 1 };
-        return when(store.save(session), function () {
+        return RSVP.resolve(store.save(session)).then(function () {
           return delay(store.ttl / 2).then(function () {
-            return when(store.touch(session), function () {
-              return when(store.save(session), function (newValue) {
+            return RSVP.resolve(store.touch(session)).then(function () {
+              return RSVP.resolve(store.save(session)).then(function (newValue) {
                 value = newValue;
                 return delay(store.ttl / 2);
               });
@@ -107,11 +106,17 @@ function describeSessionStore(store, skip) {
       });
 
       it('loads the session', function () {
-        return when(store.load(value), function (session) {
+        return RSVP.resolve(store.load(value)).then(function (session) {
           assert(session);
           assert.equal(session.count, 1);
         });
       });
     });
   });
+}
+
+function delay(ms) {
+  var deferred = RSVP.defer();
+  setTimeout(deferred.resolve, ms);
+  return deferred.promise;
 }

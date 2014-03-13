@@ -1,5 +1,5 @@
 var util = require('util');
-var when = require('when');
+var RSVP = require('rsvp');
 var utils = require('../../utils');
 var SessionStore = require('./store');
 module.exports = CookieStore;
@@ -46,16 +46,18 @@ CookieStore.prototype.load = function (value) {
   var data = cookie.substring(0, index);
   var hash = cookie.substring(index + 2);
 
-  if (hash === makeHash(data, this.secret)) {
-    try {
-      var session = JSON.parse(data);
-      if (!session._expiry || session._expiry > Date.now()) {
-        return session;
-      }
-    } catch (e) {
-      // The cookie does not contain valid JSON. Ignore it.
-    }
+  if (hash !== makeHash(data, this.secret))
+    return {};
+
+  try {
+    var session = JSON.parse(data);
+  } catch (error) {
+    // The cookie does not contain valid JSON. Ignore it.
+    return {};
   }
+
+  if (!session._expiry || session._expiry > Date.now())
+    return session;
 
   return {};
 };
@@ -67,17 +69,15 @@ CookieStore.prototype.save = function (session) {
   var hash = makeHash(data, this.secret);
   var value = utils.encodeBase64(data + '--' + hash);
 
-  if (value.length > 4096) {
-    return when.reject('Cookie data size exceeds 4k; content dropped');
-  }
+  if (value.length > 4096)
+    return RSVP.reject('Cookie data size exceeds 4k; content dropped');
 
   return value;
 };
 
 CookieStore.prototype.touch = function (session) {
-  if (this.ttl) {
+  if (this.ttl)
     session._expiry = Date.now() + this.ttl;
-  }
 };
 
 function makeHash(data, secret) {

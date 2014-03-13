@@ -2,7 +2,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var Stream = require('stream');
 var Readable = Stream.Readable;
-var when = require('when');
+var RSVP = require('rsvp');
 var utils = require('./utils');
 var errors = require('./errors');
 var multipart = require('./multipart');
@@ -54,9 +54,8 @@ function Request(options) {
 
   this.headers = {};
   if (options.headers) {
-    for (var headerName in options.headers) {
+    for (var headerName in options.headers)
       this.headers[headerName.toLowerCase()] = options.headers[headerName];
-    }
   }
 
   if (options.error) {
@@ -125,12 +124,12 @@ Request.prototype.apply = function (app, extraArgs) {
     args.push.apply(args, extraArgs);
 
   try {
-    var value = app.apply(this, args);
+    var response = app.apply(this, args);
   } catch (error) {
-    return when.reject(error);
+    return RSVP.reject(error);
   }
 
-  return when(value, function (response) {
+  return RSVP.resolve(response).then(function (response) {
     if (response == null)
       throw new Error('No response returned from app: ' + app);
 
@@ -389,7 +388,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
     uploadPrefix = Request.defaultUploadPrefix;
 
   if (!this.canParseContent) {
-    this._parsedContent = when.resolve({});
+    this._parsedContent = RSVP.resolve({});
   } else if (this.mediaType === 'application/json') {
     this._parsedContent = parseJson(this.content, maxLength);
   } else {
@@ -527,19 +526,18 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
     paramValues.push(partHandler(part));
   };
 
-  var value = when.defer();
+  var deferred = RSVP.defer();
   var length = 0;
 
   content.on('data', function (chunk) {
     length += chunk.length;
 
     if (maxLength && length > maxLength) {
-      value.reject(new errors.MaxLengthExceededError(maxLength));
+      deferred.reject(new errors.MaxLengthExceededError(maxLength));
     } else {
       var parsedLength = parser.execute(chunk);
-      if (parsedLength !== chunk.length) {
-        value.reject(new Error('Error parsing multipart body: ' + parsedLength + ' of ' + chunk.length + ' bytes parsed'));
-      }
+      if (parsedLength !== chunk.length)
+        deferred.reject(new Error('Error parsing multipart body: ' + parsedLength + ' of ' + chunk.length + ' bytes parsed'));
     }
   });
 
@@ -547,12 +545,12 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
     try {
       parser.finish();
     } catch (error) {
-      value.reject(new Error('Error parsing multipart body: ' + error.message));
+      deferred.reject(new Error('Error parsing multipart body: ' + error.message));
       return;
     }
 
     // Resolve all parameter values.
-    var promise = when.all(paramValues).then(function (values) {
+    var promise = RSVP.all(paramValues).then(function (values) {
       var params = {};
 
       paramNames.forEach(function (name, i) {
@@ -562,14 +560,14 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
       return params;
     });
 
-    value.resolve(promise);
+    deferred.resolve(promise);
   });
 
   content.on('error', function (error) {
-    value.reject(error);
+    deferred.reject(error);
   });
 
-  return value.promise;
+  return deferred.promise;
 }
 
 function makeReadable(content) {

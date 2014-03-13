@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
-var when = require('when');
+var RSVP = require('rsvp');
 var utils = require('../utils');
 module.exports = File;
 
@@ -87,7 +87,7 @@ File.prototype.apply = function (request) {
       return path.join(fullPath, file);
     });
 
-    return when.all(indexPaths.map(findFile)).then(function (stats) {
+    return RSVP.all(indexPaths.map(findFile)).then(function (stats) {
       for (var i = 0, len = stats.length; i < len; ++i) {
         if (stats[i])
           return this._sendFile(indexPaths[i], stats[i]);
@@ -120,7 +120,7 @@ File.prototype._sendFile = function (file, stat) {
   });
 };
 
-var statFile = require('when/node/function').lift(fs.stat);
+var statFile = RSVP.denodeify(fs.stat);
 
 // Attempt to get a stat for the given file. Return null if it does not exist.
 function findFile(file) {

@@ -1,4 +1,4 @@
-var when = require('when');
+var RSVP = require('rsvp');
 var utils = require('../utils');
 
 /**
@@ -49,7 +49,7 @@ module.exports = function (app, validate, realm) {
     var username = params[0];
     var password = params[1];
 
-    return when(validate(username, password), function (user) {
+    return RSVP.resolve(validate(username, password)).then(function (user) {
       if (!user)
         return unauthorized(realm);
 
