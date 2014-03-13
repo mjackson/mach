@@ -14,7 +14,7 @@ var assert = require('assert');
 /**
  * Parses an entire multipart message in one shot. Returns an object of all
  * parts in the message, keyed by name, each of which has a buffer property
- * that represents the the content of that part as a Buffer.
+ * that represents the content of that part as a Buffer.
  */
 exports.parse = function (buffer, boundary) {
   var parser = new exports.Parser(boundary);
