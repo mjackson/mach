@@ -1,3 +1,7 @@
+### 0.7.0 / 2014-03-12
+
+  * Now using RSVP promises
+
 ### 0.6.3 / 2014-03-01
 
   * Add PATCH support to the router
