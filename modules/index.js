@@ -41,7 +41,7 @@ var Request = exports.Request;
 /**
  * The current version of mach.
  */
-exports.version = '0.6.3';
+exports.version = '0.7.0';
 
 /**
  * The default port to use in mach.serve.
