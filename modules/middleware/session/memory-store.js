@@ -20,7 +20,6 @@ function MemoryStore(options) {
   options = options || {};
 
   this.sessions = {};
-  this.expires = {};
 
   this._keyLength = options.keyLength || 32;
   this._timer = _pruneStore(this, options.purgeInterval || 5000);
@@ -30,13 +29,16 @@ function MemoryStore(options) {
 }
 
 MemoryStore.prototype.load = function (value) {
-  var expiry = this.expires[value];
+  var session = this.sessions[value];
 
-  // Verify the session is not expired.
-  if (expiry && expiry <= Date.now())
+  if (!session)
     return RSVP.resolve({});
 
-  return RSVP.resolve(this.sessions[value] || {});
+  // Verify the session is not expired.
+  if (session._expiry && session._expiry <= Date.now())
+    return RSVP.resolve({});
+
+  return RSVP.resolve(session);
 };
 
 MemoryStore.prototype.save = function (session) {
@@ -44,10 +46,10 @@ MemoryStore.prototype.save = function (session) {
   if (!key)
     key = session._id = _makeUniqueKey(this.sessions, this._keyLength);
 
-  this.sessions[key] = session;
-
   if (this._ttl)
-    this.expires[key] = Date.now() + this._ttl;
+    session._expiry = Date.now() + this._ttl;
+
+  this.sessions[key] = session;
 
   return RSVP.resolve(key);
 };
@@ -55,16 +57,13 @@ MemoryStore.prototype.save = function (session) {
 MemoryStore.prototype.purge = function (key) {
   if (key) {
     delete this.sessions[key];
-    delete this.expires[key];
   } else {
     this.sessions = {};
-    this.expires = {};
   }
 };
 
 MemoryStore.prototype.destroy = function () {
   delete this.sessions;
-  delete this.expires;
 
   if (this._timer) {
     clearInterval(this._timer);
@@ -85,11 +84,11 @@ function _pruneStore(store, interval) {
   var timer = setInterval(function () {
     var now = Date.now();
 
-    var expiry;
-    for (var key in store.expires) {
-      expiry = store.expires[key];
+    var session;
+    for (var key in store.sessions) {
+      session = store.sessions[key];
 
-      if (expiry && expiry < now)
+      if (session._expiry && session._expiry < now)
         store.purge(key);
     }
   }, interval);
