@@ -16,8 +16,8 @@ describe('mach.params', function () {
       assert(lastResponse.buffer);
       var params = JSON.parse(lastResponse.buffer);
       assert(params);
-      assert.equal(params.a, 'c');
-      assert.equal(params.c, 'd');
+      expect(params.a).toEqual('c');
+      expect(params.c).toEqual('d');
     });
   });
 
@@ -35,7 +35,7 @@ describe('mach.params', function () {
     });
 
     it('returns 413', function () {
-      assert.equal(lastResponse.status, 413);
+      expect(lastResponse.status).toEqual(413);
     });
   });
 });

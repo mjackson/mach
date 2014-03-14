@@ -17,7 +17,7 @@ describe('mach.token', function () {
     });
 
     it('returns 403', function () {
-      assert.equal(lastResponse.status, 403);
+      expect(lastResponse.status).toEqual(403);
     });
   });
 
@@ -36,7 +36,7 @@ describe('mach.token', function () {
     });
 
     it('passes the request downstream', function () {
-      assert.equal(lastResponse.status, 200);
+      expect(lastResponse.status).toEqual(200);
     });
   });
 });

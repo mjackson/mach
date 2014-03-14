@@ -26,7 +26,7 @@ describe('mach.mapper', function () {
 
     it('passes the request through to the default app', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 404);
+      expect(lastResponse.status).toEqual(404);
     });
   });
 
@@ -43,7 +43,7 @@ describe('mach.mapper', function () {
 
       it('passes the request through to the default app', function () {
         assert(lastResponse);
-        assert.equal(lastResponse.status, 404);
+        expect(lastResponse.status).toEqual(404);
       });
     });
 
@@ -54,15 +54,15 @@ describe('mach.mapper', function () {
 
       it('passes the request through to the mapping', function () {
         assert(lastResponse);
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
 
       it('puts the matching portion of the URL in the scriptName variable', function () {
-        assert.equal(lastResponse.headers['Script-Name'], '/one');
+        expect(lastResponse.headers['Script-Name']).toEqual('/one');
       });
 
       it('stuffs the remainder of the path into the pathInfo variable', function () {
-        assert.equal(lastResponse.headers['Path-Info'], '/messages');
+        expect(lastResponse.headers['Path-Info']).toEqual('/messages');
       });
     });
 
@@ -78,15 +78,15 @@ describe('mach.mapper', function () {
 
       it('passes the request through to the mapping', function () {
         assert(lastResponse);
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
 
       it('puts the matching portion of the URL in the scriptName variable', function () {
-        assert.equal(lastResponse.headers['Script-Name'], '/two');
+        expect(lastResponse.headers['Script-Name']).toEqual('/two');
       });
 
       it('stuffs the remainder of the path into the pathInfo variable', function () {
-        assert.equal(lastResponse.headers['Path-Info'], '/messages');
+        expect(lastResponse.headers['Path-Info']).toEqual('/messages');
       });
     });
   });

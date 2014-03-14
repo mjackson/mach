@@ -18,7 +18,7 @@ describe('A mach.Request', function () {
 
       it('returns an empty object', function () {
         return request.parseContent().then(function (params) {
-          assert.deepEqual(params, {});
+          expect(params).toEqual({});
         });
       });
     }); // text/plain
@@ -36,7 +36,7 @@ describe('A mach.Request', function () {
 
         it('parses the content', function () {
           return request.parseContent().then(function (params) {
-            assert.deepEqual(params, object);
+            expect(params).toEqual(object);
           });
         });
       });
@@ -72,7 +72,7 @@ describe('A mach.Request', function () {
             assert(false, 'successfully parsed a content stream that is too large');
           }, function (error) {
             assert(error);
-            assert.strictEqual(error.constructor, errors.MaxLengthExceededError);
+            expect(error).toBeA(errors.MaxLengthExceededError);
           });
         });
       });
@@ -91,7 +91,7 @@ describe('A mach.Request', function () {
 
         it('parses the content', function () {
           return request.parseContent().then(function (params) {
-            assert.deepEqual(params, object);
+            expect(params).toEqual(object);
           });
         });
       });
@@ -109,7 +109,7 @@ describe('A mach.Request', function () {
             assert(false, 'successfully parsed a content stream that is too large');
           }, function (error) {
             assert(error);
-            assert.strictEqual(error.constructor, errors.MaxLengthExceededError);
+            expect(error).toBeA(errors.MaxLengthExceededError);
           });
         });
       });
@@ -135,7 +135,7 @@ describe('A mach.Request', function () {
 
         it('returns strings for non-file values', function () {
           return request.parseContent().then(function (params) {
-            assert.equal(typeof params.text, 'string');
+            expect(typeof params.text).toEqual('string');
           });
         });
       });

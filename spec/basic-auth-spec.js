@@ -21,7 +21,7 @@ describe('mach.basicAuth', function () {
 
     it('returns 401 Unauthorized', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 401);
+      expect(lastResponse.status).toEqual(401);
     });
   });
 
@@ -36,7 +36,7 @@ describe('mach.basicAuth', function () {
 
     it('returns 401 Unauthorized', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 401);
+      expect(lastResponse.status).toEqual(401);
     });
   });
 
@@ -51,7 +51,7 @@ describe('mach.basicAuth', function () {
 
     it('returns passes the app downstream', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 200);
+      expect(lastResponse.status).toEqual(200);
     });
   });
 });

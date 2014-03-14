@@ -25,7 +25,7 @@ describe('mach.router', function () {
     });
 
     it('returns 404', function () {
-      assert.equal(lastResponse.status, 404);
+      expect(lastResponse.status).toEqual(404);
     });
   });
 
@@ -35,8 +35,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '1' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '1' ]);
     });
   });
 
@@ -46,8 +46,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '1' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '1' ]);
     });
   });
 
@@ -57,8 +57,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '2' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '2' ]);
     });
   });
 
@@ -68,8 +68,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '3' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '3' ]);
     });
   });
 
@@ -79,8 +79,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '5', null ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '5', null ]);
     });
   });
 
@@ -90,8 +90,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '5', 'html' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '5', 'html' ]);
     });
   });
 
@@ -101,8 +101,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ 'feed', 'xml' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ 'feed', 'xml' ]);
     });
   });
 
@@ -112,8 +112,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ 'feed', '' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ 'feed', '' ]);
     });
   });
 
@@ -123,8 +123,8 @@ describe('mach.router', function () {
     });
 
     it('calls the correct app', function () {
-      assert.ok(lastResponse.headers['X-Args']);
-      assert.deepEqual(JSON.parse(lastResponse.headers['X-Args']), [ '', 'xml' ]);
+      assert(lastResponse.headers['X-Args']);
+      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '', 'xml' ]);
     });
   });
 
@@ -134,7 +134,7 @@ describe('mach.router', function () {
     });
 
     it('returns 404', function () {
-      assert.equal(lastResponse.status, 404);
+      expect(lastResponse.status).toEqual(404);
     });
   });
 });

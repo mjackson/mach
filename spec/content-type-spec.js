@@ -11,6 +11,6 @@ describe('mach.contentType', function () {
   });
 
   it('adds a Content-Type header', function () {
-    assert.equal(lastResponse.headers['Content-Type'], expectedType);
+    expect(lastResponse.headers['Content-Type']).toEqual(expectedType);
   });
 });

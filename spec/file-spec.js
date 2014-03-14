@@ -14,7 +14,7 @@ describe('mach.file', function () {
     });
 
     it('serves the file', function () {
-      assert.equal(lastResponse.buffer, contents);
+      expect(lastResponse.buffer).toEqual(contents);
     });
   });
 
@@ -32,15 +32,15 @@ describe('mach.file', function () {
       });
 
       it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
 
       it('serves that file', function () {
-        assert.equal(lastResponse.buffer, contents);
+        expect(lastResponse.buffer).toEqual(contents);
       });
 
       it('sets the correct Content-Type', function () {
-        assert.equal(lastResponse.headers['Content-Type'], 'application/javascript');
+        expect(lastResponse.headers['Content-Type']).toEqual('application/javascript');
       });
     });
 
@@ -50,15 +50,15 @@ describe('mach.file', function () {
       });
 
       it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
 
       it('serves the index file', function () {
-        assert.equal(lastResponse.buffer, contents);
+        expect(lastResponse.buffer).toEqual(contents);
       });
 
       it('sets the correct Content-Type', function () {
-        assert.equal(lastResponse.headers['Content-Type'], 'application/javascript');
+        expect(lastResponse.headers['Content-Type']).toEqual('application/javascript');
       });
     });
 
@@ -68,7 +68,7 @@ describe('mach.file', function () {
       });
 
       it('forwards the request to the downstream app', function () {
-        assert.equal(lastResponse.status, 404);
+        expect(lastResponse.status).toEqual(404);
       });
     });
 
@@ -78,7 +78,7 @@ describe('mach.file', function () {
       });
 
       it('returns 403', function () {
-        assert.equal(lastResponse.status, 403);
+        expect(lastResponse.status).toEqual(403);
       });
     });
   });
@@ -97,15 +97,15 @@ describe('mach.file', function () {
       });
 
       it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
 
       it('serves the first index file that exists', function () {
-        assert.equal(lastResponse.buffer, contents);
+        expect(lastResponse.buffer).toEqual(contents);
       });
 
       it('sets the correct Content-Type', function () {
-        assert.equal(lastResponse.headers['Content-Type'], 'application/javascript');
+        expect(lastResponse.headers['Content-Type']).toEqual('application/javascript');
       });
     });
   });

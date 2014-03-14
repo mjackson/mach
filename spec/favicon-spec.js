@@ -10,7 +10,7 @@ describe('mach.favicon', function () {
 
     it('returns 404', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 404);
+      expect(lastResponse.status).toEqual(404);
     });
   });
 });

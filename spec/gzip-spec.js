@@ -22,11 +22,11 @@ describe('gzip', function () {
     });
 
     it('sets the Content-Encoding header to "gzip"', function () {
-      assert.equal(lastResponse.headers['Content-Encoding'], 'gzip');
+      expect(lastResponse.headers['Content-Encoding']).toEqual('gzip');
     });
 
     it('sets the Vary header to "Accept-Encoding"', function () {
-      assert.equal(lastResponse.headers['Vary'], 'Accept-Encoding');
+      expect(lastResponse.headers['Vary']).toEqual('Accept-Encoding');
     });
 
     it('gzip-encodes the response content', function () {
@@ -57,5 +57,5 @@ describe('gzip', function () {
 });
 
 function compareBuffers(one, two) {
-  assert.deepEqual(one, two, 'buffers are not equal');
+  expect(one).toEqual(two, 'buffers are not equal');
 }

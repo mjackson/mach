@@ -12,11 +12,11 @@ describe('A request to hello world', function () {
 
   it('returns 200', function () {
     assert(lastResponse);
-    assert.equal(lastResponse.status, 200);
+    expect(lastResponse.status).toEqual(200);
   });
 
   it('returns "hello world"', function () {
     assert(lastResponse);
-    assert.equal(lastResponse.buffer, content);
+    expect(lastResponse.buffer).toEqual(content);
   });
 });

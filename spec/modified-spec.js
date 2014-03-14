@@ -26,7 +26,7 @@ describe('mach.modified', function () {
       });
 
       it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
     });
 
@@ -38,7 +38,7 @@ describe('mach.modified', function () {
       });
 
       it('returns 304', function () {
-        assert.equal(lastResponse.status, 304);
+        expect(lastResponse.status).toEqual(304);
       });
     });
   });
@@ -54,7 +54,7 @@ describe('mach.modified', function () {
       });
 
       it('returns 200', function () {
-        assert.equal(lastResponse.status, 200);
+        expect(lastResponse.status).toEqual(200);
       });
     });
 
@@ -68,7 +68,7 @@ describe('mach.modified', function () {
       });
 
       it('returns 304', function () {
-        assert.equal(lastResponse.status, 304);
+        expect(lastResponse.status).toEqual(304);
       });
     });
 
@@ -82,7 +82,7 @@ describe('mach.modified', function () {
       });
 
       it('returns 304', function () {
-        assert.equal(lastResponse.status, 304);
+        expect(lastResponse.status).toEqual(304);
       });
     });
   });

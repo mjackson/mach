@@ -18,7 +18,7 @@ describe('mach.logger', function () {
       var match = entries[0].match(/\b(\d+) ([0-9\.]+)\b$/);
       assert(match);
       var contentLength = match[1];
-      assert.equal(contentLength, '0');
+      expect(contentLength).toEqual('0');
     });
   });
 });

@@ -17,7 +17,7 @@ describe('methodOverride', function () {
       });
 
       it('sets the request method', function () {
-        assert.equal(lastResponse.buffer, 'PUT');
+        expect(lastResponse.buffer).toEqual('PUT');
       });
     });
 
@@ -32,11 +32,11 @@ describe('methodOverride', function () {
       });
 
       it('does not set the request method', function () {
-        assert.equal(lastResponse.buffer, 'GET');
+        expect(lastResponse.buffer).toEqual('GET');
       });
 
       it('writes to the error stream', function () {
-        assert.equal(error.data, 'No request params. Use mach.params in front of mach.methodOverride\n');
+        expect(error.data).toEqual('No request params. Use mach.params in front of mach.methodOverride\n');
       });
     });
   });
@@ -52,7 +52,7 @@ describe('methodOverride', function () {
       });
 
       it('sets the request method to the last given value', function () {
-        assert.equal(lastResponse.buffer, 'DELETE');
+        expect(lastResponse.buffer).toEqual('DELETE');
       });
     });
   });
@@ -65,7 +65,7 @@ describe('methodOverride', function () {
     });
 
     it('sets the request method', function () {
-      assert.equal(lastResponse.buffer, 'PUT');
+      expect(lastResponse.buffer).toEqual('PUT');
     });
   });
 });

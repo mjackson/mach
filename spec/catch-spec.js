@@ -26,7 +26,7 @@ describe('mach.catch', function () {
 
     it('returns it', function () {
       assert(lastResponse);
-      assert.equal(lastResponse.status, 404);
+      expect(lastResponse.status).toEqual(404);
     });
   });
 });
