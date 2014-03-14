@@ -33,6 +33,9 @@ function Session(app, options) {
 
   options = options || {};
 
+  if (typeof options === 'string')
+    options = { secret: options };
+
   this._secret = options.secret;
 
   if (!this._secret) {
