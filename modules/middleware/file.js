@@ -12,7 +12,8 @@ module.exports = File;
  *
  *   - root               The path to the root directory to serve files from
  *   - index              An array of file names to try and serve when the
- *                        request targets a directory (e.g. ["index.html", "index.htm"])
+ *                        request targets a directory (e.g. ["index.html", "index.htm"]).
+ *                        May simply be truthy to use ["index.html"]
  *   - useLastModified    Set this true to include the Last-Modified header
  *                        based on the mtime of the file. Defaults to true
  *   - useEtag            Set this true to include the ETag header based on
@@ -30,21 +31,14 @@ function File(app, options) {
     app = utils.defaultApp;
   }
 
-  var root, indexFiles, useLastModified, useEtag;
-  if (typeof options === 'string') {
-    root = options;
-    useLastModified = true;
-    useEtag = false;
-  } else if (options) {
-    root = options.root;
-    indexFiles = options.index;
-    useLastModified = ('useLastModified' in options) ? !!options.useLastModified : true;
-    useEtag = !!options.useEtag;
-  }
+  if (typeof options === 'string')
+    options = { root: options };
 
-  if (typeof root !== 'string' || !fs.existsSync(root) || !fs.statSync(root).isDirectory())
-    throw new Error('Invalid root directory: ' + root);
+  var rootDirectory = options.root;
+  if (typeof rootDirectory !== 'string' || !fs.existsSync(rootDirectory) || !fs.statSync(rootDirectory).isDirectory())
+    throw new Error('Invalid root directory: ' + rootDirectory);
 
+  var indexFiles = options.index;
   if (indexFiles) {
     if (typeof indexFiles === 'string') {
       indexFiles = [ indexFiles ];
@@ -54,10 +48,10 @@ function File(app, options) {
   }
 
   this._app = app;
-  this._root = root;
+  this._rootDirectory = rootDirectory;
   this._indexFiles = indexFiles;
-  this._useLastModified = useLastModified;
-  this._useEtag = useEtag;
+  this._useLastModified = ('useLastModified' in options) ? !!options.useLastModified : true;
+  this._useEtag = !!options.useEtag;
 }
 
 File.prototype.apply = function (request) {
@@ -69,9 +63,9 @@ File.prototype.apply = function (request) {
   if (pathInfo.indexOf('..') !== -1)
     return utils.forbidden();
 
-  var fullPath = path.join(this._root, pathInfo);
+  var fullPath = path.join(this._rootDirectory, pathInfo);
 
-  return findFile(fullPath).then(function (stat) {
+  return _findFile(fullPath).then(function (stat) {
     // If the request targets a file, send it!
     if (stat && stat.isFile())
       return this._sendFile(fullPath, stat);
@@ -87,7 +81,7 @@ File.prototype.apply = function (request) {
       return path.join(fullPath, file);
     });
 
-    return RSVP.all(indexPaths.map(findFile)).then(function (stats) {
+    return RSVP.all(indexPaths.map(_findFile)).then(function (stats) {
       for (var i = 0, len = stats.length; i < len; ++i) {
         if (stats[i])
           return this._sendFile(indexPaths[i], stats[i]);
@@ -120,11 +114,11 @@ File.prototype._sendFile = function (file, stat) {
   });
 };
 
-var statFile = RSVP.denodeify(fs.stat);
+var _statFile = RSVP.denodeify(fs.stat);
 
 // Attempt to get a stat for the given file. Return null if it does not exist.
-function findFile(file) {
-  return statFile(file).then(undefined, function (error) {
+function _findFile(file) {
+  return _statFile(file).then(undefined, function (error) {
     if (error.code === 'ENOENT')
       return null;
 

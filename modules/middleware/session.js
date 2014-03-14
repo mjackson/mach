@@ -73,11 +73,11 @@ Session.prototype.apply = function (request) {
   var originalValue = request.cookies[this._name];
   var self = this;
 
-  return RSVP.resolve(originalValue && self.decode(originalValue)).then(function (session) {
+  return RSVP.resolve(originalValue && self._decodeValue(originalValue)).then(function (session) {
     request.session = session || {};
 
     return request.call(app).then(function (response) {
-      return RSVP.resolve(request.session && self.encode(request.session)).then(function (value) {
+      return RSVP.resolve(request.session && self._encodeSession(request.session)).then(function (value) {
         var expires = self._expireAfter && new Date(Date.now() + (self._expireAfter * 1000));
 
         // Don't bother setting the cookie if its value
@@ -106,20 +106,7 @@ Session.prototype.apply = function (request) {
   });
 };
 
-Session.prototype.decode = function (value) {
-  var signedValue = utils.decodeBase64(value);
-  var index = signedValue.lastIndexOf('--');
-  var data = signedValue.substring(0, index);
-  var hash = signedValue.substring(index + 2);
-
-  // Verify the cookie has not been tampered with.
-  if (hash !== makeHash(data, this._secret))
-    return {};
-
-  return this._store.load(data);
-};
-
-Session.prototype.encode = function (session) {
+Session.prototype._encodeSession = function (session) {
   var secret = this._secret;
 
   return this._store.save(session).then(function (data) {
@@ -130,6 +117,19 @@ Session.prototype.encode = function (session) {
 
     return value;
   });
+};
+
+Session.prototype._decodeValue = function (value) {
+  var signedValue = utils.decodeBase64(value);
+  var index = signedValue.lastIndexOf('--');
+  var data = signedValue.substring(0, index);
+  var hash = signedValue.substring(index + 2);
+
+  // Verify the cookie has not been tampered with.
+  if (hash !== makeHash(data, this._secret))
+    return {};
+
+  return this._store.load(data);
 };
 
 function makeHash(data, secret) {
