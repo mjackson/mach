@@ -3,9 +3,9 @@ var utils = require('../utils');
 module.exports = Gzip;
 
 /**
- * A middleware that gzip encodes the body of the response. The options may be
- * any of node's zlib options (see http://nodejs.org/api/zlib.html) or any of
- * the following:
+ * A middleware that encodes the body of the response using Gzip. The options
+ * may be any of node's zlib options (see http://nodejs.org/api/zlib.html) or
+ * any of the following:
  *
  *   - test   A function that tests the response to see if it should be gzip'd
  *            or not. Should return a boolean. Defaults to checking the value of
