@@ -70,11 +70,11 @@ Session.prototype.apply = function (request) {
   var originalValue = request.cookies[this._name];
   var self = this;
 
-  return RSVP.resolve(originalValue && self.load(originalValue)).then(function (session) {
+  return RSVP.resolve(originalValue && self.decode(originalValue)).then(function (session) {
     request.session = session || {};
 
     return request.call(app).then(function (response) {
-      return RSVP.resolve(request.session && self.save(request.session)).then(function (value) {
+      return RSVP.resolve(request.session && self.encode(request.session)).then(function (value) {
         var expires = self._expireAfter && new Date(Date.now() + (self._expireAfter * 1000));
 
         // Don't bother setting the cookie if its value
@@ -93,17 +93,17 @@ Session.prototype.apply = function (request) {
 
         return response;
       }, function (error) {
-        request.error.write('Error saving session data: ' + error);
+        request.error.write('Error encoding session data: ' + error);
         return response;
       });
     });
   }, function (error) {
-    request.error.write('Error loading session data: ' + error);
+    request.error.write('Error decoding session data: ' + error);
     return request.call(app);
   });
 };
 
-Session.prototype.load = function (value) {
+Session.prototype.decode = function (value) {
   var signedValue = utils.decodeBase64(value);
   var index = signedValue.lastIndexOf('--');
   var data = signedValue.substring(0, index);
@@ -116,7 +116,7 @@ Session.prototype.load = function (value) {
   return this._store.load(data);
 };
 
-Session.prototype.save = function (session) {
+Session.prototype.encode = function (session) {
   var secret = this._secret;
 
   return this._store.save(session).then(function (data) {
