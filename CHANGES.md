@@ -1,3 +1,7 @@
+### 0.8.0 / 2014-03-14
+
+  * Sign all session cookies
+
 ### 0.7.0 / 2014-03-12
 
   * Now using RSVP promises
