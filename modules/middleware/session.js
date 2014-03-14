@@ -65,10 +65,8 @@ function Session(app, options) {
 }
 
 Session.prototype.apply = function (request) {
-  var app = this._app;
-
   if (request.session)
-    return request.call(app); // Don't overwrite the existing session.
+    return request.call(this._app); // Don't overwrite the existing session.
 
   var originalValue = request.cookies[this._name];
   var self = this;
@@ -76,7 +74,7 @@ Session.prototype.apply = function (request) {
   return RSVP.resolve(originalValue && self._decodeValue(originalValue)).then(function (session) {
     request.session = session || {};
 
-    return request.call(app).then(function (response) {
+    return request.call(self._app).then(function (response) {
       return RSVP.resolve(request.session && self._encodeSession(request.session)).then(function (value) {
         var expires = self._expireAfter && new Date(Date.now() + (self._expireAfter * 1000));
 
@@ -102,7 +100,7 @@ Session.prototype.apply = function (request) {
     });
   }, function (error) {
     request.error.write('Error decoding session data: ' + error);
-    return request.call(app);
+    return request.call(self._app);
   });
 };
 

@@ -64,32 +64,33 @@ File.prototype.apply = function (request) {
     return utils.forbidden();
 
   var fullPath = path.join(this._rootDirectory, pathInfo);
+  var self = this;
 
   return _findFile(fullPath).then(function (stat) {
     // If the request targets a file, send it!
     if (stat && stat.isFile())
-      return this._sendFile(fullPath, stat);
+      return self._sendFile(fullPath, stat);
 
     // If the request does not target a directory or we don't have any
     // index files to try, pass the request downstream.
-    if (!stat || (!stat.isDirectory() || !this._indexFiles))
-      return request.call(this._app);
+    if (!stat || (!stat.isDirectory() || !self._indexFiles))
+      return request.call(self._app);
 
     // The request targets a directory. Try all the index files in order
     // to see if we can serve any of them.
-    var indexPaths = this._indexFiles.map(function (file) {
+    var indexPaths = self._indexFiles.map(function (file) {
       return path.join(fullPath, file);
     });
 
     return RSVP.all(indexPaths.map(_findFile)).then(function (stats) {
       for (var i = 0, len = stats.length; i < len; ++i) {
         if (stats[i])
-          return this._sendFile(indexPaths[i], stats[i]);
+          return self._sendFile(indexPaths[i], stats[i]);
       }
 
-      return request.call(this._app);
-    }.bind(this));
-  }.bind(this));
+      return request.call(self._app);
+    });
+  });
 };
 
 File.prototype._sendFile = function (file, stat) {
