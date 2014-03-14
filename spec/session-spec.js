@@ -3,7 +3,10 @@ require('./helper');
 describe('mach.session', function () {
   describe('when using a server-side store', function () {
     var store = new mach.session.MemoryStore({ expireAfter: 10 });
-    var app = mach.session(counter, { store: store });
+    var app = mach.session(counter, {
+      secret: 'secret',
+      store: store
+    });
 
     describe('when a request is made', function () {
       beforeEach(function () {
@@ -16,7 +19,7 @@ describe('mach.session', function () {
 
       it('instantiates a new session', function () {
         var data = JSON.parse(lastResponse.buffer);
-        assert.equal(data.count, 1);
+        expect(data.count).toEqual(1);
       });
 
       describe('and then another', function () {
@@ -34,7 +37,7 @@ describe('mach.session', function () {
 
         it('persists session data', function () {
           var data = JSON.parse(lastResponse.buffer);
-          assert.equal(data.count, 2);
+          expect(data.count).toEqual(2);
         });
       });
     });
@@ -42,7 +45,10 @@ describe('mach.session', function () {
 
   describe('when using a client-side store', function () {
     var store = new mach.session.CookieStore({ secret: 'secret' });
-    var app = mach.session(counter, { store: store });
+    var app = mach.session(counter, {
+      secret: 'secret',
+      store: store
+    });
 
     describe('when a request is made', function () {
       beforeEach(function () {
@@ -55,7 +61,7 @@ describe('mach.session', function () {
 
       it('instantiates a new session', function () {
         var data = JSON.parse(lastResponse.buffer);
-        assert.equal(data.count, 1);
+        expect(data.count).toEqual(1);
       });
 
       describe('and then another', function () {
@@ -73,7 +79,7 @@ describe('mach.session', function () {
 
         it('persists session data', function () {
           var data = JSON.parse(lastResponse.buffer);
-          assert.equal(data.count, 2);
+          expect(data.count).toEqual(2);
         });
       });
     });
