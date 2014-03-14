@@ -327,6 +327,13 @@ Request.prototype.__defineGetter__('cookies', function () {
 });
 
 /**
+ * The value of this request's Content-Type header.
+ */
+Request.prototype.__defineGetter__('contentType', function () {
+  return this.headers['content-type'];
+});
+
+/**
  * The media type (type/subtype) portion of the Content-Type header without any
  * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
  * the mediaType is "text/plain".
@@ -334,8 +341,10 @@ Request.prototype.__defineGetter__('cookies', function () {
  * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
  */
 Request.prototype.__defineGetter__('mediaType', function () {
-  var contentType = this.headers['content-type'];
-  return contentType && contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+  var contentType = this.contentType;
+
+  if (contentType)
+    return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
 });
 
 /**
@@ -356,6 +365,21 @@ Request.prototype.__defineGetter__('isForm', function () {
  */
 Request.prototype.__defineGetter__('canParseContent', function () {
   return Request.parseMediaTypes.indexOf(this.mediaType) !== -1 || this.isForm;
+});
+
+/**
+ * The value that was used as the boundary for multipart content in this request's
+ * Content-Type header.
+ */
+Request.prototype.__defineGetter__('multipartBoundary', function () {
+  var contentType = this.contentType;
+
+  if (contentType) {
+    var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
+
+    if (match)
+      return match[1] || match[2];
+  }
 });
 
 /**
@@ -391,16 +415,18 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
     this._parsedContent = RSVP.resolve({});
   } else if (this.mediaType === 'application/json') {
     this._parsedContent = parseJson(this.content, maxLength);
+  } else if (this.mediaType === 'application/x-www-form-urlencoded') {
+    this._parsedContent = parseUrlEncoded(this.content, maxLength);
   } else {
-    var contentType = this.headers['content-type'] || '';
-    var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
+    var boundary = this.multipartBoundary;
 
-    if (match) {
-      var boundary = match[1] || match[2];
-      var partHandler = this.handlePart.bind(this, uploadPrefix);
-      this._parsedContent = parseMultipart(this.content, maxLength, boundary, partHandler);
+    if (boundary) {
+      var self = this;
+      this._parsedContent = parseMultipart(this.content, maxLength, boundary, function (part) {
+        self.handlePart(part, uploadPrefix);
+      });
     } else {
-      // Content is application/x-www-form-urlencoded.
+      // Assume content is URL-encoded.
       this._parsedContent = parseUrlEncoded(this.content, maxLength);
     }
   }
@@ -418,7 +444,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
  * This should be overridden if you want to specify some kind of custom handling
  * for multipart data, such as streaming it directly to a network file storage.
  */
-Request.prototype.handlePart = function (uploadPrefix, part) {
+Request.prototype.handlePart = function (part, uploadPrefix) {
   if (part.isFile)
     return utils.streamToDisk(part, uploadPrefix);
 
@@ -428,9 +454,8 @@ Request.prototype.handlePart = function (uploadPrefix, part) {
 };
 
 /**
- * A high-level method that returns a promise for an object that is the union of data contained
- * in the request query and body. This can be useful when you want to get all request parameters
- * ad hoc for one particular route.
+ * A high-level method that returns a promise for an object that is the union of
+ * data contained in the request query and body.
  *
  *   var maxUploadLimit = Math.pow(2, 20); // 1 mb
  *
