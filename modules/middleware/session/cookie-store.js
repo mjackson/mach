@@ -1,5 +1,4 @@
 var RSVP = require('rsvp');
-var utils = require('../../utils');
 module.exports = CookieStore;
 
 /**
@@ -45,7 +44,3 @@ CookieStore.prototype.save = function (session) {
 
   return RSVP.resolve(JSON.stringify(session));
 };
-
-function makeHash(data, secret) {
-  return utils.makeHash(secret ? data + secret : data);
-}
