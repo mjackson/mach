@@ -1,42 +1,7 @@
-var submodules = {
-  basicAuth:      './middleware/basic-auth',
-  catch:          './middleware/catch',
-  contentType:    './middleware/content-type',
-  errors:         './errors',
-  favicon:        './middleware/favicon',
-  file:           './middleware/file',
-  File:           './middleware/file',
-  gzip:           './middleware/gzip',
-  Gzip:           './middleware/gzip',
-  logger:         './middleware/logger',
-  Logger:         './middleware/logger',
-  mapper:         './middleware/mapper',
-  Mapper:         './middleware/mapper',
-  methodOverride: './middleware/method-override',
-  modified:       './middleware/modified',
-  multipart:      './multipart',
-  params:         './middleware/params',
-  Request:        './request',
-  router:         './middleware/router',
-  Router:         './middleware/router',
-  session:        './middleware/session',
-  stack:          './middleware/stack',
-  Stack:          './middleware/stack',
-  token:          './middleware/token',
-  urlMap:         './middleware/url-map',
-  utils:          './utils'
-};
-
-Object.keys(submodules).forEach(function (name) {
-  module.exports.__defineGetter__(name, function () {
-    return require(submodules[name]);
-  });
-});
-
 var http = require('http');
 var https = require('https');
-var utils = exports.utils;
-var Request = exports.Request;
+var utils = require('./utils');
+var Request = require('./request');
 
 /**
  * The current version of mach.
@@ -303,3 +268,38 @@ exports.redirect = function (location, status, headers) {
 exports.back = function (request, defaultLocation) {
   return exports.redirect(request.headers.referer || defaultLocation || '/');
 };
+
+var submodules = {
+  basicAuth:      './middleware/basic-auth',
+  catch:          './middleware/catch',
+  contentType:    './middleware/content-type',
+  errors:         './errors',
+  favicon:        './middleware/favicon',
+  file:           './middleware/file',
+  File:           './middleware/file',
+  gzip:           './middleware/gzip',
+  Gzip:           './middleware/gzip',
+  logger:         './middleware/logger',
+  Logger:         './middleware/logger',
+  mapper:         './middleware/mapper',
+  Mapper:         './middleware/mapper',
+  methodOverride: './middleware/method-override',
+  modified:       './middleware/modified',
+  multipart:      './multipart',
+  params:         './middleware/params',
+  Request:        './request',
+  router:         './middleware/router',
+  Router:         './middleware/router',
+  session:        './middleware/session',
+  stack:          './middleware/stack',
+  Stack:          './middleware/stack',
+  token:          './middleware/token',
+  urlMap:         './middleware/url-map',
+  utils:          './utils'
+};
+
+Object.keys(submodules).forEach(function (name) {
+  module.exports.__defineGetter__(name, function () {
+    return require(submodules[name]);
+  });
+});

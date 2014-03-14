@@ -1,13 +1,5 @@
-var submodules = {
-  Parser:   './parser',
-  Part:     './part'
-};
-
-Object.keys(submodules).forEach(function (name) {
-  module.exports.__defineGetter__(name, function () {
-    return require(submodules[name]);
-  });
-});
+exports.Parser = require('./parser');
+exports.Part = require('./Part');
 
 var assert = require('assert');
 
