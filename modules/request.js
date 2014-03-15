@@ -468,17 +468,26 @@ Request.prototype.handlePart = function (part, uploadPrefix) {
  * Note: Content parameters overwrite query parameters with the same name.
  */
 Request.prototype.getParams = function (maxLength, uploadPrefix) {
-  if (this._parsedParams)
-    return this._parsedParams;
+  if (this._params)
+    return this._params;
 
-  var queryParams = utils.mergeProperties({}, this.query);
+  var queryParams = mergeProperties({}, this.query);
 
-  this._parsedParams = this.parseContent(maxLength, uploadPrefix).then(function (contentParams) {
-    return utils.mergeProperties(queryParams, contentParams);
+  this._params = this.parseContent(maxLength, uploadPrefix).then(function (contentParams) {
+    return mergeProperties(queryParams, contentParams);
   });
 
-  return this._parsedParams;
+  return this._params;
 };
+
+function mergeProperties(object, extension) {
+  for (var property in extension) {
+    if (extension.hasOwnProperty(property))
+      object[property] = extension[property];
+  }
+
+  return object;
+}
 
 /**
  * A high-level method that returns a promise for an object of all parameters given in this request

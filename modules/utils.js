@@ -111,22 +111,11 @@ exports.defaultApp = function (request) {
 };
 
 var _slice = Array.prototype.slice;
-
 exports.slice = function (object) {
   return _slice.apply(object, _slice.call(arguments, 1));
 };
 
-exports.mergeProperties = function (object, extension) {
-  for (var property in extension) {
-    if (extension.hasOwnProperty(property))
-      object[property] = extension[property];
-  }
-
-  return object;
-};
-
 var _toString = Object.prototype.toString;
-
 exports.isRegExp = function (object) {
   return _toString.call(object) === '[object RegExp]';
 };
