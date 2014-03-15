@@ -23,7 +23,7 @@ describe('A mach.Request', function () {
       });
     }); // text/plain
 
-    describe('when using the application/json Content-Type', function () {
+    describe('when using Content-Type: application/json', function () {
       describe('when the content is valid JSON', function () {
         var object;
         beforeEach(function () {
@@ -78,7 +78,7 @@ describe('A mach.Request', function () {
       });
     }); // application/json
 
-    describe('when using the application/x-www-form-urlencoded Content-Type', function () {
+    describe('when using Content-Type: application/x-www-form-urlencoded', function () {
       describe('when the content is URL-encoded', function () {
         var object;
         beforeEach(function () {
@@ -115,7 +115,7 @@ describe('A mach.Request', function () {
       });
     }); // application/x-www-form-urlencoded
 
-    describe('when using the multipart/form-data Content-Type', function () {
+    describe('when using Content-Type: multipart/form-data', function () {
       describe('when the content is encoded properly', function () {
         var content;
         beforeEach(function () {

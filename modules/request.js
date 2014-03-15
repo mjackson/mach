@@ -348,6 +348,21 @@ Request.prototype.__defineGetter__('mediaType', function () {
 });
 
 /**
+ * The value that was used as the boundary for multipart content in this request's
+ * Content-Type header.
+ */
+Request.prototype.__defineGetter__('multipartBoundary', function () {
+  var contentType = this.contentType;
+
+  if (contentType) {
+    var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
+
+    if (match)
+      return match[1] || match[2];
+  }
+});
+
+/**
  * True if this request was probably made using an HTML form, false otherwise.
  */
 Request.prototype.__defineGetter__('isForm', function () {
@@ -365,21 +380,6 @@ Request.prototype.__defineGetter__('isForm', function () {
  */
 Request.prototype.__defineGetter__('canParseContent', function () {
   return Request.parseMediaTypes.indexOf(this.mediaType) !== -1 || this.isForm;
-});
-
-/**
- * The value that was used as the boundary for multipart content in this request's
- * Content-Type header.
- */
-Request.prototype.__defineGetter__('multipartBoundary', function () {
-  var contentType = this.contentType;
-
-  if (contentType) {
-    var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
-
-    if (match)
-      return match[1] || match[2];
-  }
 });
 
 /**
@@ -423,7 +423,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
     if (boundary) {
       var self = this;
       this._parsedContent = parseMultipart(this.content, maxLength, boundary, function (part) {
-        self.handlePart(part, uploadPrefix);
+        return self.handlePart(part, uploadPrefix);
       });
     } else {
       // Assume content is URL-encoded.

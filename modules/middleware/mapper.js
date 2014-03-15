@@ -49,10 +49,9 @@ Mapper.prototype.apply = function (request) {
     if (!(match = pathInfo.match(mapping.pattern))) 
       continue;
 
-    remainingPath = match[1];
-
     // Skip if the remaining path doesn't start with a "/".
-    if (remainingPath.length > 0 && remainingPath[0] != '/')
+    remainingPath = match[1];
+    if (remainingPath.length > 0 && remainingPath[0] !== '/')
       continue;
 
     request.scriptName = scriptName + mapping.path;
@@ -87,7 +86,7 @@ Mapper.prototype.map = function (location, app) {
     path = location;
   }
 
-  if (path.charAt(0) != '/')
+  if (path.charAt(0) !== '/')
     throw new Error('Path must start with "/", was "' + path + '"');
 
   path = path.replace(/\/$/, '');
