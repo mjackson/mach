@@ -145,7 +145,7 @@ exports.parseUrl = function (string) {
 };
 
 exports.encodeBase64 = function (string) {
-  return new Buffer(string).toString('base64');
+  return new Buffer(string, arguments[1]).toString('base64');
 };
 
 exports.decodeBase64 = function (string) {
