@@ -136,16 +136,12 @@ exports.makeKey = function (length) {
   return crypto.randomBytes(length).toString('hex').slice(0, length);
 };
 
-exports.parseQueryString = function (queryString) {
-  return qs.parse(queryString);
+exports.parseQueryString = function (string) {
+  return qs.parse(string);
 };
 
-exports.parseCookie = function (cookie) {
-  return require('querystring').parse(cookie, /[;,] */);
-};
-
-exports.parseUrl = function (urlString) {
-  return url.parse(urlString);
+exports.parseUrl = function (string) {
+  return url.parse(string);
 };
 
 exports.encodeBase64 = function (string) {
@@ -156,26 +152,29 @@ exports.decodeBase64 = function (string) {
   return new Buffer(string, 'base64').toString();
 };
 
-exports.encodeCookie = function (name, options) {
+exports.makeCookie = function (name, options) {
   options = options || {};
 
   if (typeof options === 'string')
     options = { value: options };
 
-  var cookie = encodeURIComponent(name) + '=';
+  var cookie = encodeURIComponent(name) + '=' + encodeURIComponent(options.value || '');
 
-  if (options.value) cookie += encodeURIComponent(options.value);
-  if (options.domain) cookie += '; domain=' + options.domain;
-  if (options.path) cookie += '; path=' + options.path;
-  if (options.expires) cookie += '; expires=' + options.expires.toUTCString();
-  if (options.secure) cookie += '; secure';
+  if (options.domain)   cookie += '; domain=' + options.domain;
+  if (options.path)     cookie += '; path=' + options.path;
+  if (options.expires)  cookie += '; expires=' + options.expires.toUTCString();
+  if (options.secure)   cookie += '; secure';
   if (options.httpOnly) cookie += '; HttpOnly';
 
   return cookie;
 };
 
+exports.parseCookie = function (cookie) {
+  return require('querystring').parse(cookie, /[;,] */);
+};
+
 exports.setCookie = function (headers, name, options) {
-  var cookie = exports.encodeCookie(name, options);
+  var cookie = exports.makeCookie(name, options);
 
   if (headers['Set-Cookie']) {
     headers['Set-Cookie'] = [ headers['Set-Cookie'], cookie ].join('\n');
