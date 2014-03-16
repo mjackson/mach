@@ -1,5 +1,5 @@
 exports.Parser = require('./parser');
-exports.Part = require('./Part');
+exports.Part = require('./part');
 
 var assert = require('assert');
 
