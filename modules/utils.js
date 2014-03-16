@@ -115,10 +115,7 @@ exports.slice = function (object) {
   return _slice.apply(object, _slice.call(arguments, 1));
 };
 
-var _toString = Object.prototype.toString;
-exports.isRegExp = function (object) {
-  return _toString.call(object) === '[object RegExp]';
-};
+exports.isRegExp = util.isRegExp;
 
 exports.escapeRegExp = function (string) {
   return String(string).replace(/([.?*+^$[\]\\(){}-])/g, '\\$1');
