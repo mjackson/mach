@@ -9,7 +9,7 @@ module.exports = MemoryStore;
  *
  * Accepts the following options:
  *
- * - keyLength        The length that will be used for unique cache keys.
+ * - keyLength        The length (in bytes) that will be used for unique cache keys.
  *                    Defaults to 32
  * - purgeInterval    The interval (in milliseconds) at which the cache is
  *                    purged of expired sessions. Defaults to 5000
@@ -74,7 +74,7 @@ MemoryStore.prototype.destroy = function () {
 function _makeUniqueKey(sessions, keyLength) {
   var key;
   do {
-    key = utils.makeKey(keyLength);
+    key = utils.makeToken(keyLength);
   } while (sessions[key]);
 
   return key;

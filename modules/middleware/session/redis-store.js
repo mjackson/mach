@@ -15,7 +15,7 @@ module.exports = RedisStore;
  * Accepts the following options:
  *
  * - url              The URL of the Redis instance
- * - keyLength        The length that will be used for unique cache keys.
+ * - keyLength        The length (in bytes) that will be used for unique cache keys.
  *                    Defaults to 32
  * - expireAfter      The number of seconds after which sessions expire.
  *                    Defaults to 0 (no expiration)
@@ -75,7 +75,7 @@ RedisStore.prototype.destroy = function () {
 };
 
 function _makeUniqueKey(redisClient, keyLength) {
-  var key = utils.makeKey(keyLength);
+  var key = utils.makeToken(keyLength);
 
   // Try to set an empty string to reserve the key.
   return redisClient.setnx(key, '').then(function (result) {

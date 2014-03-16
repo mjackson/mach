@@ -125,14 +125,6 @@ exports.mimeType = function (file) {
   return mime.lookup(file);
 };
 
-exports.makeHash = function (string) {
-  return crypto.createHash('sha1').update(string).digest('hex');
-};
-
-exports.makeKey = function (length) {
-  return crypto.randomBytes(length).toString('hex').slice(0, length);
-};
-
 exports.parseQueryString = function (string) {
   return qs.parse(string);
 };
@@ -206,14 +198,26 @@ exports.compileRoute = function (route) {
 };
 
 /**
- * Returns a promise for the checksum of all data in the given file using
- * the given algorithm (defaults to "md5").
+ * Returns a cryptographically-secure string containing the given number
+ * of bytes.
  */
-exports.makeChecksum = function (file, algorithm) {
-  algorithm = algorithm || 'md5';
+exports.makeToken = function (byteLength) {
+  return crypto.randomBytes(byteLength).toString('hex');
+};
 
+/**
+ * Returns a SHA1 hash of the given string.
+ */
+exports.makeHash = function (string) {
+  return crypto.createHash('sha1').update(string).digest('hex');
+};
+
+/**
+ * Returns a promise for the MD5 checksum of all data in the given file.
+ */
+exports.makeChecksum = function (file) {
   var deferred = RSVP.defer();
-  var hash = crypto.createHash(algorithm);
+  var hash = crypto.createHash('md5');
   var stream = fs.createReadStream(file);
 
   stream.on('data', function (chunk) {
