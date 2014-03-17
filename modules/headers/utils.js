@@ -1,35 +1,21 @@
 /**
- * Converts 1.0 and 0.0 qvalues to 1 and 0 respectively. Used to maintain
- * consistency across methods that handle qvalues.
- */
-exports.normalizeQualityFactor = function (qualityFactor) {
-  if (typeof qualityFactor === 'string')
-    qualityFactor = parseFloat(qualityFactor);
-
-  if (qualityFactor == 1 || qualityFactor == 0)
-    return Math.floor(qualityFactor);
-
-  return qualityFactor;
-};
-
-/**
  * Parses a media value string including parameters and returns an object
  * containing the type, subtype, and an object of parameters.
  *
  *   parseMediaValue("text/html;level=2;q=0.4") =>
  *     { type: 'text',
  *       subtype: 'html', 
- *       params: { level: '2', q: 0.4 } }
+ *       params: { level: '2', q: '0.4' } }
  *
  *   parseMediaValue("en-gb;q=0.8", "-") =>
  *     { type: 'en',
  *       subtype: 'gb',
- *       params: { q: 0.8 } }
+ *       params: { q: '0.8' } }
  *
  *   parseMediaValue("unicode-1-1;q=0.8") =>
  *     { type: 'unicode-1-1',
  *       subtype: undefined,
- *       params: { q: 0.8 } }
+ *       params: { q: '0.8' } }
  */
 exports.parseMediaValue = function (value, typeSeparator) {
   typeSeparator = typeSeparator || '/';
@@ -42,10 +28,6 @@ exports.parseMediaValue = function (value, typeSeparator) {
     memo[nameValue[0]] = nameValue[1];
     return memo;
   }, {});
-
-  // Automatically parse and normalize a "q" value, if present.
-  if (params.q)
-    params.q = exports.normalizeQualityFactor(params.q);
 
   return {
     type: mediaTypes[0],
@@ -69,13 +51,13 @@ exports.parseMediaValues = function (value, typeSeparator) {
  * Creates a string from an object containing a media value. This object may
  * have properties containing the type, subtype, and parameters.
  *
- *   stringifyMediaValue({ type: 'text', subtype: 'html', params: { level: '2', q: 0.4 } }) =>
+ *   stringifyMediaValue({ type: 'text', subtype: 'html', params: { level: '2', q: '0.4' } }) =>
  *     "text/html;level=2;q=0.4"
  *
- *   stringifyMediaValue({ type: 'en', subtype: 'gb', params: { q: 0.8 } }) =>
+ *   stringifyMediaValue({ type: 'en', subtype: 'gb', params: { q: '0.8' } }) =>
  *     "en-gb;q=0.8"
  *
- *   stringifyMediaValue({ type: 'unicode-1-1', params: { q: 0.8 } }) =>
+ *   stringifyMediaValue({ type: 'unicode-1-1', params: { q: '0.8' } }) =>
  *     "unicode-1-1;q=0.8"
  */
 exports.stringifyMediaValue = function (value, typeSeparator) {
@@ -141,5 +123,6 @@ function _cloneParamsWithoutQualityFactor(params) {
  * Returns the quality factor for the given media value object.
  */
 exports.qualityFactorForMediaValue = function (mediaValue) {
-  return mediaValue.params && ('q' in mediaValue.params) ? mediaValue.params.q : 1;
+  var qvalue = mediaValue.params && mediaValue.params.q;
+  return qvalue ? parseFloat(qvalue) : 1;
 };
