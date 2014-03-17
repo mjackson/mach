@@ -1,4 +1,4 @@
-### HEAD
+### 0.9.0 / 2014-03-17
 
   * Added accepts* content-negotiation methods to Request
   * Fixed case-sensitive require statement (thanks nicholascloud)
