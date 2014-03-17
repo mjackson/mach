@@ -277,6 +277,7 @@ var submodules = {
   favicon:        './middleware/favicon',
   file:           './middleware/file',
   File:           './middleware/file',
+  headers:        './headers',
   gzip:           './middleware/gzip',
   Gzip:           './middleware/gzip',
   logger:         './middleware/logger',
