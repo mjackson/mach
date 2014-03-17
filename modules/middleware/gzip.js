@@ -3,8 +3,8 @@ var utils = require('../utils');
 module.exports = Gzip;
 
 /**
- * A middleware that encodes the body of the response using Gzip. Options
- * may be any of node's zlib options (see http://nodejs.org/api/zlib.html).
+ * A middleware that gzip's the response content (see http://www.gzip.org/).
+ * Options may be any of node's zlib options (see http://nodejs.org/api/zlib.html).
  */
 function Gzip(app, options) {
   if (!(this instanceof Gzip))
@@ -18,7 +18,7 @@ function Gzip(app, options) {
 
 Gzip.prototype.apply = function (request) {
   return request.call(this._app).then(function (response) {
-    if (!canGzipContentType(response.headers['Content-Type']) || !request.acceptsEncoding('gzip'))
+    if (!shouldGzipContentType(response.headers['Content-Type']) || !request.acceptsEncoding('gzip'))
       return response;
 
     response.content = this.wrapContent(response.content);
@@ -35,7 +35,7 @@ Gzip.prototype.wrapContent = function (content) {
   return content.pipe(zlib.createGzip(this._options));
 };
 
-function canGzipContentType(contentType) {
+function shouldGzipContentType(contentType) {
   if (!contentType || contentType === 'text/event-stream')
     return false;
 
