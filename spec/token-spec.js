@@ -39,6 +39,18 @@ describe('mach.token', function () {
       expect(lastResponse.status).toEqual(200);
     });
   });
+
+  describe('when the request is not a POST', function () {
+    beforeEach(function () {
+      return callApp(app, {
+        method: 'GET'
+      });
+    });
+
+    it('passes the request downstream', function () {
+      expect(lastResponse.status).toEqual(200);
+    });
+  });
 });
 
 function extractCookie(setCookie) {
