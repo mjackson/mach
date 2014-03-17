@@ -1,4 +1,3 @@
-var redis = require('then-redis');
 var RSVP = require('rsvp');
 var utils = require('../../utils');
 module.exports = RedisStore;
@@ -22,6 +21,12 @@ module.exports = RedisStore;
  */
 function RedisStore(options) {
   options = options || {};
+
+  try {
+    var redis = require('then-redis');
+  } catch (error) {
+    throw new Error('You must install then-redis');
+  }
 
   this._redisClient = redis.createClient(options.url);
   this._keyLength = options.keyLength || 32;
