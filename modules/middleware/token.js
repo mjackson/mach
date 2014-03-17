@@ -34,6 +34,10 @@ var utils = require('../utils');
  *   - sessionKey       The name of the session variable to use to store the token.
  *                      Defaults to "_token"
  *   - byteLength       The length of the token in bytes. Defaults to 32
+ *
+ * Note: Non-POST requests are always forwarded to the downstream app regardless of
+ * whether or not they contain the token since it is assumed they are not modifying
+ * anything and are safe.
  */
 module.exports = function (app, options) {
   options = options || {};
