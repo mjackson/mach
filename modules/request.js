@@ -5,6 +5,7 @@ var Readable = Stream.Readable;
 var RSVP = require('rsvp');
 var utils = require('./utils');
 var errors = require('./errors');
+var headers = require('./headers');
 var multipart = require('./multipart');
 module.exports = Request;
 
@@ -14,7 +15,7 @@ var NO_CONTENT = new Buffer(0);
  * A Request is created for each new request received by the server. It serves
  * as the concurrency primitive for the duration of the request handling process.
  *
- * The `options` may contain any of the following:
+ * Options may contain any of the following:
  *
  *   - protocol           The protocol being used (i.e. "http:" or "https:")
  *   - protocolVersion    The protocol version
@@ -289,6 +290,60 @@ Request.prototype.__defineGetter__('url', function () {
 });
 
 /**
+ * Returns true if the client accepts the given mediaType.
+ */
+Request.prototype.accepts = function (mediaType) {
+  if (!this._acceptHeader)
+    this._acceptHeader = new headers.Accept(this.headers['accept']);
+
+  return this._acceptHeader.accepts(mediaType);
+};
+
+/**
+ * Returns true if the client accepts the given character set.
+ */
+Request.prototype.acceptsCharset = function (charset) {
+  if (!this._acceptCharsetHeader)
+    this._acceptCharsetHeader = new headers.AcceptCharset(this.headers['accept-charset']);
+
+  return this._acceptCharsetHeader.accepts(charset);
+};
+
+/**
+ * Returns true if the client accepts the given content encoding.
+ */
+Request.prototype.acceptsEncoding = function (encoding) {
+  if (!this._acceptEncodingHeader)
+    this._acceptEncodingHeader = new headers.AcceptEncoding(this.headers['accept-encoding']);
+
+  return this._acceptEncodingHeader.accepts(encoding);
+};
+
+/**
+ * Returns true if the client accepts the given content language.
+ */
+Request.prototype.acceptsLanguage = function (language) {
+  if (!this._acceptLanguageHeader)
+    this._acceptLanguageHeader = new headers.AcceptLanguage(this.headers['accept-language']);
+
+  return this._acceptLanguageHeader.accepts(language);
+};
+
+/**
+ * The media type (type/subtype) portion of the Content-Type header without any
+ * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
+ * the mediaType is "text/plain".
+ *
+ * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
+ */
+Request.prototype.__defineGetter__('mediaType', function () {
+  var contentType = this.contentType;
+
+  if (contentType)
+    return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+});
+
+/**
  * An object containing the properties and values that were URL-encoded in
  * the query string.
  */
@@ -331,20 +386,6 @@ Request.prototype.__defineGetter__('cookies', function () {
  */
 Request.prototype.__defineGetter__('contentType', function () {
   return this.headers['content-type'];
-});
-
-/**
- * The media type (type/subtype) portion of the Content-Type header without any
- * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
- * the mediaType is "text/plain".
- *
- * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
- */
-Request.prototype.__defineGetter__('mediaType', function () {
-  var contentType = this.contentType;
-
-  if (contentType)
-    return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
 });
 
 /**
