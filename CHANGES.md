@@ -1,3 +1,8 @@
+### HEAD
+
+  * Made package dependencies friendly with npm 1.3
+  * then-redis package is optional
+
 ### 0.9.0 / 2014-03-17
 
   * Added accepts* content-negotiation methods to Request
