@@ -1,3 +1,12 @@
+### HEAD
+
+  * Added accepts* content-negotiation methods to Request
+  * Fixed case-sensitive require statement (thanks nicholascloud)
+  * mach.token takes options as second argument
+  * mach.session accepts session secret as second argument
+  * Renamed utils.makeKey => utils.makeToken
+  * Renamed utils.encodeCookie => utils.makeCookie
+
 ### 0.8.0 / 2014-03-14
 
   * Sign all session cookies
