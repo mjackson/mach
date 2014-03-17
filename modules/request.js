@@ -330,20 +330,6 @@ Request.prototype.acceptsLanguage = function (language) {
 };
 
 /**
- * The media type (type/subtype) portion of the Content-Type header without any
- * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
- * the mediaType is "text/plain".
- *
- * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
- */
-Request.prototype.__defineGetter__('mediaType', function () {
-  var contentType = this.contentType;
-
-  if (contentType)
-    return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
-});
-
-/**
  * An object containing the properties and values that were URL-encoded in
  * the query string.
  */
@@ -389,6 +375,20 @@ Request.prototype.__defineGetter__('contentType', function () {
 });
 
 /**
+ * The media type (type/subtype) portion of the Content-Type header without any
+ * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
+ * the mediaType is "text/plain".
+ *
+ * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
+ */
+Request.prototype.__defineGetter__('mediaType', function () {
+  var contentType = this.contentType;
+
+  if (contentType)
+    return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+});
+
+/**
  * The value that was used as the boundary for multipart content in this request's
  * Content-Type header.
  */
@@ -397,9 +397,7 @@ Request.prototype.__defineGetter__('multipartBoundary', function () {
 
   if (contentType) {
     var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
-
-    if (match)
-      return match[1] || match[2];
+    return match && (match[1] || match[2]);
   }
 });
 
