@@ -3,7 +3,7 @@ var utils = require('../utils');
 var CookieStore = require('./session/cookie-store');
 module.exports = Session;
 
-var MAX_LENGTH = 4096;
+var MAX_COOKIE_SIZE = 4096;
 
 /**
  * A middleware that provides support for HTTP sessions using cookies.
@@ -68,23 +68,23 @@ Session.prototype.apply = function (request) {
   if (request.session)
     return request.call(this._app); // Don't overwrite the existing session.
 
-  var originalValue = request.cookies[this._name];
+  var cookie = request.cookies[this._name];
   var self = this;
 
-  return RSVP.resolve(originalValue && self._decodeValue(originalValue)).then(function (session) {
+  return RSVP.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
     request.session = session || {};
 
     return request.call(self._app).then(function (response) {
-      return RSVP.resolve(request.session && self._encodeSession(request.session)).then(function (value) {
+      return RSVP.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
         var expires = self._expireAfter && new Date(Date.now() + (self._expireAfter * 1000));
 
         // Don't bother setting the cookie if its value
         // hasn't changed and there is no expires date.
-        if (value === originalValue && !expires)
+        if (newCookie === cookie && !expires)
           return response;
 
         utils.setCookie(response.headers, self._name, {
-          value: value,
+          value: newCookie,
           path: self._path,
           domain: self._domain,
           expires: expires,
@@ -104,33 +104,33 @@ Session.prototype.apply = function (request) {
   });
 };
 
-Session.prototype._encodeSession = function (session) {
+Session.prototype.encodeSession = function (session) {
   var secret = this._secret;
 
   return this._store.save(session).then(function (data) {
-    var value = utils.encodeBase64(data + '--' + makeHash(data, secret));
+    var cookie = utils.encodeBase64(data + '--' + _makeHash(data, secret));
 
-    if (value.length > MAX_LENGTH)
-      return RSVP.reject('Cookie data size exceeds 4k; content dropped');
+    if (cookie.length > MAX_COOKIE_SIZE)
+      return RSVP.reject(new Error('Cookie data size exceeds 4k; content dropped'));
 
-    return value;
+    return cookie;
   });
 };
 
-Session.prototype._decodeValue = function (value) {
-  var signedValue = utils.decodeBase64(value);
-  var index = signedValue.lastIndexOf('--');
-  var data = signedValue.substring(0, index);
-  var hash = signedValue.substring(index + 2);
+Session.prototype.decodeCookie = function (cookie) {
+  var value = utils.decodeBase64(cookie);
+  var index = value.lastIndexOf('--');
+  var data = value.substring(0, index);
+  var hash = value.substring(index + 2);
 
   // Verify the cookie has not been tampered with.
-  if (hash !== makeHash(data, this._secret))
+  if (hash !== _makeHash(data, this._secret))
     return {};
 
   return this._store.load(data);
 };
 
-function makeHash(data, secret) {
+function _makeHash(data, secret) {
   return utils.makeHash(secret ? data + secret : data);
 }
 
