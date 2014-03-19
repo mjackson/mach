@@ -1,20 +1,19 @@
-var when = require('when');
+var RSVP = require('rsvp');
 var mach = require('../modules');
 
 mach.serve(function (request) {
-  if (Math.random() > 0.5) {
+  if (Math.random() > 0.5)
     throw new Error('boom!');
-  }
 
-  var value = when.defer();
+  var deferred = RSVP.defer();
 
   setTimeout(function () {
     if (Math.random() > 0.8) {
-      value.reject(new Error('deferred boom!'));
+      deferred.reject(new Error('deferred boom!'));
+    } else {
+      deferred.resolve('Hello world!');
     }
-
-    value.resolve('Hello world!');
   }, 100);
 
-  return value.promise;
+  return deferred.promise;
 });
