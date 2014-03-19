@@ -18,21 +18,21 @@ AcceptCharset.prototype.toString = function () {
 /**
  * Returns the value of this header as a string.
  */
- AcceptCharset.prototype.__defineGetter__('value', function () {
+AcceptCharset.prototype.__defineGetter__('value', function () {
   return utils.stringifyMediaValues(this._mediaValues) || '';
 });
 
 /**
  * Returns true if the given charset is acceptable.
  */
- AcceptCharset.prototype.accepts = function (charset) {
+AcceptCharset.prototype.accepts = function (charset) {
   return this.qualityFactorForCharset(charset) !== 0;
 };
 
 /**
  * Returns the quality factor for the given charset.
  */
- AcceptCharset.prototype.qualityFactorForCharset = function (charset) {
+AcceptCharset.prototype.qualityFactorForCharset = function (charset) {
   var values = this._mediaValues;
 
   var givenValue = utils.parseMediaValue(charset);

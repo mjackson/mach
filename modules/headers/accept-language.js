@@ -18,14 +18,14 @@ AcceptLanguage.prototype.toString = function () {
 /**
  * Returns the value of this header as a string.
  */
- AcceptLanguage.prototype.__defineGetter__('value', function () {
+AcceptLanguage.prototype.__defineGetter__('value', function () {
   return utils.stringifyMediaValues(this._mediaValues, '-') || '';
 });
 
 /**
  * Returns true if the given language is acceptable.
  */
- AcceptLanguage.prototype.accepts = function (language) {
+AcceptLanguage.prototype.accepts = function (language) {
   return this.qualityFactorForLanguage(language) !== 0;
 };
 

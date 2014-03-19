@@ -18,14 +18,14 @@ AcceptEncoding.prototype.toString = function () {
 /**
  * Returns the value of this header as a string.
  */
- AcceptEncoding.prototype.__defineGetter__('value', function () {
+AcceptEncoding.prototype.__defineGetter__('value', function () {
   return utils.stringifyMediaValues(this._mediaValues) || '';
 });
 
 /**
  * Returns true if the given encoding is acceptable.
  */
- AcceptEncoding.prototype.accepts = function (encoding) {
+AcceptEncoding.prototype.accepts = function (encoding) {
   return this.qualityFactorForEncoding(encoding) !== 0;
 };
 
