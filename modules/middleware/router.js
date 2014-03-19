@@ -56,7 +56,7 @@ Router.prototype.apply = function (request) {
 /**
  * Sets the given app as the default for this router.
  */
- Router.prototype.run = function (app) {
+Router.prototype.run = function (app) {
   this._app = app;
 };
 
@@ -65,19 +65,19 @@ Router.prototype.apply = function (request) {
  * path used in the request. If the pattern is a string, it is automatically
  * compiled (see utils.compileRoute).
  */
- Router.prototype.route = function (pattern, methods, app) {
+Router.prototype.route = function (pattern, methods, app) {
   if (typeof methods === 'function') {
     app = methods;
     methods = null;
   }
 
-  if (typeof methods === 'string') {
-    methods = [ methods ];
-  } else {
-    methods = methods || [ 'ANY' ];
-  }
-
   app = app || utils.defaultApp;
+
+  if (typeof methods === 'string')
+    methods = [ methods ];
+
+  if (!Array.isArray(methods))
+    methods = [ 'ANY' ];
 
   if (typeof pattern === 'string')
     pattern = utils.compileRoute(pattern);
