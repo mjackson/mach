@@ -54,7 +54,7 @@ exports.parseMediaValues = function (value, typeSeparator) {
  *   stringifyMediaValue({ type: 'text', subtype: 'html', params: { level: '2', q: '0.4' } }) =>
  *     "text/html;level=2;q=0.4"
  *
- *   stringifyMediaValue({ type: 'en', subtype: 'gb', params: { q: '0.8' } }) =>
+ *   stringifyMediaValue({ type: 'en', subtype: 'gb', params: { q: '0.8' } }, "-") =>
  *     "en-gb;q=0.8"
  *
  *   stringifyMediaValue({ type: 'unicode-1-1', params: { q: '0.8' } }) =>
@@ -99,13 +99,11 @@ exports.stringifyMediaValues = function (values, typeSeparator) {
  * "q" value parameters. See exports.stringifyMediaValue.
  */
 exports.stringifyMediaValueWithoutQualityFactor = function (value, typeSeparator) {
-  var clonedValue = {
+  return exports.stringifyMediaValue({
     type: value.type,
     subtype: value.subtype,
     params: value.params && _cloneParamsWithoutQualityFactor(value.params)
-  };
-
-  return exports.stringifyMediaValue(clonedValue, typeSeparator);
+  }, typeSeparator);
 };
 
 function _cloneParamsWithoutQualityFactor(params) {
@@ -122,7 +120,7 @@ function _cloneParamsWithoutQualityFactor(params) {
 /**
  * Returns the quality factor for the given media value object.
  */
-exports.qualityFactorForMediaValue = function (mediaValue) {
-  var qvalue = mediaValue.params && mediaValue.params.q;
-  return qvalue ? parseFloat(qvalue) : 1;
+exports.qualityFactorForMediaValue = function (value) {
+  var qualityFactor = value.params && value.params.q;
+  return qualityFactor ? parseFloat(qualityFactor) : 1;
 };
