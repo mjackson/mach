@@ -20,8 +20,8 @@ module.exports = Router;
  *     // login logic goes here...
  *   });
  *
- *   app.get('/users/:user_id', function (request, userId) {
- *     // find the user with the given id...
+ *   app.get('/users/:userId', function (request, userId) {
+ *     // find the user with the given userId...
  *   });
  *
  *   mach.serve(app);
