@@ -1,3 +1,7 @@
+### 0.9.2 / 2014-03-19
+
+  * Exclude specs from npm package.
+
 ### 0.9.1 / 2014-03-17
 
   * Made package dependencies friendly with npm 1.3
