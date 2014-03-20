@@ -18,45 +18,50 @@ require("mach").serve(function (request) {
 
 More complex applications can be built through the use of various middleware. Mach includes middleware for doing many common tasks including Sinatra-style request routing, HTTP caching, content negotiation, multipart handling, and much more. Asynchronous responses are fully supported through the use of [promises](http://promises-aplus.github.io/promises-spec/).
 
-A more full-featured example might look like this:
+The following example should give you a good idea of what it feels like to build a real-world app with mach:
 
 ```js
 var mach = require('mach');
 var app = mach.stack();
 
-// Log all requests.
+app.use(mach.gzip);
 app.use(mach.logger);
+app.use(mach.contentType, 'text/html');
+app.use(mach.file, 'public');
 
-// Serve requests to the "files" subdomain with a static file server.
 app.map('files.example.com', function (app) {
-  app.use(mach.file, '/www/downloads');
+  app.use(mach.file, '/www/static-files');
 });
 
-app.use(mach.session);    // HTTP sessions
-app.use(mach.params);     // Parse request parameters
+app.use(mach.session, 'session secret');
+app.use(mach.params);
 
 app.get('/', function (request) {
   return "Hello world!";
 });
 
-// GET /posts/123.json
-app.get('/posts/:post_id.json', function (request, postId) {
-  return query('SELECT * FROM posts WHERE id=?', postId).then(JSON.stringify);
+app.get('/posts/:postId.json', function (request, postId) {
+  return query('SELECT * FROM posts WHERE id=?', postId).then(function (post) {
+    return post ? mach.json(post) : 404;
+  });
 });
 
-// POST /posts/123/comments
-app.post('/posts/:post_id/comments', function (request) {
-  var authorId = request.params.author_id;
-  var commentBody = request.params.body;
-  // ...
-  return 201;
+app.post('/posts/:postId/comments', function (request, postId) {
+  return createComment(postId, request.params).then(function (comment) {
+    return mach.json(comment, 201);
+  }, function (error) {
+    return mach.json({ error: error.message }, 403);
+  });
 });
 
-// Serve the app, listening on port 3000.
+app.get('/legacy-url', function (request) {
+  return mach.redirect('/new-url', 301);
+});
+
 mach.serve(app, 3000);
 ```
 
-Please [checkout the docs](https://github.com/machjs/mach/wiki) for more information and lots of usage examples.
+There is a lot going on in the example above, but comments have been ommitted for the sake of code clarity and conciseness. Please [read the docs](https://github.com/machjs/mach/wiki) for explanations and many more usage examples.
 
 ### Installation
 
