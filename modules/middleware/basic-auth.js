@@ -32,7 +32,7 @@ module.exports = function (app, validate, realm) {
   if (typeof validate !== 'function')
     throw new Error('Missing validation function for basic auth');
 
-  function basicAuth(request) {
+  return function (request) {
     if (request.remoteUser)
       return request.call(app); // Don't overwrite existing remoteUser.
 
@@ -57,9 +57,7 @@ module.exports = function (app, validate, realm) {
 
       return request.call(app);
     });
-  }
-
-  return basicAuth;
+  };
 };
 
 function unauthorized(realm) {
