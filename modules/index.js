@@ -32,6 +32,10 @@ exports.bind = function (app, nodeServer) {
     serverPort = address.port;
   }
 
+  // Allow setting serverName via the SERVER_NAME environment variable.
+  if (process.env.SERVER_NAME)
+    serverName = process.env.SERVER_NAME;
+
   function requestHandler(nodeRequest, nodeResponse) {
     var request = makeRequest(nodeRequest, serverName, serverPort);
 
@@ -74,7 +78,7 @@ function makeRequest(nodeRequest, serverName, serverPort) {
     method: nodeRequest.method,
     remoteHost: nodeRequest.connection.remoteAddress,
     remotePort: nodeRequest.connection.remotePort,
-    serverName: process.env.SERVER_NAME || serverName,
+    serverName: serverName,
     serverPort: serverPort,
     pathInfo: url.pathname,
     queryString: url.query || '',
