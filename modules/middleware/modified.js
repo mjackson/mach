@@ -9,7 +9,7 @@ module.exports = function (app) {
     var checkEtag;
     var ifNoneMatch = request.headers['if-none-match'];
     if (ifNoneMatch)
-      checkEtag = stripQuotes(ifNoneMatch);
+      checkEtag = _stripQuotes(ifNoneMatch);
 
     var checkLastModified;
     var ifModifiedSince = request.headers['if-modified-since'];
@@ -20,11 +20,8 @@ module.exports = function (app) {
       if (checkEtag) {
         var etag = response.headers['ETag'];
 
-        if (etag && etag === checkEtag) {
-          response.status = 304;
-          response.content = new Buffer(0);
-          return response;
-        }
+        if (etag && etag === checkEtag)
+          return _notModifiedResponse(response);
       }
 
       if (checkLastModified) {
@@ -34,11 +31,8 @@ module.exports = function (app) {
           if (typeof lastModified === 'string')
             lastModified = Date.parse(lastModified);
 
-          if (lastModified <= checkLastModified) {
-            response.status = 304;
-            response.content = new Buffer(0);
-            return response;
-          }
+          if (lastModified <= checkLastModified)
+            return _notModifiedResponse(response);
         }
       }
 
@@ -47,7 +41,15 @@ module.exports = function (app) {
   };
 };
 
-function stripQuotes(string) {
+var NO_CONTENT = new Buffer(0);
+
+function _notModifiedResponse(response) {
+  response.status = 304;
+  response.content = NO_CONTENT;
+  return response;
+}
+
+function _stripQuotes(string) {
   if (string.substring(0, 1) === '"')
     return string.replace(/^"|"$/g, '');
 
