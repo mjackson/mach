@@ -51,13 +51,13 @@ function Session(app, options) {
   this._name = options.name || '_session';
   this._path = options.path || '/';
   this._domain = options.domain;
-  this._secure = options.secure || false;
+  this._isSecure = options.secure || false;
   this._expireAfter = options.expireAfter || 0;
 
   if ('httpOnly' in options) {
-    this._httpOnly = options.httpOnly || false;
+    this._isHttpOnly = options.httpOnly || false;
   } else {
-    this._httpOnly = true;
+    this._isHttpOnly = true;
   }
 
   this._store = options.store || new CookieStore(options);
@@ -65,31 +65,35 @@ function Session(app, options) {
 }
 
 Session.prototype.apply = function (request) {
-  if (request.session)
-    return request.call(this._app); // Don't overwrite the existing session.
+  var app = this._app;
+  var cookieName = this._name;
+  var expireAfter = this._expireAfter;
 
-  var cookie = request.cookies[this._name];
+  if (request.session)
+    return request.call(app); // Don't overwrite the existing session.
+
+  var cookie = request.cookies[cookieName];
   var self = this;
 
   return RSVP.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
     request.session = session || {};
 
-    return request.call(self._app).then(function (response) {
+    return request.call(app).then(function (response) {
       return RSVP.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
-        var expires = self._expireAfter && new Date(Date.now() + (self._expireAfter * 1000));
+        var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
 
         // Don't bother setting the cookie if its value
         // hasn't changed and there is no expires date.
         if (newCookie === cookie && !expires)
           return response;
 
-        utils.setCookie(response.headers, self._name, {
+        utils.setCookie(response.headers, cookieName, {
           value: newCookie,
           path: self._path,
           domain: self._domain,
           expires: expires,
-          httpOnly: self._httpOnly,
-          secure: self._secure
+          httpOnly: self._isHttpOnly,
+          secure: self._isSecure
         });
 
         return response;
@@ -100,10 +104,14 @@ Session.prototype.apply = function (request) {
     });
   }, function (error) {
     request.error.write('Error decoding session data: ' + error);
-    return request.call(self._app);
+    return request.call(app);
   });
 };
 
+/**
+ * Stores the given session and returns a promise for a value that should be stored
+ * in the session cookie to retrieve the session data again on the next request.
+ */
 Session.prototype.encodeSession = function (session) {
   var secret = this._secret;
 
@@ -111,12 +119,17 @@ Session.prototype.encodeSession = function (session) {
     var cookie = utils.encodeBase64(data + '--' + _makeHash(data, secret));
 
     if (cookie.length > MAX_COOKIE_SIZE)
-      return RSVP.reject(new Error('Cookie data size exceeds 4k; content dropped'));
+      throw new Error('Cookie data size exceeds 4kb; content dropped');
 
     return cookie;
   });
 };
 
+/**
+ * Decodes the given cookie value and returns a promise for the corresponding session
+ * data from the store. Also verifies the hash value to ensure the cookie has not been
+ * tampered with. If it has, returns null.
+ */
 Session.prototype.decodeCookie = function (cookie) {
   var value = utils.decodeBase64(cookie);
   var index = value.lastIndexOf('--');
@@ -124,10 +137,10 @@ Session.prototype.decodeCookie = function (cookie) {
   var hash = value.substring(index + 2);
 
   // Verify the cookie has not been tampered with.
-  if (hash !== _makeHash(data, this._secret))
-    return {};
+  if (hash === _makeHash(data, this._secret))
+    return this._store.load(data);
 
-  return this._store.load(data);
+  return null;
 };
 
 function _makeHash(data, secret) {
