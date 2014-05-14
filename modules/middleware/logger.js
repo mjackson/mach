@@ -1,5 +1,10 @@
 var strftime = require('strftime').strftime;
-var microtime = require('microtime');
+var microtime
+try {
+  microtime = require('microtime');
+} catch(err) {
+  console.log("Microtime not available -> logging millisecond durations")
+}
 
 /**
  * A middleware that writes log entry data about the response to a given stream.
@@ -10,7 +15,12 @@ module.exports = function (app, outputStream) {
   outputStream = outputStream || process.stderr;
 
   return function (request) {
-    var start = microtime.now();
+    var start
+    if (microtime) {
+      start = microtime.now();
+    } else {
+      start = Date.now()
+    }
 
     return request.call(app).then(function (response) {
       var host = request.remoteHost || '-';
@@ -23,8 +33,13 @@ module.exports = function (app, outputStream) {
       if (contentLength == null)
         contentLength = '-';
 
-      var elapsedMicroseconds = microtime.now() - start;
-      var seconds = Math.round(elapsedMicroseconds / 100) / 10000;
+      var seconds
+      if (microtime) {
+        var elapsedMicroseconds = microtime.now() - start;
+        seconds = Math.round(elapsedMicroseconds / 100) / 10000;
+      } else {
+        seconds = Date.now() - start
+      }
 
       // 127.0.0.1 - frank [10/Oct/2000 13:55:36] "GET /apache_pb.gif HTTP/1.0" 200 2326 0.003
       var entry = [ host, id, user, timestamp, info, response.status, contentLength, seconds ].join(' ');
