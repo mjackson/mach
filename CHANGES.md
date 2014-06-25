@@ -1,6 +1,10 @@
+### 0.9.3 / 2014-06-25
+
+  * Exclude undefined values from Request#filterParams
+
 ### 0.9.2 / 2014-03-19
 
-  * Exclude specs from npm package.
+  * Exclude specs from npm package
 
 ### 0.9.1 / 2014-03-17
 
