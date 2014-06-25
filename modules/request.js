@@ -536,7 +536,7 @@ function mergeProperties(object, extension) {
  * Keys in the filterMap should correspond to the names of request parameters and values
  * should be a filter function that is used to coerce the value of that parameter to the
  * desired output value. Any parameters in the filterMap that were not given in the request
- * are ignored.
+ * are ignored. Values for which filtering functions return `undefined` are also ignored.
  *
  *   // This function parses a list of comma-separated values in
  *   // a request parameter into an array.
@@ -559,12 +559,16 @@ Request.prototype.filterParams = function (filterMap, maxLength, uploadPrefix) {
   return this.getParams(maxLength, uploadPrefix).then(function (params) {
     var filteredParams = {};
 
-    var filter;
+    var filter, value;
     for (var paramName in filterMap) {
       filter = filterMap[paramName];
 
-      if (isFunction(filter) && params.hasOwnProperty(paramName))
-        filteredParams[paramName] = filter(params[paramName]);
+      if (isFunction(filter) && params.hasOwnProperty(paramName)) {
+        value = filter(params[paramName]);
+
+        if (value !== undefined)
+          filteredParams[paramName] = value;
+      }
     }
 
     return filteredParams;
