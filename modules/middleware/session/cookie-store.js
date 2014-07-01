@@ -1,4 +1,4 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 module.exports = CookieStore;
 
 /**
@@ -24,23 +24,23 @@ function CookieStore(options) {
 }
 
 CookieStore.prototype.load = function (value) {
-  try {    
+  try {
     var session = JSON.parse(value);
   } catch (error) {
     // Ignore invalid JSON data.
-    return RSVP.resolve({});
+    return Promise.resolve({});
   }
 
   // Verify the session is not expired.
   if (session._expiry && session._expiry <= Date.now())
-    return RSVP.resolve({});
+    return Promise.resolve({});
 
-  return RSVP.resolve(session);
+  return Promise.resolve(session);
 };
 
 CookieStore.prototype.save = function (session) {
   if (this._ttl)
     session._expiry = Date.now() + this._ttl;
 
-  return RSVP.resolve(JSON.stringify(session));
+  return Promise.resolve(JSON.stringify(session));
 };

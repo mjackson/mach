@@ -1,11 +1,11 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var mach = require('../modules');
 
 mach.serve(function (request) {
   if (Math.random() > 0.5)
     throw new Error('boom!');
 
-  var deferred = RSVP.defer();
+  var deferred = Promise.defer();
 
   setTimeout(function () {
     if (Math.random() > 0.8) {

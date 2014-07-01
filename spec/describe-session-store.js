@@ -114,10 +114,8 @@ function describeSessionStore(store, skip) {
   });
 }
 
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 
 function delay(ms) {
-  var deferred = RSVP.defer();
-  setTimeout(deferred.resolve, ms);
-  return deferred.promise;
+  return new Promise.delay(ms);
 }

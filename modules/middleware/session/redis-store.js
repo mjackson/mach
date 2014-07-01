@@ -1,4 +1,4 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var utils = require('../../utils');
 module.exports = RedisStore;
 
@@ -50,7 +50,7 @@ RedisStore.prototype.save = function (session) {
   var client = this._redisClient;
   var ttl = this._ttl;
 
-  return RSVP.resolve(session._id || _makeUniqueKey(this._redisClient, this._keyLength)).then(function (key) {
+  return Promise.resolve(session._id || _makeUniqueKey(this._redisClient, this._keyLength)).then(function (key) {
     session._id = key;
 
     var json = JSON.stringify(session);

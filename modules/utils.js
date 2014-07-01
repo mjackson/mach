@@ -4,7 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var qs = require('qs');
 var url = require('url');
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var mime = require('mime');
 var errors = require('./errors');
 
@@ -216,7 +216,7 @@ exports.makeHash = function (string) {
  * Returns a promise for the MD5 checksum of all data in the given file.
  */
 exports.makeChecksum = function (file) {
-  var deferred = RSVP.defer();
+  var deferred = Promise.defer();
   var hash = crypto.createHash('md5');
   var stream = fs.createReadStream(file);
 
@@ -240,7 +240,7 @@ exports.makeChecksum = function (file) {
  * the given maximum length.
  */
 exports.bufferStream = function (stream, maxLength) {
-  var deferred = RSVP.defer();
+  var deferred = Promise.defer();
   var chunks = [];
   var length = 0;
 
@@ -275,7 +275,7 @@ exports.streamToDisk = function (part, filePrefix) {
   };
 
   var stream = fs.createWriteStream(info.path);
-  var deferred = RSVP.defer();
+  var deferred = Promise.defer();
 
   part.on('data', function (chunk) {
     info.size += chunk.length;
