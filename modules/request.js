@@ -2,7 +2,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var Stream = require('stream');
 var Readable = Stream.Readable;
-var blubird = require('bluebird');
+var Promise = require('bluebird');
 var utils = require('./utils');
 var errors = require('./errors');
 var headers = require('./headers');
@@ -127,10 +127,10 @@ Request.prototype.apply = function (app, extraArgs) {
   try {
     var response = app.apply(this, args);
   } catch (error) {
-    return blubird.reject(error);
+    return Promise.reject(error);
   }
 
-  return blubird.resolve(response).then(function (response) {
+  return Promise.resolve(response).then(function (response) {
     if (response == null)
       throw new Error('No response returned from app: ' + app);
 
@@ -451,7 +451,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
     uploadPrefix = Request.defaultUploadPrefix;
 
   if (!this.canParseContent) {
-    this._parsedContent = blubird.resolve({});
+    this._parsedContent = Promise.resolve({});
   } else if (this.mediaType === 'application/json') {
     this._parsedContent = parseJson(this.content, maxLength);
   } else if (this.mediaType === 'application/x-www-form-urlencoded') {
@@ -603,7 +603,7 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
     paramValues.push(partHandler(part));
   };
 
-  var deferred = blubird.defer();
+  var deferred = Promise.defer();
   var length = 0;
 
   content.on('data', function (chunk) {
@@ -627,7 +627,7 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
     }
 
     // Resolve all parameter values.
-    var promise = blubird.all(paramValues).then(function (values) {
+    var promise = Promise.all(paramValues).then(function (values) {
       var params = {};
 
       paramNames.forEach(function (name, i) {
