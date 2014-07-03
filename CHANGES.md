@@ -1,3 +1,7 @@
+### HEAD
+
+  * Add Date header if not already present in responses.
+
 ### 0.9.3 / 2014-06-25
 
   * Exclude undefined values from Request#filterParams

@@ -43,11 +43,15 @@ exports.bind = function (app, nodeServer) {
       var isHead = request.method === 'HEAD';
       var isEmpty = isHead || !utils.statusHasContent(response.status);
 
-      // Preserve the Content-Length header on HEAD requests.
-      if (isEmpty && !isHead)
-        response.headers['Content-Length'] = 0;
+      var headers = response.headers;
 
-      nodeResponse.writeHead(response.status, response.headers);
+      if (isEmpty && !isHead)
+        headers['Content-Length'] = 0;
+
+      if (!headers['Date'])
+        headers['Date'] = (new Date).toUTCString();
+
+      nodeResponse.writeHead(response.status, headers);
 
       var content = response.content;
 
