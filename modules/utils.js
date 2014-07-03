@@ -244,23 +244,27 @@ exports.bufferStream = function (stream, maxLength) {
   var chunks = [];
   var length = 0;
 
-  stream.on('data', function (chunk) {
-    length += chunk.length;
+  if (!stream.readable) {
+    deferred.reject(new Error('Cannot buffer stream that is not readable'));
+  } else {
+    stream.on('data', function (chunk) {
+      length += chunk.length;
 
-    if (maxLength && length > maxLength) {
-      deferred.reject(new errors.MaxLengthExceededError(maxLength));
-    } else {
-      chunks.push(chunk);
-    }
-  });
+      if (maxLength && length > maxLength) {
+        deferred.reject(new errors.MaxLengthExceededError(maxLength));
+      } else {
+        chunks.push(chunk);
+      }
+    });
 
-  stream.on('end', function () {
-    deferred.resolve(Buffer.concat(chunks));
-  });
+    stream.on('end', function () {
+      deferred.resolve(Buffer.concat(chunks));
+    });
 
-  stream.on('error', function (error) {
-    deferred.reject(error);
-  });
+    stream.on('error', function (error) {
+      deferred.reject(error);
+    });
+  }
 
   return deferred.promise;
 };
