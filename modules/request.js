@@ -485,7 +485,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
  */
 Request.prototype.handlePart = function (part, uploadPrefix) {
   if (part.isFile)
-    return utils.streamToDisk(part.content, uploadPrefix);
+    return utils.streamToDisk(part, uploadPrefix);
 
   return utils.bufferStream(part.content).then(function (buffer) {
     return buffer.toString();
@@ -594,58 +594,51 @@ function parseUrlEncoded(content, maxLength) {
 }
 
 function parseMultipart(content, maxLength, boundary, partHandler) {
-  var parser = new multipart.Parser(boundary);
+  return new Promise(function (resolve, reject) {
+    var parser = new multipart.Parser(boundary);
+    var length = 0;
 
-  var paramNames = [];
-  var paramValues = [];
-  parser.onPart = function (part) {
-    paramNames.push(part.name);
-    paramValues.push(partHandler(part));
-  };
+    var paramNames = [];
+    var paramValues = [];
+    parser.onPart = function (part) {
+      paramNames.push(part.name);
+      paramValues.push(partHandler(part));
+    };
 
-  var deferred = Promise.defer();
-  var length = 0;
+    content.on('data', function (chunk) {
+      length += chunk.length;
 
-  content.on('data', function (chunk) {
-    length += chunk.length;
+      if (maxLength && length > maxLength) {
+        reject(new errors.MaxLengthExceededError(maxLength));
+      } else {
+        var parsedLength = parser.execute(chunk);
 
-    if (maxLength && length > maxLength) {
-      deferred.reject(new errors.MaxLengthExceededError(maxLength));
-    } else {
-      var parsedLength = parser.execute(chunk);
-
-      if (parsedLength !== chunk.length)
-        deferred.reject(new Error('Error parsing multipart body: ' + parsedLength + ' of ' + chunk.length + ' bytes parsed'));
-    }
-  });
-
-  content.on('end', function () {
-    try {
-      parser.finish();
-    } catch (error) {
-      deferred.reject(new Error('Error parsing multipart body: ' + error.message));
-      return;
-    }
-
-    // Resolve all parameter values.
-    var promise = Promise.all(paramValues).then(function (values) {
-      var params = {};
-
-      paramNames.forEach(function (name, i) {
-        params[name] = values[i];
-      });
-
-      return params;
+        if (parsedLength !== chunk.length)
+          reject(new Error('Error parsing multipart body: ' + parsedLength + ' of ' + chunk.length + ' bytes parsed'));
+      }
     });
 
-    deferred.resolve(promise);
-  });
+    content.on('end', function () {
+      try {
+        parser.finish();
+      } catch (error) {
+        reject(new Error('Error parsing multipart body: ' + error.message));
+        return;
+      }
 
-  content.on('error', function (error) {
-    deferred.reject(error);
-  });
+      resolve(Promise.all(paramValues).then(function (values) {
+        var params = {};
 
-  return deferred.promise;
+        paramNames.forEach(function (name, i) {
+          params[name] = values[i];
+        });
+
+        return params;
+      }));
+    });
+
+    content.on('error', reject);
+  });
 }
 
 function makeReadable(content) {

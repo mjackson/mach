@@ -216,23 +216,20 @@ exports.makeHash = function (string) {
  * Returns a promise for the MD5 checksum of all data in the given file.
  */
 exports.makeChecksum = function (file) {
-  var deferred = Promise.defer();
-  var hash = crypto.createHash('md5');
-  var stream = fs.createReadStream(file);
+  return new Promise(function (resolve, reject) {
+    var hash = crypto.createHash('md5');
+    var stream = fs.createReadStream(file);
 
-  stream.on('data', function (chunk) {
-    hash.update(chunk);
+    stream.on('error', reject);
+
+    stream.on('data', function (chunk) {
+      hash.update(chunk);
+    });
+
+    stream.on('end', function () {
+      resolve(hash.digest('hex'));
+    });
   });
-
-  stream.on('end', function () {
-    deferred.resolve(hash.digest('hex'));
-  });
-
-  stream.on('error', function (error) {
-    deferred.reject(error);
-  });
-
-  return deferred.promise;
 };
 
 /**
@@ -240,33 +237,30 @@ exports.makeChecksum = function (file) {
  * the given maximum length.
  */
 exports.bufferStream = function (stream, maxLength) {
-  var deferred = Promise.defer();
-  var chunks = [];
-  var length = 0;
+  return new Promise(function (resolve, reject) {
+    if (!stream.readable) {
+      reject(new Error('Cannot buffer stream that is not readable'));
+    } else {
+      var chunks = [];
+      var length = 0;
 
-  if (!stream.readable) {
-    deferred.reject(new Error('Cannot buffer stream that is not readable'));
-  } else {
-    stream.on('data', function (chunk) {
-      length += chunk.length;
+      stream.on('error', reject);
 
-      if (maxLength && length > maxLength) {
-        deferred.reject(new errors.MaxLengthExceededError(maxLength));
-      } else {
-        chunks.push(chunk);
-      }
-    });
+      stream.on('data', function (chunk) {
+        length += chunk.length;
 
-    stream.on('end', function () {
-      deferred.resolve(Buffer.concat(chunks));
-    });
+        if (maxLength && length > maxLength) {
+          reject(new errors.MaxLengthExceededError(maxLength));
+        } else {
+          chunks.push(chunk);
+        }
+      });
 
-    stream.on('error', function (error) {
-      deferred.reject(error);
-    });
-  }
-
-  return deferred.promise;
+      stream.on('end', function () {
+        resolve(Buffer.concat(chunks));
+      });
+    }
+  });
 };
 
 exports.streamToDisk = function (part, filePrefix) {
@@ -279,26 +273,19 @@ exports.streamToDisk = function (part, filePrefix) {
   };
 
   var stream = fs.createWriteStream(info.path);
-  var deferred = Promise.defer();
 
-  part.on('data', function (chunk) {
-    info.size += chunk.length;
-    stream.write(chunk, function () {
-      // TODO: Emit progress.
+  return new Promise(function (resolve, reject) {
+    part.content.on('data', function (chunk) {
+      info.size += chunk.length;
+      stream.write(chunk);
+    });
+
+    part.content.on('end', function () {
+      stream.end(function () {
+        resolve(info);
+      });
     });
   });
-
-  part.on('end', function () {
-    stream.end(function () {
-      deferred.resolve(info);
-    });
-  });
-
-  part.on('error', function (error) {
-    deferred.reject(error);
-  });
-
-  return deferred.promise;
 };
 
 var os = require('os');
