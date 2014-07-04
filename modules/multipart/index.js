@@ -1,3 +1,4 @@
+exports.Content = require('./content');
 exports.Parser = require('./parser');
 exports.Part = require('./part');
 
@@ -17,11 +18,11 @@ exports.parse = function (buffer, boundary) {
 
     var chunks = [];
 
-    part.on('data', function (chunk) {
+    part.content.on('data', function (chunk) {
       chunks.push(chunk);
     });
 
-    part.on('end', function () {
+    part.content.on('end', function () {
       part.buffer = Buffer.concat(chunks);
     });
   };

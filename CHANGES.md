@@ -1,7 +1,9 @@
 ### HEAD
 
-  * Add Date header if not already present in responses.
-  * Removed upper-case versions of middleware.
+  * Add Date header if not already present in responses
+  * Removed upper-case versions of middleware
+  * Added content stream property to multipart.Part objects that are
+    instances of multipart.Content
 
 ### 0.9.3 / 2014-06-25
 

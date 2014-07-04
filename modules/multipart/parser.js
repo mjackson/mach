@@ -314,11 +314,11 @@ Parser.prototype.onHeadersEnd = function () {
 };
 
 Parser.prototype.onPartData = function (buffer, start, end) {
-  this._part.emit('data', buffer.slice(start, end));
+  this._part.content.emit('data', buffer.slice(start, end));
 };
 
 Parser.prototype.onPartEnd = function () {
-  this._part.emit('end');
+  this._part.content.emit('end');
 };
 
 Parser.prototype.onPart = function (part) {};

@@ -485,9 +485,9 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
  */
 Request.prototype.handlePart = function (part, uploadPrefix) {
   if (part.isFile)
-    return utils.streamToDisk(part, uploadPrefix);
+    return utils.streamToDisk(part.content, uploadPrefix);
 
-  return utils.bufferStream(part).then(function (buffer) {
+  return utils.bufferStream(part.content).then(function (buffer) {
     return buffer.toString();
   });
 };
@@ -613,6 +613,7 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
       deferred.reject(new errors.MaxLengthExceededError(maxLength));
     } else {
       var parsedLength = parser.execute(chunk);
+
       if (parsedLength !== chunk.length)
         deferred.reject(new Error('Error parsing multipart body: ' + parsedLength + ' of ' + chunk.length + ' bytes parsed'));
     }

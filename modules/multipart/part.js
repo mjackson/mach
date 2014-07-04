@@ -1,16 +1,18 @@
-var util = require('util');
-var EventEmitter = require('events').EventEmitter;
+var Content = require('./content');
 module.exports = Part;
 
 /**
  * A container class for data pertaining to one part of a multipart message.
  */
 function Part() {
-  EventEmitter.call(this);
   this.headers = {};
+  this.content = new Content;
 }
 
-util.inherits(Part, EventEmitter);
+Part.prototype.on = function () {
+  console.warn('multipart.Part#on is deprecated and will not work in the next major release');
+  return this.content.on.apply(this.content, arguments);
+};
 
 /**
  * Returns the Content-Type of this part.
