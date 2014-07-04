@@ -1,4 +1,4 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var utils = require('../../utils');
 module.exports = MemoryStore;
 
@@ -32,13 +32,13 @@ MemoryStore.prototype.load = function (value) {
   var session = this.sessions[value];
 
   if (!session)
-    return RSVP.resolve({});
+    return Promise.resolve({});
 
   // Verify the session is not expired.
   if (session._expiry && session._expiry <= Date.now())
-    return RSVP.resolve({});
+    return Promise.resolve({});
 
-  return RSVP.resolve(session);
+  return Promise.resolve(session);
 };
 
 MemoryStore.prototype.save = function (session) {
@@ -51,7 +51,7 @@ MemoryStore.prototype.save = function (session) {
 
   this.sessions[key] = session;
 
-  return RSVP.resolve(key);
+  return Promise.resolve(key);
 };
 
 MemoryStore.prototype.purge = function (key) {

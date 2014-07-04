@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var utils = require('../utils');
 module.exports = File;
 
@@ -82,7 +82,7 @@ File.prototype.apply = function (request) {
       return path.join(fullPath, file);
     });
 
-    return RSVP.all(indexPaths.map(_findFile)).then(function (stats) {
+    return Promise.all(indexPaths.map(_findFile)).then(function (stats) {
       for (var i = 0, len = stats.length; i < len; ++i) {
         if (stats[i])
           return self._sendFile(indexPaths[i], stats[i]);
@@ -115,12 +115,12 @@ File.prototype._sendFile = function (file, stat) {
   });
 };
 
-var _statFile = RSVP.denodeify(fs.stat);
+var _statFile = Promise.promisify(fs.stat);
 
 // Attempt to get a stat for the given file. Return null if it does not exist.
 function _findFile(file) {
   return _statFile(file).then(undefined, function (error) {
-    if (error.code === 'ENOENT')
+    if (error.cause.code === 'ENOENT')
       return null;
 
     throw error;

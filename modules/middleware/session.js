@@ -1,4 +1,4 @@
-var RSVP = require('rsvp');
+var Promise = require('bluebird');
 var utils = require('../utils');
 var CookieStore = require('./session/cookie-store');
 module.exports = Session;
@@ -75,11 +75,11 @@ Session.prototype.apply = function (request) {
   var cookie = request.cookies[cookieName];
   var self = this;
 
-  return RSVP.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
+  return Promise.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
     request.session = session || {};
 
     return request.call(app).then(function (response) {
-      return RSVP.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
+      return Promise.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
         var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
 
         // Don't bother setting the cookie if its value
