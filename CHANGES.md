@@ -1,4 +1,4 @@
-### HEAD
+### 0.10.0 / 2014-07-05
 
   * Add Date header if not already present in responses
   * Removed upper-case versions of middleware

@@ -1,6 +1,6 @@
 {
   "name": "mach",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "description": "A better way to build web servers",
   "main": "modules/index.js",
   "dependencies": {
