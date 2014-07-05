@@ -22,7 +22,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/mjijackson/mach.git"
+    "url": "git://github.com/mjackson/mach.git"
   },
   "keywords": [
     "web",
@@ -40,6 +40,6 @@
   "author": "Michael Jackson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mjijackson/mach/issues"
+    "url": "https://github.com/mjackson/mach/issues"
   }
 }
