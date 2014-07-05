@@ -3,9 +3,6 @@ expect = require('expect');
 mach = require('../modules');
 var utils = mach.utils;
 
-// Override mocha's built-in methods with promise-aware versions.
-require('mocha-as-promised')();
-
 // This global holds the response to the last request made via callApp.
 lastResponse = null;
 
