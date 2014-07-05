@@ -1,6 +1,5 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-module.exports = Content;
 
 /**
  * A Stream-like class for multipart content.
@@ -18,3 +17,5 @@ function setupContent(content) {
     content.readable = false;
   });
 }
+
+module.exports = Content;

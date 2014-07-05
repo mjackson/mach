@@ -1,4 +1,5 @@
-var utils = require('../utils');
+var defaultApp = require('../index').defaultApp;
+var isApp = require('../utils/isApp');
 var Mapper = require('./mapper');
 
 /**
@@ -18,10 +19,10 @@ var Mapper = require('./mapper');
  *
  *   });
  */
-module.exports = function (app, map) {
-  if (!utils.isApp(app)) {
+function urlMap(app, map) {
+  if (!isApp(app)) {
     map = app;
-    app = utils.defaultApp;
+    app = defaultApp;
   }
 
   var mapper = new Mapper(app);
@@ -32,4 +33,6 @@ module.exports = function (app, map) {
   }
 
   return mapper;
-};
+}
+
+module.exports = urlMap;

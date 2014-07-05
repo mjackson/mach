@@ -1,6 +1,4 @@
 var Promise = require('bluebird');
-var utils = require('../../utils');
-module.exports = RedisStore;
 
 /**
  * Server-side storage for sessions using Redis.
@@ -50,7 +48,7 @@ RedisStore.prototype.save = function (session) {
   var client = this._redisClient;
   var ttl = this._ttl;
 
-  return Promise.resolve(session._id || _makeUniqueKey(this._redisClient, this._keyLength)).then(function (key) {
+  return Promise.resolve(session._id || makeUniqueKey(this._redisClient, this._keyLength)).then(function (key) {
     session._id = key;
 
     var json = JSON.stringify(session);
@@ -79,14 +77,18 @@ RedisStore.prototype.destroy = function () {
   return this._redisClient.quit();
 };
 
-function _makeUniqueKey(redisClient, keyLength) {
-  var key = utils.makeToken(keyLength);
+var makeToken = require('../../utils/makeToken');
+
+function makeUniqueKey(redisClient, keyLength) {
+  var key = makeToken(keyLength);
 
   // Try to set an empty string to reserve the key.
   return redisClient.setnx(key, '').then(function (result) {
     if (result === 1)
       return key; // The key was available.
 
-    return _makeUniqueKey(redisClient, keyLength); // Try again.
+    return makeUniqueKey(redisClient, keyLength); // Try again.
   });
 }
+
+module.exports = RedisStore;

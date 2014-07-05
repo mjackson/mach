@@ -1,4 +1,6 @@
-var utils = require('../utils');
+var forbidden = require('../index').forbidden;
+var isSafeRequestMethod = require('../utils/isSafeRequestMethod');
+var makeToken = require('../utils/makeToken');
 
 /**
  * A middleware that helps to prevent Cross-site Request Forgery attacks by
@@ -39,7 +41,7 @@ var utils = require('../utils');
  * whether or not they contain the token since it is assumed they are not modifying
  * anything and are safe.
  */
-module.exports = function (app, options) {
+function verifyToken(app, options) {
   options = options || {};
 
   if (typeof options === 'string')
@@ -61,7 +63,7 @@ module.exports = function (app, options) {
       // Get the session token, creating a new one if needed.
       var token = session[sessionKey];
       if (!token)
-        token = session[sessionKey] = utils.makeToken(byteLength);
+        token = session[sessionKey] = makeToken(byteLength);
 
       if (params[paramName] && params[paramName] === token)
         return request.call(app);
@@ -69,9 +71,11 @@ module.exports = function (app, options) {
 
     // If the request is not a POST we assume it's not a form submission
     // and therefore not modifying anything. Pass it downstream.
-    if (utils.isSafeRequestMethod(request.method))
+    if (isSafeRequestMethod(request.method))
       return request.call(app);
 
-    return utils.forbidden();
+    return forbidden();
   };
-};
+}
+
+module.exports = verifyToken;

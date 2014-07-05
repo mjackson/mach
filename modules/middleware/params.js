@@ -1,5 +1,5 @@
-var errors = require('../errors');
-var utils = require('../utils');
+var requestEntityTooLarge = require('../index').requestEntityTooLarge;
+var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
 
 /**
  * Automatically parses all request parameters and stores them in the `params`
@@ -22,7 +22,7 @@ var utils = require('../utils');
  * you'd prefer to only do this work on some requests and not all, you can use
  * request.getParams and/or request.filterParams inside your app instead.
  */
-module.exports = function (app, options) {
+function parseParams(app, options) {
   options = options || {};
 
   var maxLength = options.maxLength;
@@ -37,10 +37,12 @@ module.exports = function (app, options) {
         request.params = params;
         return request.call(app);
       }, function (error) {
-        if (error instanceof errors.MaxLengthExceededError)
-          return utils.requestEntityTooLarge();
+        if (error instanceof MaxLengthExceededError)
+          return requestEntityTooLarge();
 
         throw error;
       });
   };
-};
+}
+
+module.exports = parseParams;

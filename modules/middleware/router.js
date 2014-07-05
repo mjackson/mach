@@ -1,5 +1,7 @@
-var utils = require('../utils');
-module.exports = Router;
+var defaultApp = require('../index').defaultApp;
+var isRegExp = require('../utils/isRegExp');
+var compileRoute = require('../utils/compileRoute');
+var sliceArray = require('../utils/sliceArray');
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
@@ -32,7 +34,7 @@ function Router(app) {
   if (!(this instanceof Router))
     return new Router(app);
 
-  this._app = app || utils.defaultApp;
+  this._app = app || defaultApp;
   this._routes = {};
 }
 
@@ -47,7 +49,7 @@ Router.prototype.apply = function (request) {
 
     // Try to match the route.
     if (match = route.pattern.exec(request.pathInfo))
-      return request.apply(route.app, utils.slice(match, 1));
+      return request.apply(route.app, sliceArray(match, 1));
   }
 
   return request.call(this._app);
@@ -63,7 +65,7 @@ Router.prototype.run = function (app) {
 /**
  * Adds a new route that runs the given app when a given pattern matches the
  * path used in the request. If the pattern is a string, it is automatically
- * compiled (see utils.compileRoute).
+ * compiled (see utils/compileRoute.js).
  */
 Router.prototype.route = function (pattern, methods, app) {
   if (typeof methods === 'function') {
@@ -71,7 +73,7 @@ Router.prototype.route = function (pattern, methods, app) {
     methods = null;
   }
 
-  app = app || utils.defaultApp;
+  app = app || defaultApp;
 
   if (typeof methods === 'string')
     methods = [ methods ];
@@ -80,9 +82,9 @@ Router.prototype.route = function (pattern, methods, app) {
     methods = [ 'ANY' ];
 
   if (typeof pattern === 'string')
-    pattern = utils.compileRoute(pattern);
+    pattern = compileRoute(pattern);
 
-  if (!utils.isRegExp(pattern))
+  if (!isRegExp(pattern))
     throw new Error('Pattern must be a RegExp');
 
   var routes = this._routes;
@@ -116,3 +118,5 @@ Object.keys(methodVerbs).forEach(function (method) {
     return this.route(pattern, methodVerbs[method], app);
   };
 });
+
+module.exports = Router;

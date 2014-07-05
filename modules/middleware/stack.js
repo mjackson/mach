@@ -1,7 +1,6 @@
-var utils = require('../utils');
+var sliceArray = require('../utils/sliceArray');
 var Mapper = require('./mapper');
 var Router = require('./router');
-module.exports = Stack;
 
 /**
  * A middleware that aids in building complex apps that are fronted by other
@@ -92,7 +91,7 @@ Stack.prototype._compile = function () {
  * the stack is compiled.
  */
 Stack.prototype.use = function (middleware) {
-  var middlewareArgs = utils.slice(arguments, 1);
+  var middlewareArgs = sliceArray(arguments, 1);
 
   this._layers.push(function (app) {
     this._mapper = null;
@@ -134,3 +133,5 @@ Stack.prototype.map = function (location, callback) {
     return method.apply(app, arguments);
   };
 });
+
+module.exports = Stack;

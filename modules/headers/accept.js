@@ -1,5 +1,8 @@
-var utils = require('./utils');
-module.exports = Accept;
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
+var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaValueWithoutQualityFactor');
 
 /**
  * Represents an HTTP Accept header and provides several methods for
@@ -8,7 +11,7 @@ module.exports = Accept;
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  */
 function Accept(headerValue) {
-  this._mediaValues = headerValue ? utils.parseMediaValues(headerValue) : [];
+  this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
 Accept.prototype.toString = function () {
@@ -19,7 +22,7 @@ Accept.prototype.toString = function () {
  * Returns the value of this header as a string.
  */
 Accept.prototype.__defineGetter__('value', function () {
-  return utils.stringifyMediaValues(this._mediaValues) || '*/*';
+  return stringifyMediaValues(this._mediaValues) || '*/*';
 });
 
 /**
@@ -38,7 +41,7 @@ Accept.prototype.qualityFactorForMediaType = function (mediaType) {
   if (!values.length)
     return 1;
 
-  var givenValue = utils.parseMediaValue(mediaType);
+  var givenValue = parseMediaValue(mediaType);
   var matchingValues = values.filter(function (value) {
     return (value.type === '*' || value.type === givenValue.type) &&
            (value.subtype === '*' || value.subtype === givenValue.subtype) &&
@@ -48,7 +51,7 @@ Accept.prototype.qualityFactorForMediaType = function (mediaType) {
   if (!matchingValues.length)
     return 0;
 
-  return utils.qualityFactorForMediaValue(matchingValues[0]);
+  return qualityFactorForMediaValue(matchingValues[0]);
 };
 
 function paramsMatchIgnoringQualityFactor(params, givenParams) {
@@ -69,5 +72,7 @@ function byHighestPrecedence(a, b) {
   //   2) text/html
   //   3) text/*
   //   4) */*
-  return utils.stringifyMediaValueWithoutQualityFactor(b).length - utils.stringifyMediaValueWithoutQualityFactor(a).length;
+  return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
 }
+
+module.exports = Accept;

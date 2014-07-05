@@ -1,5 +1,4 @@
 var Promise = require('bluebird');
-module.exports = CookieStore;
 
 /**
  * Client-side storage for sessions using HTTP cookies.
@@ -44,3 +43,5 @@ CookieStore.prototype.save = function (session) {
 
   return Promise.resolve(JSON.stringify(session));
 };
+
+module.exports = CookieStore;

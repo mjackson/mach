@@ -4,6 +4,9 @@
   * Removed upper-case versions of middleware
   * Added content stream property to multipart.Part objects that are
     instances of multipart.Content
+  * Renamed Request#baseUrl => Request#baseURL
+  * Refactored utils module into many separate files
+  * Moved all response helpers from utils into the main module
 
 ### 0.9.3 / 2014-06-25
 

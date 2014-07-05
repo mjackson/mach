@@ -6,7 +6,7 @@ var microtime = require('microtime');
  * Log entries are formatted similarly to Apache httpd's Common Log Format
  * (see http://httpd.apache.org/docs/1.3/logs.html#common).
  */
-module.exports = function (app, outputStream) {
+function logger(app, outputStream) {
   outputStream = outputStream || process.stderr;
 
   return function (request) {
@@ -34,4 +34,6 @@ module.exports = function (app, outputStream) {
       return response;
     });
   };
-};
+}
+
+module.exports = logger;

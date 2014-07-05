@@ -4,12 +4,12 @@
  * headers. In order to work effectively, downstream apps must use the ETag
  * and/or Last-Modified headers.
  */
-module.exports = function (app) {
+function modified(app) {
   return function (request) {
     var checkEtag;
     var ifNoneMatch = request.headers['if-none-match'];
     if (ifNoneMatch)
-      checkEtag = _stripQuotes(ifNoneMatch);
+      checkEtag = stripQuotes(ifNoneMatch);
 
     var checkLastModified;
     var ifModifiedSince = request.headers['if-modified-since'];
@@ -21,7 +21,7 @@ module.exports = function (app) {
         var etag = response.headers['ETag'];
 
         if (etag && etag === checkEtag)
-          return _notModifiedResponse(response);
+          return notModifiedResponse(response);
       }
 
       if (checkLastModified) {
@@ -32,26 +32,28 @@ module.exports = function (app) {
             lastModified = Date.parse(lastModified);
 
           if (lastModified <= checkLastModified)
-            return _notModifiedResponse(response);
+            return notModifiedResponse(response);
         }
       }
 
       return response;
     });
   };
-};
+}
 
 var NO_CONTENT = new Buffer(0);
 
-function _notModifiedResponse(response) {
+function notModifiedResponse(response) {
   response.status = 304;
   response.content = NO_CONTENT;
   return response;
 }
 
-function _stripQuotes(string) {
+function stripQuotes(string) {
   if (string.substring(0, 1) === '"')
     return string.replace(/^"|"$/g, '');
 
   return string;
 }
+
+module.exports = modified;

@@ -1,5 +1,5 @@
-var utils = require('../utils');
-module.exports = Mapper;
+var defaultApp = require('../index').defaultApp;
+var escapeRegExp = require('../utils/escapeRegExp');
 
 /**
  * A middleware that provides host and/or location-based routing. Modifies the
@@ -27,7 +27,7 @@ function Mapper(app) {
   if (!(this instanceof Mapper))
     return new Mapper(app);
   
-  this._app = app || utils.defaultApp;
+  this._app = app || defaultApp;
   this._mappings = [];
 }
 
@@ -92,7 +92,7 @@ Mapper.prototype.map = function (location, app) {
   path = path.replace(/\/$/, '');
 
   var mappings = this._mappings;
-  var pattern = new RegExp('^' + utils.escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
+  var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
 
   mappings.push({
     host: host,
@@ -107,3 +107,5 @@ Mapper.prototype.map = function (location, app) {
 function byMostSpecific(a, b) {
   return (b.path.length - a.path.length) || ((b.host || '').length - (a.host || '').length);
 }
+
+module.exports = Mapper;

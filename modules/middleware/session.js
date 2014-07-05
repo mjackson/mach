@@ -1,7 +1,8 @@
 var Promise = require('bluebird');
-var utils = require('../utils');
-var CookieStore = require('./session/cookie-store');
-module.exports = Session;
+var CookieStore = require('./session/CookieStore');
+var decodeBase64 = require('../utils/decodeBase64');
+var encodeBase64 = require('../utils/encodeBase64');
+var setCookie = require('../utils/setCookie');
 
 var MAX_COOKIE_SIZE = 4096;
 
@@ -87,7 +88,7 @@ Session.prototype.apply = function (request) {
         if (newCookie === cookie && !expires)
           return response;
 
-        utils.setCookie(response.headers, cookieName, {
+        setCookie(response.headers, cookieName, {
           value: newCookie,
           path: self._path,
           domain: self._domain,
@@ -116,7 +117,7 @@ Session.prototype.encodeSession = function (session) {
   var secret = this._secret;
 
   return this._store.save(session).then(function (data) {
-    var cookie = utils.encodeBase64(data + '--' + _makeHash(data, secret));
+    var cookie = encodeBase64(data + '--' + makeHashWithSecret(data, secret));
 
     if (cookie.length > MAX_COOKIE_SIZE)
       throw new Error('Cookie data size exceeds 4kb; content dropped');
@@ -131,26 +132,30 @@ Session.prototype.encodeSession = function (session) {
  * tampered with. If it has, returns null.
  */
 Session.prototype.decodeCookie = function (cookie) {
-  var value = utils.decodeBase64(cookie);
+  var value = decodeBase64(cookie);
   var index = value.lastIndexOf('--');
   var data = value.substring(0, index);
   var hash = value.substring(index + 2);
 
   // Verify the cookie has not been tampered with.
-  if (hash === _makeHash(data, this._secret))
+  if (hash === makeHashWithSecret(data, this._secret))
     return this._store.load(data);
 
   return null;
 };
 
-function _makeHash(data, secret) {
-  return utils.makeHash(secret ? data + secret : data);
+var makeHash = require('../utils/makeHash');
+
+function makeHashWithSecret(data, secret) {
+  return makeHash(secret ? data + secret : data);
 }
 
+module.exports = Session;
+
 var submodules = {
-  CookieStore: './session/cookie-store',
-  MemoryStore: './session/memory-store',
-  RedisStore:  './session/redis-store'
+  CookieStore: './session/CookieStore',
+  MemoryStore: './session/MemoryStore',
+  RedisStore:  './session/RedisStore'
 };
 
 Object.keys(submodules).forEach(function (name) {

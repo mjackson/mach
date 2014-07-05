@@ -22,7 +22,7 @@
  * Note: When using mach.methodOverride with POST parameters you need to put
  * mach.params in front of it so that the request parameters will be available.
  */
-module.exports = function (app, paramName, headerName) {
+function methodOverride(app, paramName, headerName) {
   headerName = (headerName || 'X-Http-Method-Override').toLowerCase();
   paramName = paramName || '_method';
 
@@ -45,4 +45,6 @@ module.exports = function (app, paramName, headerName) {
 
     return request.call(app);
   };
-};
+}
+
+module.exports = methodOverride;

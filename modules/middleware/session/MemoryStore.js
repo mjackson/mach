@@ -1,6 +1,4 @@
 var Promise = require('bluebird');
-var utils = require('../../utils');
-module.exports = MemoryStore;
 
 /**
  * Basic server-side storage for sessions that exist within a single process.
@@ -22,7 +20,7 @@ function MemoryStore(options) {
   this.sessions = {};
 
   this._keyLength = options.keyLength || 32;
-  this._timer = _pruneStore(this, options.purgeInterval || 5000);
+  this._timer = pruneStore(this, options.purgeInterval || 5000);
   this._ttl = options.expireAfter
     ? (1000 * options.expireAfter) // expireAfter is given in seconds
     : 0;
@@ -44,7 +42,7 @@ MemoryStore.prototype.load = function (value) {
 MemoryStore.prototype.save = function (session) {
   var key = session._id;
   if (!key)
-    key = session._id = _makeUniqueKey(this.sessions, this._keyLength);
+    key = session._id = makeUniqueKey(this.sessions, this._keyLength);
 
   if (this._ttl)
     session._expiry = Date.now() + this._ttl;
@@ -71,16 +69,18 @@ MemoryStore.prototype.destroy = function () {
   }
 };
 
-function _makeUniqueKey(sessions, keyLength) {
+var makeToken = require('../../utils/makeToken');
+
+function makeUniqueKey(sessions, keyLength) {
   var key;
   do {
-    key = utils.makeToken(keyLength);
+    key = makeToken(keyLength);
   } while (sessions[key]);
 
   return key;
 }
 
-function _pruneStore(store, interval) {
+function pruneStore(store, interval) {
   var timer = setInterval(function () {
     var now = Date.now();
 
@@ -98,3 +98,5 @@ function _pruneStore(store, interval) {
 
   return timer;
 }
+
+module.exports = MemoryStore;

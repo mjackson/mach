@@ -1,5 +1,7 @@
-var utils = require('./utils');
-module.exports = AcceptEncoding;
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
 
 /**
  * Represents an HTTP Accept-Encoding header and provides several methods
@@ -8,7 +10,7 @@ module.exports = AcceptEncoding;
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
  */
 function AcceptEncoding(headerValue) {
-  this._mediaValues = headerValue ? utils.parseMediaValues(headerValue) : [];
+  this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
 AcceptEncoding.prototype.toString = function () {
@@ -19,7 +21,7 @@ AcceptEncoding.prototype.toString = function () {
  * Returns the value of this header as a string.
  */
 AcceptEncoding.prototype.__defineGetter__('value', function () {
-  return utils.stringifyMediaValues(this._mediaValues) || '';
+  return stringifyMediaValues(this._mediaValues) || '';
 });
 
 /**
@@ -35,7 +37,7 @@ AcceptEncoding.prototype.accepts = function (encoding) {
 AcceptEncoding.prototype.qualityFactorForEncoding = function (encoding) {
   var values = this._mediaValues;
 
-  var givenValue = utils.parseMediaValue(encoding);
+  var givenValue = parseMediaValue(encoding);
   var matchingValues = values.filter(function (value) {
     if (value.type === '*')
       return true;
@@ -52,7 +54,7 @@ AcceptEncoding.prototype.qualityFactorForEncoding = function (encoding) {
   // encoding is acceptable.
   if (givenValue.type === 'identity') {
     if (matchingValues.length && matchingValues[0].type === 'identity')
-      return utils.qualityFactorForMediaValue(matchingValues[0]);
+      return qualityFactorForMediaValue(matchingValues[0]);
 
     return 1;
   }
@@ -60,10 +62,12 @@ AcceptEncoding.prototype.qualityFactorForEncoding = function (encoding) {
   if (!matchingValues.length)
     return 0;
 
-  return utils.qualityFactorForMediaValue(matchingValues[0]);
+  return qualityFactorForMediaValue(matchingValues[0]);
 };
 
 function byHighestPrecedence(a, b) {
   // "*" gets least precedence, all others are equal
   return a === '*' ? -1 : (b === '*' ? 1 : 0);
 }
+
+module.exports = AcceptEncoding;

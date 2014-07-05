@@ -1,5 +1,4 @@
 var Part = require('./part');
-module.exports = Parser;
 
 // This parser is modified from the one in the node-formidable
 // project, written by Felix Geisendörfer. MIT licensed.
@@ -322,3 +321,5 @@ Parser.prototype.onPartEnd = function () {
 };
 
 Parser.prototype.onPart = function (part) {};
+
+module.exports = Parser;

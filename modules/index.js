@@ -1,8 +1,3 @@
-var http = require('http');
-var https = require('https');
-var utils = require('./utils');
-var Request = require('./request');
-
 /**
  * The current version of mach.
  */
@@ -12,6 +7,80 @@ exports.version = '0.9.3';
  * The default port to use in mach.serve.
  */
 exports.defaultPort = 3333;
+
+/**
+ * A map of HTTP status codes to their descriptions.
+ */
+exports.STATUS_CODES = {
+  100: 'Continue',
+  101: 'Switching Protocols',
+  102: 'Processing',                       // RFC 2518, obsoleted by RFC 4918
+  200: 'OK',
+  201: 'Created',
+  202: 'Accepted',
+  203: 'Non-Authoritative Information',
+  204: 'No Content',
+  205: 'Reset Content',
+  206: 'Partial Content',
+  207: 'Multi-Status',                     // RFC 4918
+  300: 'Multiple Choices',
+  301: 'Moved Permanently',
+  302: 'Moved Temporarily',
+  303: 'See Other',
+  304: 'Not Modified',
+  305: 'Use Proxy',
+  307: 'Temporary Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  406: 'Not Acceptable',
+  407: 'Proxy Authentication Required',
+  408: 'Request Time-out',
+  409: 'Conflict',
+  410: 'Gone',
+  411: 'Length Required',
+  412: 'Precondition Failed',
+  413: 'Request Entity Too Large',
+  414: 'Request-URI Too Large',
+  415: 'Unsupported Media Type',
+  416: 'Requested Range Not Satisfiable',
+  417: 'Expectation Failed',
+  418: "I'm a teapot",                     // RFC 2324
+  422: 'Unprocessable Entity',             // RFC 4918
+  423: 'Locked',                           // RFC 4918
+  424: 'Failed Dependency',                // RFC 4918
+  425: 'Unordered Collection',             // RFC 4918
+  426: 'Upgrade Required',                 // RFC 2817
+  428: 'Precondition Required',            // RFC 6585
+  429: 'Too Many Requests',                // RFC 6585
+  431: 'Request Header Fields Too Large',  // RFC 6585
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+  505: 'HTTP Version Not Supported',
+  506: 'Variant Also Negotiates',          // RFC 2295
+  507: 'Insufficient Storage',             // RFC 4918
+  509: 'Bandwidth Limit Exceeded',
+  510: 'Not Extended',                     // RFC 2774
+  511: 'Network Authentication Required'   // RFC 6585
+};
+
+/**
+ * HTTP status codes that don't have entities.
+ */
+exports.STATUS_WITHOUT_CONTENT = {
+  100: true,
+  101: true,
+  204: true,
+  304: true
+};
+
+var stringifyError = require('./utils/stringifyError');
 
 /**
  * Binds the given app to the "request" event of the given server so that it
@@ -41,7 +110,7 @@ exports.bind = function (app, nodeServer) {
 
     request.call(app).then(function (response) {
       var isHead = request.method === 'HEAD';
-      var isEmpty = isHead || !utils.statusHasContent(response.status);
+      var isEmpty = isHead || exports.STATUS_WITHOUT_CONTENT[response.status] === true;
 
       var headers = response.headers;
 
@@ -64,7 +133,7 @@ exports.bind = function (app, nodeServer) {
         content.pipe(nodeResponse);
       }
     }, function (error) {
-      request.error.write(utils.stringifyError(error) + '\n');
+      request.error.write(stringifyError(error) + '\n');
       nodeResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       nodeResponse.end('Internal Server Error');
     });
@@ -75,8 +144,11 @@ exports.bind = function (app, nodeServer) {
   return requestHandler;
 };
 
+var Request = require('./Request');
+var parseURL = require('./utils/parseURL');
+
 function makeRequest(nodeRequest, serverName, serverPort) {
-  var url = utils.parseUrl(nodeRequest.url);
+  var url = parseURL(nodeRequest.url);
   var request = new Request({
     protocolVersion: nodeRequest.httpVersion,
     method: nodeRequest.method,
@@ -96,6 +168,9 @@ function makeRequest(nodeRequest, serverName, serverPort) {
 
   return request;
 }
+
+var http = require('http');
+var https = require('https');
 
 /**
  * Creates and starts a node HTTP server that serves the given app. Options may
@@ -277,10 +352,72 @@ exports.back = function (request, defaultLocation) {
   return exports.redirect(request.headers.referer || defaultLocation || '/');
 };
 
+function textResponse(status, content) {
+  content = content || exports.STATUS_CODES[status];
+
+  return {
+    status: status,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Length': Buffer.byteLength(content)
+    },
+    content: content
+  };
+}
+
+function makeTextResponder(status) {
+  return function (content) {
+    return textResponse(status, content);
+  };
+}
+
+/**
+ * Returns a text/plain 200 OK response.
+ */
+exports.ok = makeTextResponder(200);
+
+/**
+ * Returns a text/plain 400 Bad Request response.
+ */
+exports.badRequest = makeTextResponder(400);
+
+/**
+ * Returns a text/plain 401 Unauthorized response.
+ */
+exports.unauthorized = makeTextResponder(401);
+
+/**
+ * Returns a text/plain 403 Forbidden response.
+ */
+exports.forbidden = makeTextResponder(403);
+
+/**
+ * Returns a text/plain 404 Not Found response.
+ */
+exports.notFound = makeTextResponder(404);
+
+/**
+ * Returns a text/plain 413 Request Entity Too Large response.
+ */
+exports.requestEntityTooLarge = makeTextResponder(413);
+
+/**
+ * Returns a text/plain 500 Internal Server Error response.
+ */
+exports.internalServerError = makeTextResponder(500);
+
+/**
+ * The default application that is used as the root of routers and mappers
+ * when no other app is given.
+ */
+exports.defaultApp = function (request) {
+  return textResponse(404, 'Not Found: ' + request.method + ' ' + request.path);
+};
+
 var submodules = {
-  basicAuth       : './middleware/basic-auth',
+  basicAuth       : './middleware/basicAuth',
   catch           : './middleware/catch',
-  contentType     : './middleware/content-type',
+  contentType     : './middleware/contentType',
   errors          : './errors',
   favicon         : './middleware/favicon',
   file            : './middleware/file',
@@ -288,16 +425,16 @@ var submodules = {
   gzip            : './middleware/gzip',
   logger          : './middleware/logger',
   mapper          : './middleware/mapper',
-  methodOverride  : './middleware/method-override',
+  methodOverride  : './middleware/methodOverride',
   modified        : './middleware/modified',
   multipart       : './multipart',
   params          : './middleware/params',
-  Request         : './request',
+  Request         : './Request',
   router          : './middleware/router',
   session         : './middleware/session',
   stack           : './middleware/stack',
   token           : './middleware/token',
-  urlMap          : './middleware/url-map',
+  urlMap          : './middleware/urlMap',
   utils           : './utils'
 };
 

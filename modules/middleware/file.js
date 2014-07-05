@@ -1,9 +1,12 @@
-var fs = require('fs');
-var path = require('path');
-var crypto = require('crypto');
 var Promise = require('bluebird');
-var utils = require('../utils');
-module.exports = File;
+var defaultApp = require('../index').defaultApp;
+var forbidden = require('../index').forbidden;
+var fileExists = require('../utils/fileExists');
+var isApp = require('../utils/isApp');
+var isDirectory = require('../utils/isDirectory');
+var makeChecksum = require('../utils/makeChecksum');
+var mimeType = require('../utils/mimeType');
+var statFile = require('../utils/statFile');
 
 /**
  * A middleware for serving files efficiently from the file system according
@@ -26,16 +29,16 @@ function File(app, options) {
   if (!(this instanceof File))
     return new File(app, options);
 
-  if (!utils.isApp(app)) {
+  if (!isApp(app)) {
     options = app;
-    app = utils.defaultApp;
+    app = defaultApp;
   }
 
   if (typeof options === 'string')
     options = { root: options };
 
   var rootDirectory = options.root;
-  if (typeof rootDirectory !== 'string' || !fs.existsSync(rootDirectory) || !fs.statSync(rootDirectory).isDirectory())
+  if (typeof rootDirectory !== 'string' || !fileExists(rootDirectory) || !isDirectory(rootDirectory))
     throw new Error('Invalid root directory: ' + rootDirectory);
 
   var indexFiles = options.index;
@@ -54,6 +57,8 @@ function File(app, options) {
   this._useEtag = !!options.useEtag;
 }
 
+var path = require('path');
+
 File.prototype.apply = function (request) {
   var method = request.method;
   if (method !== 'GET' && method !== 'HEAD')
@@ -61,15 +66,15 @@ File.prototype.apply = function (request) {
 
   var pathInfo = request.pathInfo;
   if (pathInfo.indexOf('..') !== -1)
-    return utils.forbidden();
+    return forbidden();
 
   var fullPath = path.join(this._rootDirectory, pathInfo);
   var self = this;
 
-  return _findFile(fullPath).then(function (stat) {
+  return findFile(fullPath).then(function (stat) {
     // If the request targets a file, send it!
     if (stat && stat.isFile())
-      return self._sendFile(fullPath, stat);
+      return self.sendFile(fullPath, stat);
 
     // If the request does not target a directory or we don't have any
     // index files to try, pass the request downstream.
@@ -82,10 +87,10 @@ File.prototype.apply = function (request) {
       return path.join(fullPath, file);
     });
 
-    return Promise.all(indexPaths.map(_findFile)).then(function (stats) {
+    return Promise.all(indexPaths.map(findFile)).then(function (stats) {
       for (var i = 0, len = stats.length; i < len; ++i) {
         if (stats[i])
-          return self._sendFile(indexPaths[i], stats[i]);
+          return self.sendFile(indexPaths[i], stats[i]);
       }
 
       return request.call(self._app);
@@ -93,11 +98,13 @@ File.prototype.apply = function (request) {
   });
 };
 
-File.prototype._sendFile = function (file, stat) {
+var fs = require('fs');
+
+File.prototype.sendFile = function (file, stat) {
   var response = {
     status: 200,
     headers: {
-      'Content-Type': utils.mimeType(file),
+      'Content-Type': mimeType(file),
       'Content-Length': stat.size
     },
     content: fs.createReadStream(file)
@@ -109,20 +116,20 @@ File.prototype._sendFile = function (file, stat) {
   if (!this._useEtag)
     return response;
 
-  return utils.makeChecksum(file).then(function (checksum) {
+  return makeChecksum(file).then(function (checksum) {
     response.headers['ETag'] = checksum;
     return response;
   });
 };
 
-var _statFile = Promise.promisify(fs.stat);
-
 // Attempt to get a stat for the given file. Return null if it does not exist.
-function _findFile(file) {
-  return _statFile(file).then(undefined, function (error) {
+function findFile(file) {
+  return statFile(file).then(undefined, function (error) {
     if (error.cause.code === 'ENOENT')
       return null;
 
     throw error;
   });
 }
+
+module.exports = File;

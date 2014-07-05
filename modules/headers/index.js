@@ -1,4 +1,4 @@
-exports.Accept = require('./accept');
-exports.AcceptCharset = require('./accept-charset');
-exports.AcceptEncoding = require('./accept-encoding');
-exports.AcceptLanguage = require('./accept-language');
+exports.Accept = require('./Accept');
+exports.AcceptCharset = require('./AcceptCharset');
+exports.AcceptEncoding = require('./AcceptEncoding');
+exports.AcceptLanguage = require('./AcceptLanguage');

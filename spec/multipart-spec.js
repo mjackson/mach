@@ -19,7 +19,7 @@ describe('multipart', function () {
       var parser = new multipart.Parser('abc');
 
       it('has the correct boundary', function () {
-        assert.deepEqual(utils.slice(parser.boundary), [13, 10, 45, 45, 97, 98, 99]);
+        assert.deepEqual(utils.sliceArray(parser.boundary), [ 13, 10, 45, 45, 97, 98, 99 ]);
         assert.deepEqual(parser.boundaryChars, { 10: true, 13: true, 45: true, 97: true, 98: true, 99: true });
       });
     });

@@ -21,13 +21,13 @@ callApp = function (app, options, leaveBuffer) {
 
   // If options is a string it specifies a URL.
   if (typeof options === 'string') {
-    var parsedUrl = utils.parseUrl(options);
+    var parsedURL = utils.parseURL(options);
     options = {
-      protocol: parsedUrl.protocol,
-      serverName: parsedUrl.hostname,
-      serverPort: parsedUrl.port,
-      pathInfo: parsedUrl.pathname,
-      queryString: parsedUrl.query
+      protocol: parsedURL.protocol,
+      serverName: parsedURL.hostname,
+      serverPort: parsedURL.port,
+      pathInfo: parsedURL.pathname,
+      queryString: parsedURL.query
     };
   }
 

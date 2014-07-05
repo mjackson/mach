@@ -3,11 +3,14 @@ var EventEmitter = require('events').EventEmitter;
 var Stream = require('stream');
 var Readable = Stream.Readable;
 var Promise = require('bluebird');
-var utils = require('./utils');
 var errors = require('./errors');
 var headers = require('./headers');
 var multipart = require('./multipart');
-module.exports = Request;
+var bufferStream = require('./utils/bufferStream');
+var mergeProperties = require('./utils/mergeProperties');
+var parseCookie = require('./utils/parseCookie');
+var parseQueryString = require('./utils/parseQueryString');
+var streamPartToDisk = require('./utils/streamPartToDisk');
 
 var NO_CONTENT = new Buffer(0);
 
@@ -169,7 +172,7 @@ Request.prototype.apply = function (app, extraArgs) {
  */
 Request.prototype.call = function (app) {
   if (arguments.length > 1)
-    return this.apply(app, utils.slice(arguments, 1));
+    return this.apply(app, sliceArray(arguments, 1));
 
   return this.apply(app);
 };
@@ -257,7 +260,7 @@ Request.prototype.__defineGetter__('port', function () {
  * Returns a URL containing the protocol, hostname, and port of the original
  * request.
  */
-Request.prototype.__defineGetter__('baseUrl', function () {
+Request.prototype.__defineGetter__('baseURL', function () {
   var protocol = this.protocol;
   var base = protocol + '//' + this.host;
   var port = this.port;
@@ -286,7 +289,7 @@ Request.prototype.__defineGetter__('fullPath', function () {
  * The original URL of this request.
  */
 Request.prototype.__defineGetter__('url', function () {
-  return this.baseUrl + this.fullPath;
+  return this.baseURL + this.fullPath;
 });
 
 /**
@@ -335,7 +338,7 @@ Request.prototype.acceptsLanguage = function (language) {
  */
 Request.prototype.__defineGetter__('query', function () {
   if (!this._query)
-    this._query = utils.parseQueryString(this.queryString);
+    this._query = parseQueryString(this.queryString);
 
   return this._query;
 });
@@ -346,7 +349,7 @@ Request.prototype.__defineGetter__('query', function () {
 Request.prototype.__defineGetter__('cookies', function () {
   if (!this._cookies) {
     if (this.headers.cookie) {
-      var cookies = utils.parseCookie(this.headers.cookie);
+      var cookies = parseCookie(this.headers.cookie);
 
       // From RFC 2109:
       // If multiple cookies satisfy the criteria above, they are ordered in
@@ -453,9 +456,9 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
   if (!this.canParseContent) {
     this._parsedContent = Promise.resolve({});
   } else if (this.mediaType === 'application/json') {
-    this._parsedContent = parseJson(this.content, maxLength);
+    this._parsedContent = parseJSON(this.content, maxLength);
   } else if (this.mediaType === 'application/x-www-form-urlencoded') {
-    this._parsedContent = parseUrlEncoded(this.content, maxLength);
+    this._parsedContent = parseURLEncoded(this.content, maxLength);
   } else {
     var boundary = this.multipartBoundary;
 
@@ -466,7 +469,7 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
       });
     } else {
       // Assume content is URL-encoded.
-      this._parsedContent = parseUrlEncoded(this.content, maxLength);
+      this._parsedContent = parseURLEncoded(this.content, maxLength);
     }
   }
 
@@ -485,9 +488,9 @@ Request.prototype.parseContent = function (maxLength, uploadPrefix) {
  */
 Request.prototype.handlePart = function (part, uploadPrefix) {
   if (part.isFile)
-    return utils.streamToDisk(part, uploadPrefix);
+    return streamPartToDisk(part, uploadPrefix);
 
-  return utils.bufferStream(part.content).then(function (buffer) {
+  return bufferStream(part.content).then(function (buffer) {
     return buffer.toString();
   });
 };
@@ -518,15 +521,6 @@ Request.prototype.getParams = function (maxLength, uploadPrefix) {
 
   return this._params;
 };
-
-function mergeProperties(object, extension) {
-  for (var property in extension) {
-    if (extension.hasOwnProperty(property))
-      object[property] = extension[property];
-  }
-
-  return object;
-}
 
 /**
  * A high-level method that returns a promise for an object of all parameters given in this request
@@ -581,15 +575,15 @@ function isFunction(object) {
   return typeof object === 'function';
 }
 
-function parseJson(content, maxLength) {
-  return utils.bufferStream(content, maxLength).then(function (buffer) {
+function parseJSON(content, maxLength) {
+  return bufferStream(content, maxLength).then(function (buffer) {
     return JSON.parse(buffer.toString());
   });
 }
 
-function parseUrlEncoded(content, maxLength) {
-  return utils.bufferStream(content, maxLength).then(function (buffer) {
-    return utils.parseQueryString(buffer.toString());
+function parseURLEncoded(content, maxLength) {
+  return bufferStream(content, maxLength).then(function (buffer) {
+    return parseQueryString(buffer.toString());
   });
 }
 
@@ -658,3 +652,5 @@ function makeReadable(content) {
 
   return stream;
 }
+
+module.exports = Request;

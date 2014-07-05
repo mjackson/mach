@@ -4,7 +4,7 @@ var utils = mach.utils;
 describe('mach.router', function () {
   var app = mach.router();
   var innerApp = function (request) {
-    var extraArgs = utils.slice(arguments, 1);
+    var extraArgs = utils.sliceArray(arguments, 1);
 
     return {
       headers: {

@@ -1,5 +1,4 @@
 var Content = require('./content');
-module.exports = Part;
 
 /**
  * A container class for data pertaining to one part of a multipart message.
@@ -86,3 +85,5 @@ Part.prototype.__defineGetter__('filename', function () {
 Part.prototype.__defineGetter__('isFile', function () {
   return !!this.filename;
 });
+
+module.exports = Part;

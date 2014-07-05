@@ -4,7 +4,7 @@ var utils = mach.utils;
 
 describe('mach.contentType', function () {
   var expectedType = 'text/plain';
-  var app = contentType(utils.defaultApp, expectedType);
+  var app = contentType(mach.defaultApp, expectedType);
 
   beforeEach(function () {
     return callApp(app, '/');

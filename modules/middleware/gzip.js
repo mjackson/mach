@@ -1,11 +1,10 @@
 var zlib = require('zlib');
-var utils = require('../utils');
 
 /**
  * A middleware that gzip's the response content (see http://www.gzip.org/).
  * Options may be any of node's zlib options (see http://nodejs.org/api/zlib.html).
  */
-module.exports = function (app, gzipOptions) {
+function gzip(app, gzipOptions) {
   return function (request) {
     return request.call(app).then(function (response) {
       var headers = response.headers;
@@ -22,7 +21,7 @@ module.exports = function (app, gzipOptions) {
       return response;
     });
   };
-};
+}
 
 var gzipTypes = /text|javascript|json/i;
 
@@ -32,3 +31,5 @@ function shouldGzipContentType(contentType) {
 
   return gzipTypes.test(contentType);
 }
+
+module.exports = gzip;

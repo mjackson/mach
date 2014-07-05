@@ -1,5 +1,7 @@
-var utils = require('./utils');
-module.exports = AcceptCharset;
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
 
 /**
  * Represents an HTTP Accept-Charset header and provides several methods
@@ -8,7 +10,7 @@ module.exports = AcceptCharset;
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
  */
 function AcceptCharset(headerValue) {
-  this._mediaValues = headerValue ? utils.parseMediaValues(headerValue) : [];
+  this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
 AcceptCharset.prototype.toString = function () {
@@ -19,7 +21,7 @@ AcceptCharset.prototype.toString = function () {
  * Returns the value of this header as a string.
  */
 AcceptCharset.prototype.__defineGetter__('value', function () {
-  return utils.stringifyMediaValues(this._mediaValues) || '';
+  return stringifyMediaValues(this._mediaValues) || '';
 });
 
 /**
@@ -35,7 +37,7 @@ AcceptCharset.prototype.accepts = function (charset) {
 AcceptCharset.prototype.qualityFactorForCharset = function (charset) {
   var values = this._mediaValues;
 
-  var givenValue = utils.parseMediaValue(charset);
+  var givenValue = parseMediaValue(charset);
   var matchingValues = values.filter(function (value) {
     if (value.type === '*')
       return true;
@@ -51,7 +53,7 @@ AcceptCharset.prototype.qualityFactorForCharset = function (charset) {
   // 1 if not explicitly mentioned.
   if (givenValue.type === 'iso-8859-1') {
     if (matchingValues.length && matchingValues[0].type === 'iso-8859-1')
-      return utils.qualityFactorForMediaValue(matchingValues[0]);
+      return qualityFactorForMediaValue(matchingValues[0]);
 
     return 1;
   }
@@ -59,10 +61,12 @@ AcceptCharset.prototype.qualityFactorForCharset = function (charset) {
   if (!matchingValues.length)
     return 0;
 
-  return utils.qualityFactorForMediaValue(matchingValues[0]);
+  return qualityFactorForMediaValue(matchingValues[0]);
 };
 
 function byHighestPrecedence(a, b) {
   // "*" gets least precedence, all others are equal
   return a === '*' ? -1 : (b === '*' ? 1 : 0);
 }
+
+module.exports = AcceptCharset;

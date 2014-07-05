@@ -9,7 +9,7 @@
  *     throw 200;
  *   });
  */
-module.exports = function (app) {
+function catchError(app) {
   return function (request) {
     return request.call(app).then(null, function (reason) {
       if (reason instanceof Error)
@@ -18,4 +18,6 @@ module.exports = function (app) {
       return reason;
     });
   };
-};
+}
+
+module.exports = catchError;

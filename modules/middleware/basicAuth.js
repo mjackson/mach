@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
-var utils = require('../utils');
+var badRequest = require('../index').badRequest;
+var decodeBase64 = require('../utils/decodeBase64');
 
 /**
  * A middleware that performs basic auth on the incoming request before passing
@@ -26,7 +27,7 @@ var utils = require('../utils');
  *     return query('SELECT username FROM users WHERE handle=? AND password=?', user, pass);
  *   });
  */
-module.exports = function (app, validate, realm) {
+function basicAuth(app, validate, realm) {
   realm = realm || 'Authorization Required';
 
   if (typeof validate !== 'function')
@@ -43,9 +44,9 @@ module.exports = function (app, validate, realm) {
     var parts = authorization.split(' ');
     var scheme = parts[0];
     if (scheme.toLowerCase() !== 'basic')
-      return utils.badRequest();
+      return badRequest();
 
-    var params = utils.decodeBase64(parts[1]).split(':');
+    var params = decodeBase64(parts[1]).split(':');
     var username = params[0];
     var password = params[1];
 
@@ -58,7 +59,7 @@ module.exports = function (app, validate, realm) {
       return request.call(app);
     });
   };
-};
+}
 
 function unauthorized(realm) {
   return {
@@ -70,3 +71,5 @@ function unauthorized(realm) {
     content: 'Not Authorized'
   };
 }
+
+module.exports = basicAuth;

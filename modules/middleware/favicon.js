@@ -1,8 +1,13 @@
 /**
- * A middleware that generates a 404 for requests for "/favicon.ico".
+ * A middleware that returns the given response to requests for "/favicon.ico".
+ * Defaults to returning an empty 404.
  */
-module.exports = function (app) {
+function favicon(app, response) {
+  response = response || 404;
+
   return function (request) {
-    return request.path === '/favicon.ico' ? 404 : request.call(app);
+    return request.path === '/favicon.ico' ? response : request.call(app);
   };
-};
+}
+
+module.exports = favicon;

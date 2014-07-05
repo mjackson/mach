@@ -1,5 +1,8 @@
-var utils = require('./utils');
-module.exports = AcceptLanguage;
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
+var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaValueWithoutQualityFactor');
 
 /**
  * Represents an HTTP Accept-Language header and provides several methods
@@ -8,7 +11,7 @@ module.exports = AcceptLanguage;
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
  */
 function AcceptLanguage(headerValue) {
-  this._mediaValues = headerValue ? utils.parseMediaValues(headerValue, '-') : [];
+  this._mediaValues = headerValue ? parseMediaValues(headerValue, '-') : [];
 }
 
 AcceptLanguage.prototype.toString = function () {
@@ -19,7 +22,7 @@ AcceptLanguage.prototype.toString = function () {
  * Returns the value of this header as a string.
  */
 AcceptLanguage.prototype.__defineGetter__('value', function () {
-  return utils.stringifyMediaValues(this._mediaValues, '-') || '';
+  return stringifyMediaValues(this._mediaValues, '-') || '';
 });
 
 /**
@@ -38,7 +41,7 @@ AcceptLanguage.prototype.qualityFactorForLanguage = function (language) {
   if (!values.length)
     return 1;
 
-  var givenValue = utils.parseMediaValue(language, '-');
+  var givenValue = parseMediaValue(language, '-');
   var matchingValues = values.filter(function (value) {
     if (value.type === '*')
       return true;
@@ -52,7 +55,7 @@ AcceptLanguage.prototype.qualityFactorForLanguage = function (language) {
   if (!matchingValues.length)
     return 0;
 
-  return utils.qualityFactorForMediaValue(matchingValues[0]);
+  return qualityFactorForMediaValue(matchingValues[0]);
 };
 
 function byHighestPrecedence(a, b) {
@@ -61,5 +64,7 @@ function byHighestPrecedence(a, b) {
 }
 
 function byMostSpecific(a, b) {
-  return utils.stringifyMediaValueWithoutQualityFactor(b).length - utils.stringifyMediaValueWithoutQualityFactor(a).length;
+  return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
 }
+
+module.exports = AcceptLanguage;
