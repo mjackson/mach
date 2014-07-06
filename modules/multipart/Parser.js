@@ -1,4 +1,4 @@
-var Part = require('./part');
+var Part = require('./Part');
 
 // This parser is modified from the one in the node-formidable
 // project, written by Felix Geisendörfer. MIT licensed.

@@ -1,4 +1,4 @@
-var Content = require('./content');
+var Content = require('./Content');
 
 /**
  * A container class for data pertaining to one part of a multipart message.

@@ -3,7 +3,7 @@ var Parser = require('../multipart/Parser');
 
 /**
  * Parses an entire multipart message in one shot. Returns an object of all
- * parts in the message, keyed by name, each of which has a buffer property
+ * parts in the message, keyed by name, each of which has a "buffer" property
  * that represents the content of that part as a Buffer.
  */
 function parseMultipartMessage(buffer, boundary) {
