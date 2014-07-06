@@ -1,7 +1,7 @@
 /**
  * The current version of mach.
  */
-exports.version = '0.10.0';
+exports.version = '0.10.1';
 
 /**
  * The default port to use in mach.serve.

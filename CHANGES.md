@@ -1,3 +1,7 @@
+### 0.10.1 / 2014-07-06
+
+  * Corrected case for some require statements
+
 ### 0.10.0 / 2014-07-05
 
   * Add Date header if not already present in responses
