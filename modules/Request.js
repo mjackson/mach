@@ -5,7 +5,6 @@ var Readable = Stream.Readable;
 var Promise = require('bluebird');
 var errors = require('./errors');
 var headers = require('./headers');
-var multipart = require('./multipart');
 var bufferStream = require('./utils/bufferStream');
 var mergeProperties = require('./utils/mergeProperties');
 var parseCookie = require('./utils/parseCookie');
@@ -587,22 +586,21 @@ function parseURLEncoded(content, maxLength) {
   });
 }
 
+var Parser = require('./multipart/Parser');
+
 function parseMultipart(content, maxLength, boundary, partHandler) {
   return new Promise(function (resolve, reject) {
-    var parser = new multipart.Parser(boundary);
-    var length = 0;
+    var parts = {};
+    var contentLength = 0;
 
-    var paramNames = [];
-    var paramValues = [];
-    parser.onPart = function (part) {
-      paramNames.push(part.name);
-      paramValues.push(partHandler(part));
-    };
+    var parser = new Parser(boundary, function (part) {
+      parts[part.name] = partHandler(part);
+    });
 
     content.on('data', function (chunk) {
-      length += chunk.length;
+      contentLength += chunk.length;
 
-      if (maxLength && length > maxLength) {
+      if (maxLength && contentLength > maxLength) {
         reject(new errors.MaxLengthExceededError(maxLength));
       } else {
         var parsedLength = parser.execute(chunk);
@@ -615,20 +613,10 @@ function parseMultipart(content, maxLength, boundary, partHandler) {
     content.on('end', function () {
       try {
         parser.finish();
+        resolve(Promise.props(parts));
       } catch (error) {
         reject(new Error('Error parsing multipart body: ' + error.message));
-        return;
       }
-
-      resolve(Promise.all(paramValues).then(function (values) {
-        var params = {};
-
-        paramNames.forEach(function (name, i) {
-          params[name] = values[i];
-        });
-
-        return params;
-      }));
     });
 
     content.on('error', reject);

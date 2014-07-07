@@ -1,3 +1,7 @@
+### HEAD
+
+  * Add onPart argument to multipart.Parser
+
 ### 0.10.1 / 2014-07-06
 
   * Corrected case for some require statements

@@ -16,7 +16,7 @@ describe('multipart', function () {
   describe('Parser', function () {
 
     describe('with a boundary of "abc"', function () {
-      var parser = new multipart.Parser('abc');
+      var parser = new multipart.Parser('abc', function (part) {});
 
       it('has the correct boundary', function () {
         assert.deepEqual(utils.sliceArray(parser.boundary), [ 13, 10, 45, 45, 97, 98, 99 ]);

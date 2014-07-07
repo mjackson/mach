@@ -31,7 +31,7 @@ var SPACE = 32;
 var HYPHEN = 45;
 var COLON = 58;
 
-function Parser(boundary) {
+function Parser(boundary, partHandler) {
   this.boundary = new Buffer(boundary.length + 4);
   this.boundary.write('\r\n--', 'ascii', 0);
   this.boundary.write(boundary, 'ascii', 4);
@@ -46,6 +46,11 @@ function Parser(boundary) {
   this.state = S.START;
   this.index = null;
   this.flags = 0;
+
+  if (typeof partHandler !== 'function')
+    throw new Error('multipart.Parser requires a callback to handle parts');
+
+  this.onPart = partHandler;
 }
 
 Parser.prototype.execute = function (buffer) {
@@ -319,7 +324,5 @@ Parser.prototype.onPartData = function (buffer, start, end) {
 Parser.prototype.onPartEnd = function () {
   this._part.content.emit('end');
 };
-
-Parser.prototype.onPart = function (part) {};
 
 module.exports = Parser;

@@ -2,15 +2,13 @@ var assert = require('assert');
 var Parser = require('../multipart/Parser');
 
 /**
- * Parses an entire multipart message in one shot. Returns an object of all
- * parts in the message, keyed by name, each of which has a "buffer" property
- * that represents the content of that part as a Buffer.
+ * Parses an entire multipart message synchronously in one shot. Returns an
+ * object of all parts in the message, keyed by name, each of which has a
+ * "buffer" property that contains the content of that part as a Buffer.
  */
 function parseMultipartMessage(buffer, boundary) {
-  var parser = new Parser(boundary);
-
   var parts = {};
-  parser.onPart = function (part) {
+  var parser = new Parser(boundary, function (part) {
     parts[part.name] = part;
 
     var chunks = [];
@@ -22,7 +20,7 @@ function parseMultipartMessage(buffer, boundary) {
     part.content.on('end', function () {
       part.buffer = Buffer.concat(chunks);
     });
-  };
+  });
 
   var writtenLength = parser.execute(buffer);
 
