@@ -3,25 +3,24 @@ var Promise = require('bluebird');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
 function streamToDisk(part, filePrefix) {
-  var temporaryPath = makeTemporaryPath(filePrefix);
-  var info = {
-    path: temporaryPath,
-    name: part.filename,
-    type: part.type,
-    size: 0
-  };
-
-  var stream = fs.createWriteStream(info.path);
-
   return new Promise(function (resolve, reject) {
+    var path = makeTemporaryPath(filePrefix);
+    var stream = fs.createWriteStream(path);
+    var size = 0;
+
     part.content.on('data', function (chunk) {
-      info.size += chunk.length;
+      size += chunk.length;
       stream.write(chunk);
     });
 
     part.content.on('end', function () {
       stream.end(function () {
-        resolve(info);
+        resolve({
+          path: path,
+          name: part.filename,
+          type: part.type,
+          size: size
+        });
       });
     });
   });
