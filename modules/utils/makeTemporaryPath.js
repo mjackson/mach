@@ -1,5 +1,5 @@
-var os = require('os');
 var path = require('path');
+var TMP_DIR = require('os').tmpDir();
 
 function makeTemporaryPath(prefix) {
   prefix = prefix || '';
@@ -9,7 +9,7 @@ function makeTemporaryPath(prefix) {
   var date = '' + now.getYear() + now.getMonth() + now.getDate();
   var name = [ prefix, date, '-', process.pid, '-', random ].join('');
 
-  return path.join(os.tmpDir(), name);
+  return path.join(TMP_DIR, name);
 }
 
 module.exports = makeTemporaryPath;

@@ -415,27 +415,27 @@ exports.defaultApp = function (request) {
 };
 
 var submodules = {
-  basicAuth       : './middleware/basicAuth',
-  catch           : './middleware/catch',
-  contentType     : './middleware/contentType',
-  errors          : './errors',
-  favicon         : './middleware/favicon',
-  file            : './middleware/file',
-  headers         : './headers',
-  gzip            : './middleware/gzip',
-  logger          : './middleware/logger',
-  mapper          : './middleware/mapper',
-  methodOverride  : './middleware/methodOverride',
-  modified        : './middleware/modified',
-  multipart       : './multipart',
-  params          : './middleware/params',
-  Request         : './Request',
-  router          : './middleware/router',
-  session         : './middleware/session',
-  stack           : './middleware/stack',
-  token           : './middleware/token',
-  urlMap          : './middleware/urlMap',
-  utils           : './utils'
+  basicAuth:        './middleware/basicAuth',
+  catch:            './middleware/catch',
+  contentType:      './middleware/contentType',
+  errors:           './errors',
+  favicon:          './middleware/favicon',
+  file:             './middleware/file',
+  headers:          './headers',
+  gzip:             './middleware/gzip',
+  logger:           './middleware/logger',
+  mapper:           './middleware/mapper',
+  methodOverride:   './middleware/methodOverride',
+  modified:         './middleware/modified',
+  multipart:        './multipart',
+  params:           './middleware/params',
+  Request:          './Request',
+  router:           './middleware/router',
+  session:          './middleware/session',
+  stack:            './middleware/stack',
+  token:            './middleware/token',
+  urlMap:           './middleware/urlMap',
+  utils:            './utils'
 };
 
 Object.keys(submodules).forEach(function (name) {
