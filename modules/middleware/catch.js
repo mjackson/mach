@@ -11,7 +11,7 @@
  */
 function catchError(app) {
   return function (request) {
-    return request.call(app).then(null, function (reason) {
+    return request.call(app).then(undefined, function (reason) {
       if (reason instanceof Error)
         throw reason;
       
