@@ -192,14 +192,14 @@ Request.prototype.__defineGetter__('protocol', function () {
 /**
  * True if this request was made over SSL.
  */
-Request.prototype.__defineGetter__('isSsl', function () {
+Request.prototype.__defineGetter__('isSSL', function () {
   return this.protocol === 'https:';
 });
 
 /**
  * True if this request was made using XMLHttpRequest.
  */
-Request.prototype.__defineGetter__('isXhr', function () {
+Request.prototype.__defineGetter__('isXHR', function () {
   return this.headers['x-requested-with'] === 'XMLHttpRequest';
 });
 
@@ -246,7 +246,7 @@ Request.prototype.__defineGetter__('port', function () {
   if (port)
     return parseInt(port, 10);
 
-  if (this.isSsl)
+  if (this.isSSL)
     return 443;
 
   if (this.headers['x-forwarded-host'])
