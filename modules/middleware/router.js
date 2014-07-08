@@ -1,7 +1,6 @@
 var defaultApp = require('../index').defaultApp;
-var isRegExp = require('../utils/isRegExp');
 var compileRoute = require('../utils/compileRoute');
-var sliceArray = require('../utils/sliceArray');
+var isRegExp = require('../utils/isRegExp');
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
@@ -49,7 +48,7 @@ Router.prototype.apply = function (request) {
 
     // Try to match the route.
     if (match = route.pattern.exec(request.pathInfo))
-      return request.apply(route.app, sliceArray(match, 1));
+      return request.apply(route.app, Array.prototype.slice.call(match, 1));
   }
 
   return request.call(this._app);

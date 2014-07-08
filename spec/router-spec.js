@@ -1,10 +1,9 @@
 require('./helper');
-var utils = mach.utils;
 
 describe('mach.router', function () {
   var app = mach.router();
   var innerApp = function (request) {
-    var extraArgs = utils.sliceArray(arguments, 1);
+    var extraArgs = Array.prototype.slice.call(arguments, 1);
 
     return {
       headers: {

@@ -1,6 +1,5 @@
 require('./helper');
 var multipart = mach.multipart;
-var utils = mach.utils;
 
 var fs = require('fs');
 var parts;
@@ -19,7 +18,7 @@ describe('multipart', function () {
       var parser = new multipart.Parser('abc', function (part) {});
 
       it('has the correct boundary', function () {
-        assert.deepEqual(utils.sliceArray(parser.boundary), [ 13, 10, 45, 45, 97, 98, 99 ]);
+        assert.deepEqual(Array.prototype.slice.call(parser.boundary), [ 13, 10, 45, 45, 97, 98, 99 ]);
         assert.deepEqual(parser.boundaryChars, { 10: true, 13: true, 45: true, 97: true, 98: true, 99: true });
       });
     });

@@ -171,7 +171,7 @@ Request.prototype.apply = function (app, extraArgs) {
  */
 Request.prototype.call = function (app) {
   if (arguments.length > 1)
-    return this.apply(app, sliceArray(arguments, 1));
+    return this.apply(app, Array.prototype.slice.call(arguments, 1));
 
   return this.apply(app);
 };

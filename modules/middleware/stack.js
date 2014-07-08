@@ -1,4 +1,3 @@
-var sliceArray = require('../utils/sliceArray');
 var Mapper = require('./mapper');
 var Router = require('./router');
 
@@ -91,7 +90,7 @@ Stack.prototype._compile = function () {
  * the stack is compiled.
  */
 Stack.prototype.use = function (middleware) {
-  var middlewareArgs = sliceArray(arguments, 1);
+  var middlewareArgs = Array.prototype.slice.call(arguments, 1);
 
   this._layers.push(function (app) {
     this._mapper = null;

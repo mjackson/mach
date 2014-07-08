@@ -23,7 +23,6 @@ exports.parseQueryString                          = require('./parseQueryString'
 exports.parseURL                                  = require('./parseURL'),
 exports.qualityFactorForMediaValue                = require('./qualityFactorForMediaValue'),
 exports.setCookie                                 = require('./setCookie'),
-exports.sliceArray                                = require('./sliceArray'),
 exports.statFile                                  = require('./statFile'),
 exports.streamPartToDisk                          = require('./streamPartToDisk');
 exports.stringifyError                            = require('./stringifyError'),
