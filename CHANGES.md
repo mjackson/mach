@@ -2,6 +2,7 @@
 
   * Add onPart argument to multipart.Parser
   * Removed dependency on microtime module (issue #19)
+  * Replace mach.urlMap with mach.map
 
 ### 0.10.1 / 2014-07-06
 

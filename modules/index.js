@@ -414,6 +414,33 @@ exports.defaultApp = function (request) {
   return textResponse(404, 'Not Found: ' + request.method + ' ' + request.path);
 };
 
+/**
+ * Creates and returns a mach.mapper from the location/app pairs in `map`.
+ *
+ *   var app = mach.map({
+ *
+ *     'http://example.com/images': function (request) {
+ *       // The hostname used in the request was example.com, and the path
+ *       // started with "/images".
+ *     },
+ *
+ *     '/images': function (request) {
+ *       // The request path started with "/images".
+ *     }
+ *
+ *   });
+ */
+exports.map = function (map) {
+  var mapper = exports.mapper();
+
+  for (var location in map) {
+    if (map.hasOwnProperty(location))
+      mapper.map(location, map[location]);
+  }
+
+  return mapper;
+};
+
 var submodules = {
   basicAuth:        './middleware/basicAuth',
   catch:            './middleware/catch',
@@ -434,7 +461,6 @@ var submodules = {
   session:          './middleware/session',
   stack:            './middleware/stack',
   token:            './middleware/token',
-  urlMap:           './middleware/urlMap',
   utils:            './utils'
 };
 

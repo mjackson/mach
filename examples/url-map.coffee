@@ -1,6 +1,6 @@
 mach = require "../modules"
 
-server = mach.serve mach.logger mach.urlMap
+server = mach.serve mach.logger mach.map
 
     "/": -> '<a href="/foo">Foo</a>'
 
