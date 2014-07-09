@@ -14,10 +14,6 @@ function AcceptLanguage(headerValue) {
   this._mediaValues = headerValue ? parseMediaValues(headerValue, '-') : [];
 }
 
-AcceptLanguage.prototype.toString = function () {
-  return 'Accept-Language: ' + this.value;
-};
-
 /**
  * Returns the value of this header as a string.
  */
@@ -66,5 +62,9 @@ function byHighestPrecedence(a, b) {
 function byMostSpecific(a, b) {
   return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
 }
+
+AcceptLanguage.prototype.toString = function () {
+  return 'Accept-Language: ' + this.value;
+};
 
 module.exports = AcceptLanguage;

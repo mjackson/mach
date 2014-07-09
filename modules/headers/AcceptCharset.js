@@ -13,10 +13,6 @@ function AcceptCharset(headerValue) {
   this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
-AcceptCharset.prototype.toString = function () {
-  return 'Accept-Charset: ' + this.value;
-};
-
 /**
  * Returns the value of this header as a string.
  */
@@ -68,5 +64,9 @@ function byHighestPrecedence(a, b) {
   // "*" gets least precedence, all others are equal
   return a === '*' ? -1 : (b === '*' ? 1 : 0);
 }
+
+AcceptCharset.prototype.toString = function () {
+  return 'Accept-Charset: ' + this.value;
+};
 
 module.exports = AcceptCharset;

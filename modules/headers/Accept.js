@@ -14,10 +14,6 @@ function Accept(headerValue) {
   this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
-Accept.prototype.toString = function () {
-  return 'Accept: ' + this.value;
-};
-
 /**
  * Returns the value of this header as a string.
  */
@@ -74,5 +70,9 @@ function byHighestPrecedence(a, b) {
   //   4) */*
   return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
 }
+
+Accept.prototype.toString = function () {
+  return 'Accept: ' + this.value;
+};
 
 module.exports = Accept;

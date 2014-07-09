@@ -13,10 +13,6 @@ function AcceptEncoding(headerValue) {
   this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
 }
 
-AcceptEncoding.prototype.toString = function () {
-  return 'Accept-Encoding: ' + this.value;
-};
-
 /**
  * Returns the value of this header as a string.
  */
@@ -69,5 +65,9 @@ function byHighestPrecedence(a, b) {
   // "*" gets least precedence, all others are equal
   return a === '*' ? -1 : (b === '*' ? 1 : 0);
 }
+
+AcceptEncoding.prototype.toString = function () {
+  return 'Accept-Encoding: ' + this.value;
+};
 
 module.exports = AcceptEncoding;
