@@ -1,6 +1,7 @@
 ### HEAD
 
   * Add onPart argument to multipart.Parser
+  * Removed dependency on microtime module (issue #19)
 
 ### 0.10.1 / 2014-07-06
 
