@@ -21,10 +21,24 @@
  *
  * Note: When using mach.methodOverride with POST parameters you need to put
  * mach.params in front of it so that the request parameters will be available.
+ *
+ * Options may be any of the following:
+ *
+ *   - paramName        The name of the request param that contains the
+ *                      request method. Defaults to "_method"
+ *   - headerName       The name of the HTTP header that will contain the
+ *                      request method. This allows you to put the request
+ *                      method in an HTTP header instead of a request param.
+ *                      Defaults to "X-Http-Method-Override"
  */
-function methodOverride(app, paramName, headerName) {
-  headerName = (headerName || 'X-Http-Method-Override').toLowerCase();
-  paramName = paramName || '_method';
+function methodOverride(app, options) {
+  options = options || {};
+
+  if (typeof options === 'string')
+    options = { paramName: options };
+
+  var paramName = options.paramName || '_method';
+  var headerName = (options.headerName || 'X-Http-Method-Override').toLowerCase();
 
   return function (request) {
     var method;

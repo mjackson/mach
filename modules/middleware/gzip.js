@@ -4,7 +4,7 @@ var zlib = require('zlib');
  * A middleware that gzip's the response content (see http://www.gzip.org/).
  * Options may be any of node's zlib options (see http://nodejs.org/api/zlib.html).
  */
-function gzip(app, gzipOptions) {
+function gzip(app, options) {
   return function (request) {
     return request.call(app).then(function (response) {
       var headers = response.headers;
@@ -12,7 +12,7 @@ function gzip(app, gzipOptions) {
       if (!shouldGzipContentType(headers['Content-Type']) || !request.acceptsEncoding('gzip'))
         return response;
 
-      response.content = response.content.pipe(zlib.createGzip(gzipOptions));
+      response.content = response.content.pipe(zlib.createGzip(options));
 
       headers['Content-Encoding'] = 'gzip';
       headers['Vary'] = 'Accept-Encoding';

@@ -27,10 +27,13 @@ var decodeBase64 = require('../utils/decodeBase64');
  *     return query('SELECT username FROM users WHERE handle=? AND password=?', user, pass);
  *   });
  */
-function basicAuth(app, validate, realm) {
-  realm = realm || 'Authorization Required';
+function basicAuth(app, options) {
+  options = options || {};
 
-  if (typeof validate !== 'function')
+  if (typeof options === 'function')
+    options = { validate: options };
+
+  if (typeof options.validate !== 'function')
     throw new Error('Missing validation function for basic auth');
 
   return function (request) {
@@ -39,7 +42,7 @@ function basicAuth(app, validate, realm) {
 
     var authorization = request.headers.authorization;
     if (!authorization)
-      return unauthorized(realm);
+      return unauthorized(options.realm);
 
     var parts = authorization.split(' ');
     var scheme = parts[0];
@@ -50,9 +53,9 @@ function basicAuth(app, validate, realm) {
     var username = params[0];
     var password = params[1];
 
-    return Promise.resolve(validate(username, password)).then(function (user) {
+    return Promise.resolve(options.validate(username, password)).then(function (user) {
       if (!user)
-        return unauthorized(realm);
+        return unauthorized(options.realm);
 
       request.remoteUser = (user === true) ? username : user;
 
@@ -62,6 +65,8 @@ function basicAuth(app, validate, realm) {
 }
 
 function unauthorized(realm) {
+  realm = realm || 'Authorization Required';
+
   return {
     status: 401,
     headers: {
