@@ -21,7 +21,6 @@ function parseMediaValue(value, typeSeparator) {
   typeSeparator = typeSeparator || '/';
 
   var parts = value.split(/\s*;\s*/);
-
   var mediaTypes = parts.shift().split(typeSeparator, 2);
   var params = parts.reduce(function (memo, part) {
     var nameValue = part.split('=', 2);
