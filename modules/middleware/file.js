@@ -2,7 +2,6 @@ var Promise = require('bluebird');
 var defaultApp = require('../index').defaultApp;
 var forbidden = require('../index').forbidden;
 var fileExists = require('../utils/fileExists');
-var isApp = require('../utils/isApp');
 var isDirectory = require('../utils/isDirectory');
 var makeChecksum = require('../utils/makeChecksum');
 var mimeType = require('../utils/mimeType');
@@ -29,11 +28,6 @@ function File(app, options) {
   if (!(this instanceof File))
     return new File(app, options);
 
-  if (!isApp(app)) {
-    options = app;
-    app = defaultApp;
-  }
-
   if (typeof options === 'string')
     options = { root: options };
 
@@ -50,7 +44,7 @@ function File(app, options) {
     }
   }
 
-  this._app = app;
+  this._app = app || defaultApp;
   this._rootDirectory = rootDirectory;
   this._indexFiles = indexFiles;
   this._useLastModified = ('useLastModified' in options) ? !!options.useLastModified : true;

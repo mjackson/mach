@@ -7,7 +7,7 @@ describe('mach.file', function () {
     var fullPath = specFile('jquery-1.8.3.js');
     var filename = path.basename(fullPath);
     var contents = fs.readFileSync(fullPath, 'utf8');
-    var app = mach.file(path.dirname(fullPath));
+    var app = mach.file(null, path.dirname(fullPath));
 
     beforeEach(function () {
       return callApp(app, '/' + filename);
@@ -21,7 +21,7 @@ describe('mach.file', function () {
   describe('with a single index file', function () {
     var filename = path.basename(__filename);
     var contents = fs.readFileSync(__filename, 'utf8');
-    var app = mach.file({
+    var app = mach.file(null, {
       root: __dirname,
       index: filename
     });
@@ -86,7 +86,7 @@ describe('mach.file', function () {
   describe('with multiple index files', function () {
     var filename = path.basename(__filename);
     var contents = fs.readFileSync(__filename, 'utf8');
-    var app = mach.file({
+    var app = mach.file(null, {
       root: __dirname,
       index: [ 'index.html', filename ]
     });
