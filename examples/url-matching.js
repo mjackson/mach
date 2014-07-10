@@ -11,13 +11,13 @@ app.get('/b', function (request) {
   return '<a href="/c/' + Date.now() + '">go to c</a>';
 });
 
-app.get('/c/:id', function (request, id) {
+app.get('/c/:id', function (request) {
   return JSON.stringify({
     method: request.method,
     path: request.path,
     url: request.url,
     headers: request.headers,
-    id: id
+    id: request.params.id
   }, null, 2);
 });
 

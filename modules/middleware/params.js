@@ -1,5 +1,6 @@
 var requestEntityTooLarge = require('../index').requestEntityTooLarge;
 var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
+var mergeProperties = require('../utils/mergeProperties');
 
 /**
  * Automatically parses all request parameters and stores them in the `params`
@@ -29,19 +30,23 @@ function parseParams(app, options) {
   var uploadPrefix = options.uploadPrefix;
 
   return function (request) {
-    if (request.params)
-      return request.call(app); // Don't overwrite existing params.
+    return request.getParams(maxLength, uploadPrefix).then(function (params) {
 
-    return request.getParams(maxLength, uploadPrefix)
-      .then(function (params) {
+      if (request.params) {
+        // If the request already has params, they're probably
+        // from the route. Content params take lower precedence.
+        request.params = mergeProperties(params, request.params);
+      } else {
         request.params = params;
-        return request.call(app);
-      }, function (error) {
-        if (error instanceof MaxLengthExceededError)
-          return requestEntityTooLarge();
+      }
 
-        throw error;
-      });
+      return request.call(app);
+    }, function (error) {
+      if (error instanceof MaxLengthExceededError)
+        return requestEntityTooLarge();
+
+      throw error;
+    });
   };
 }
 

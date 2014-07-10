@@ -40,14 +40,16 @@ app.get('/', function (request) {
   return "Hello world!";
 });
 
-app.get('/posts/:postId.json', function (request, postId) {
-  return query('SELECT * FROM posts WHERE id=?', postId).then(function (post) {
+app.get('/posts/:postID.json', function (request) {
+  var postID = request.params.postID;
+  return query('SELECT * FROM posts WHERE id=?', postID).then(function (post) {
     return post ? mach.json(post) : 404;
   });
 });
 
-app.post('/posts/:postId/comments', function (request, postId) {
-  return createComment(postId, request.params).then(function (comment) {
+app.post('/posts/:postID/comments', function (request) {
+  var postID = request.params.postID;
+  return createComment(postID, request.params).then(function (comment) {
     return mach.json(comment, 201);
   }, function (error) {
     return mach.json({ error: error.message }, 403);

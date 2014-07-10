@@ -1,5 +1,9 @@
 ### HEAD
 
+  * Add route parameters to request.params instead of passing them
+    as extra arguments to apps. This cleans up the API by allowing
+    us to remove Request#apply completely and also tightens up the
+    spec by forcing all apps to have the exact same method signature
   * Add onPart argument to multipart.Parser
   * Removed dependency on microtime module (issue #19)
   * Replace mach.urlMap with mach.map

@@ -1,22 +1,15 @@
 require('./helper');
 
+var UNDEF = '__UNDEFINED__';
+
 describe('mach.router', function () {
   var app = mach.router();
-  var innerApp = function (request) {
-    var extraArgs = Array.prototype.slice.call(arguments, 1);
 
-    return {
-      headers: {
-        'X-Args': JSON.stringify(extraArgs)
-      }
-    };
-  };
-
-  app.route(/\/users\/(\d+)/i, innerApp);
-  app.route('/posts/:id', 'GET', innerApp);
-  app.route('/posts/:id', [ 'POST', 'DELETE' ], innerApp);
-  app.route('/feeds/:id.?:format?', innerApp);
-  app.route('/files/*.*', innerApp);
+  app.route('/posts/:id', 'GET', stringifyParams);
+  app.route('/posts/:id', [ 'POST', 'DELETE' ], stringifyParams);
+  app.route('/feeds/:id.?:format?', stringifyParams);
+  app.route('/files/*.*', stringifyParams);
+  app.route(/\/users\/(\d+)/i, stringifyParams);
 
   describe('when a match cannot be made', function () {
     beforeEach(function () {
@@ -28,25 +21,13 @@ describe('mach.router', function () {
     });
   });
 
-  describe('GET /users/1', function () {
-    beforeEach(function () {
-      return callApp(app, '/users/1');
-    });
-
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '1' ]);
-    });
-  });
-
   describe('GET /posts/1', function () {
     beforeEach(function () {
       return callApp(app, '/posts/1');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '1' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ id: '1' });
     });
   });
 
@@ -55,9 +36,8 @@ describe('mach.router', function () {
       return callApp(app, { method: 'POST', path: '/posts/2' });
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '2' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ id: '2' });
     });
   });
 
@@ -66,9 +46,8 @@ describe('mach.router', function () {
       return callApp(app, { method: 'DELETE', path: '/posts/3' });
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '3' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ id: '3' });
     });
   });
 
@@ -77,9 +56,8 @@ describe('mach.router', function () {
       return callApp(app, '/feeds/5');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '5', null ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ id: '5', format: UNDEF });
     });
   });
 
@@ -88,9 +66,8 @@ describe('mach.router', function () {
       return callApp(app, '/feeds/5.html');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '5', 'html' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ id: '5', format: 'html' });
     });
   });
 
@@ -99,9 +76,8 @@ describe('mach.router', function () {
       return callApp(app, '/files/feed.xml');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ 'feed', 'xml' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ splat: [ 'feed', 'xml' ] });
     });
   });
 
@@ -110,9 +86,8 @@ describe('mach.router', function () {
       return callApp(app, '/files/feed.');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ 'feed', '' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ splat: [ 'feed', '' ] });
     });
   });
 
@@ -121,9 +96,8 @@ describe('mach.router', function () {
       return callApp(app, '/files/.xml');
     });
 
-    it('calls the correct app', function () {
-      assert(lastResponse.headers['X-Args']);
-      expect(JSON.parse(lastResponse.headers['X-Args'])).toEqual([ '', 'xml' ]);
+    it('has the correct params', function () {
+      expect(lastParams()).toEqual({ splat: [ '', 'xml' ] });
     });
   });
 
@@ -136,4 +110,29 @@ describe('mach.router', function () {
       expect(lastResponse.status).toEqual(404);
     });
   });
+
+  describe('GET /users/1', function () {
+    beforeEach(function () {
+      return callApp(app, '/users/1');
+    });
+
+    it('has the correct params', function () {
+      // Regular expressions don't have named parameters.
+      expect(lastParams()).toEqual({});
+    });
+  });
 });
+
+function lastParams() {
+  assert(lastResponse.buffer);
+  return JSON.parse(lastResponse.buffer);
+}
+
+function stringifyParams(request) {
+  return JSON.stringify(request.params, function (key, value) {
+    if (value === undefined)
+      return UNDEF; // so we can test for undefined
+
+    return value;
+  });
+}

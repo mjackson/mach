@@ -3,6 +3,10 @@ expect = require('expect');
 mach = require('../modules');
 var utils = mach.utils;
 
+refute = function (condition, message) {
+  assert(!condition, message);
+};
+
 // This global holds the response to the last request made via callApp.
 lastResponse = null;
 

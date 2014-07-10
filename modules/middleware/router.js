@@ -1,11 +1,12 @@
 var defaultApp = require('../index').defaultApp;
 var compileRoute = require('../utils/compileRoute');
 var isRegExp = require('../utils/isRegExp');
+var mergeProperties = require('../utils/mergeProperties');
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
- * support for restricting matches to a specific request method. Passes segments
- * of the URL that were matched as additional arguments to the given app.
+ * support for restricting matches to a specific request method. Named segments
+ * of the URL are added to request.params and take precedence over all others.
  *
  *   var app = mach.router();
  *
@@ -18,11 +19,12 @@ var isRegExp = require('../utils/isRegExp');
  *   });
  *
  *   app.post('/login', function (request) {
- *     // login logic goes here...
+ *     // ...
  *   });
  *
- *   app.get('/users/:userId', function (request, userId) {
- *     // find the user with the given userId...
+ *   app.get('/users/:userID', function (request) {
+  *    var userID = request.params.userID;
+ *     // ...
  *   });
  *
  *   mach.serve(app);
@@ -47,12 +49,43 @@ Router.prototype.apply = function (request) {
     route = routesToTry[i];
 
     // Try to match the route.
-    if (match = route.pattern.exec(request.pathInfo))
-      return request.apply(route.app, Array.prototype.slice.call(match, 1));
+    if (match = route.pattern.exec(request.pathInfo)) {
+      var params = makeParams(route.keys, Array.prototype.slice.call(match, 1));
+
+      if (request.params) {
+        // Route params take precedence above all others.
+        mergeProperties(request.params, params);
+      } else {
+        request.params = params;
+      }
+
+      return request.call(route.app);
+    }
   }
 
   return request.call(this._app);
 };
+
+function makeParams(keys, values) {
+  return keys.reduce(function (params, key, index) {
+    var value = values[index];
+
+    if (key === 'splat') {
+      if (Array.isArray(params.splat)) {
+        params.splat.push(value);
+      } else if ('splat' in params) {
+        // Multiple "splat" keys make an array.
+        params.splat = [ params.splat, value ];
+      } else {
+        params.splat = value;
+      }
+    } else {
+      params[key] = value;
+    }
+
+    return params;
+  }, {});
+}
 
 /**
  * Sets the given app as the default for this router.
@@ -80,14 +113,16 @@ Router.prototype.route = function (pattern, methods, app) {
   if (!Array.isArray(methods))
     methods = [ 'ANY' ];
 
+  var keys = [];
+
   if (typeof pattern === 'string')
-    pattern = compileRoute(pattern);
+    pattern = compileRoute(pattern, keys);
 
   if (!isRegExp(pattern))
     throw new Error('Pattern must be a RegExp');
 
+  var route = { pattern: pattern, keys: keys, app: app };
   var routes = this._routes;
-  var route = { pattern: pattern, app: app };
 
   methods.forEach(function (method) {
     var upperMethod = method.toUpperCase();

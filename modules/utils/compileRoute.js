@@ -6,18 +6,29 @@ var escapeRegExp = require('./escapeRegExp');
  * valid JavaScript identifier (e.g. ":name", ":_name", or ":$name" are all
  * valid keys). If the route contains the special "*" symbol, it is substituted
  * with a "(.*?)" pattern in the resulting RegExp.
+ *
+ * If the keys array is supplied, it is populated with the names of all keys.
+ *
+ * Note: Any "." characters are escaped since they are commonly used in file
+ * names. Also, "(" and ")" are escaped so they may not create captures in the
+ * resulting RegExp.
  */
-function compileRoute(route) {
-  var pattern = route.replace(/((:[a-z_$][a-z0-9_$]*)|[*.+()])/ig, function (match) {
+function compileRoute(route, keys) {
+  var pattern = route.replace(/:([a-zA-Z_$][a-zA-Z0-9_$]*)|[*.()]/g, function (match, key) {
     switch (match) {
     case '*':
+      if (keys)
+        keys.push('splat');
+
       return '(.*?)';
     case '.':
-    case '+':
     case '(':
     case ')':
       return escapeRegExp(match);
     }
+
+    if (keys)
+      keys.push(key);
 
     return '([^./?#]+)';
   });
