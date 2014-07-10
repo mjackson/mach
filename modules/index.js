@@ -430,8 +430,8 @@ exports.defaultApp = function (request) {
  *
  *   });
  */
-exports.map = function (map) {
-  var mapper = exports.mapper();
+exports.map = function (map, defaultApp) {
+  var mapper = exports.mapper(defaultApp);
 
   for (var location in map) {
     if (map.hasOwnProperty(location))
