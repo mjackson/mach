@@ -28,3 +28,4 @@ exports.stringifyError                            = require('./stringifyError'),
 exports.stringifyMediaValue                       = require('./stringifyMediaValue'),
 exports.stringifyMediaValues                      = require('./stringifyMediaValues'),
 exports.stringifyMediaValueWithoutQualityFactor   = require('./stringifyMediaValueWithoutQualityFactor')
+exports.stringifyQuery                            = require('./stringifyQuery');

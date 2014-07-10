@@ -10,8 +10,6 @@ beforeEach(function () {
   lastResponse = null;
 });
 
-var queryString = require('querystring');
-
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
   options = options || {};
@@ -30,10 +28,12 @@ callApp = function (app, options, leaveBuffer) {
 
   // Params may be given as an object.
   if (options.params) {
-    var encodedParams = queryString.stringify(options.params);
+    var encodedParams = utils.stringifyQuery(options.params);
 
     if (options.method === 'POST' || options.method === 'PUT') {
-      if (!options.headers) options.headers = {};
+      if (!options.headers)
+        options.headers = {};
+
       options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
       options.content = encodedParams;
     } else {
@@ -49,11 +49,14 @@ callApp = function (app, options, leaveBuffer) {
   return request.call(app).then(function (response) {
     lastResponse = response;
 
-    // Automatically buffer response streams for convenience in tests that
-    // need to test the response content.
+    // Automatically buffer response streams for convenience
+    // in tests that need to test the response content.
     return utils.bufferStream(response.content).then(function (buffer) {
-      if (!leaveBuffer) buffer = buffer.toString();
+      if (!leaveBuffer)
+        buffer = buffer.toString();
+
       lastResponse.buffer = buffer;
+
       return lastResponse;
     });
   });
