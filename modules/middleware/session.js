@@ -65,7 +65,7 @@ function Session(app, options) {
   this._app = app;
 }
 
-Session.prototype.apply = function (request) {
+Session.prototype.call = function (request) {
   var app = this._app;
   var cookieName = this._name;
   var expireAfter = this._expireAfter;

@@ -59,7 +59,7 @@ function Stack(app) {
   this._lastCompiled = 0;
 }
 
-Stack.prototype.apply = function (request) {
+Stack.prototype.call = function (request) {
   var app = this._compiledApp;
   var numLayers = this._layers.length;
 

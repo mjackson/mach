@@ -39,7 +39,7 @@ function Router(app) {
   this._routes = {};
 }
 
-Router.prototype.apply = function (request) {
+Router.prototype.call = function (request) {
   var routes = this._routes;
   var method = request.method;
   var routesToTry = (routes[method] || []).concat(routes.ANY || []);

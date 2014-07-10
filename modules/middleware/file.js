@@ -53,7 +53,7 @@ function File(app, options) {
 
 var path = require('path');
 
-File.prototype.apply = function (request) {
+File.prototype.call = function (request) {
   var method = request.method;
   if (method !== 'GET' && method !== 'HEAD')
     return request.call(this._app);

@@ -31,7 +31,7 @@ function Mapper(app) {
   this._mappings = [];
 }
 
-Mapper.prototype.apply = function (request) {
+Mapper.prototype.call = function (request) {
   var mappings = this._mappings;
   var scriptName = request.scriptName;
   var pathInfo = request.pathInfo;

@@ -114,20 +114,15 @@ Request.parseMediaTypes = Request.formMediaTypes.concat([
 ]);
 
 /**
- * Calls the given `app` with this request as the first argument and any extra
- * arguments in the given array. Returns a promise for a response object with
- * three properties: `status`, `headers`, and `content`.
+ * Calls the given `app` with in the scope of this request with this request
+ * as the first argument as well. Returns a promise for a response object with
+ * `status`, `headers`, and `content` properties.
  *
  * Note: The `content` will always be a Readable stream.
  */
-Request.prototype.apply = function (app, extraArgs) {
-  var args = [ this ];
-
-  if (extraArgs)
-    args.push.apply(args, extraArgs);
-
+Request.prototype.call = function (app) {
   try {
-    var response = app.apply(this, args);
+    var response = app.call(this, this);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -160,20 +155,6 @@ Request.prototype.apply = function (app, extraArgs) {
 
     return response;
   });
-};
-
-/**
- * Calls the given `app` with this request as the first argument and any extra
- * arguments given. Returns a promise for a response object with three properties:
- * `status`, `headers`, and `content`.
- *
- * Note: The `content` will always be a Readable stream.
- */
-Request.prototype.call = function (app) {
-  if (arguments.length > 1)
-    return this.apply(app, Array.prototype.slice.call(arguments, 1));
-
-  return this.apply(app);
 };
 
 /**

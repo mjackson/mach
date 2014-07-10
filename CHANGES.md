@@ -4,6 +4,9 @@
     as extra arguments to apps. This cleans up the API by allowing
     us to remove Request#apply completely and also tightens up the
     spec by forcing all apps to have the exact same method signature
+  * Removed Request#apply interface
+  * App interface is app.call(request, request) instead of
+    app.apply(request, args)
   * Add onPart argument to multipart.Parser
   * Removed dependency on microtime module (issue #19)
   * Replace mach.urlMap with mach.map
