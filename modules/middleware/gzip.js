@@ -12,7 +12,10 @@ function gzip(app, options) {
       if (!shouldGzipContentType(headers['Content-Type']) || !request.acceptsEncoding('gzip'))
         return response;
 
-      response.content = response.content.pipe(zlib.createGzip(options));
+      var content = response.content;
+      response.content = content.pipe(zlib.createGzip(options));
+
+      content.resume();
 
       headers['Content-Encoding'] = 'gzip';
       headers['Vary'] = 'Accept-Encoding';

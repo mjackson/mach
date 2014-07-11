@@ -14,6 +14,8 @@ beforeEach(function () {
   lastResponse = null;
 });
 
+var Stream = require('bufferedstream');
+
 // For convenience in calling apps in tests.
 callApp = function (app, options, leaveBuffer) {
   options = options || {};
@@ -55,7 +57,7 @@ callApp = function (app, options, leaveBuffer) {
 
     // Automatically buffer response streams for convenience
     // in tests that need to test the response content.
-    return utils.bufferStream(response.content).then(function (buffer) {
+    return response.bufferContent().then(function (buffer) {
       if (!leaveBuffer)
         buffer = buffer.toString();
 
@@ -66,36 +68,10 @@ callApp = function (app, options, leaveBuffer) {
   });
 };
 
-var Stream = require('stream');
-
-fakeStream = function (target) {
-  target.data = '';
-
-  var stream = Object.create(Stream.prototype);
-  stream.writable = true;
-  stream.write = function (chunk, encoding) {
-    if (typeof chunk === 'string') {
-      target.data += chunk;
-    } else if (encoding) {
-      target.data += chunk.toString(encoding);
-    } else {
-      target.data += chunk.toString();
-    }
-  };
-
-  return stream;
-};
-
 var path = require('path');
 var _files = path.join(__dirname, '_files');
 
 specFile = function () {
   var pieces = Array.prototype.slice.call(arguments, 0);
   return path.join.apply(path, [ _files ].concat(pieces));
-};
-
-var util = require('util');
-
-debug = function (object) {
-  console.log(util.inspect(object, { depth: null, colors: true }))
 };

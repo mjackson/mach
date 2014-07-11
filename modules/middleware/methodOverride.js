@@ -1,3 +1,5 @@
+var normalizeHeaderName = require('../utils/normalizeHeaderName');
+
 /**
  * Overrides the method of the request to a value that was given in either
  * a request parameter or a request header. Can be useful when you need to use
@@ -38,14 +40,14 @@ function methodOverride(app, options) {
     options = { paramName: options };
 
   var paramName = options.paramName || '_method';
-  var headerName = (options.headerName || 'X-Http-Method-Override').toLowerCase();
+  var headerName = normalizeHeaderName(options.headerName || 'X-Http-Method-Override');
 
   return function (request) {
     var method;
     if (request.headers[headerName]) {
       method = request.headers[headerName];
     } else if (!request.params) {
-      request.error.write('No request params. Use mach.params in front of mach.methodOverride\n');
+      request.onError('No request params. Use mach.params in front of mach.methodOverride');
     } else if (request.params[paramName]) {
       method = request.params[paramName];
 

@@ -1,13 +1,22 @@
 require('./helper');
 var multipart = mach.multipart;
 
-var fs = require('fs');
-var parts;
+function partHandler(part) {
+  return part.bufferContent().then(function (chunk) {
+    part.buffer = chunk;
+    return part;
+  });
+}
+
+var fs = require('fs'), parts;
+
 function beforeEachParseFixture(fixtureName, boundary) {
   boundary = boundary || 'AaB03x';
   beforeEach(function () {
     var buffer = fs.readFileSync(specFile(fixtureName));
-    parts = multipart.parse(buffer, boundary);
+    return multipart.parse(buffer, boundary, partHandler).then(function (object) {
+      parts = object;
+    });
   });
 }
 
@@ -57,7 +66,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'image/png');
+        assert.equal(parts.files.contentType, 'image/png');
       });
 
       it("correctly parses the file's contents", function () {
@@ -82,7 +91,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'text/plain');
+        assert.equal(parts.files.contentType, 'text/plain');
       });
 
       it("correctly parses the file's contents", function () {
@@ -101,7 +110,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'text/plain');
+        assert.equal(parts.files.contentType, 'text/plain');
       });
 
       it("correctly parses the file's contents", function () {
@@ -143,7 +152,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'application/octet-stream');
+        assert.equal(parts.files.contentType, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
@@ -162,7 +171,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'application/octet-stream');
+        assert.equal(parts.files.contentType, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
@@ -181,7 +190,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'application/octet-stream');
+        assert.equal(parts.files.contentType, 'application/octet-stream');
       });
 
       it("correctly parses the file's contents", function () {
@@ -200,7 +209,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'image/jpeg');
+        assert.equal(parts.files.contentType, 'image/jpeg');
       });
 
       it("correctly parses the file's contents", function () {
@@ -219,7 +228,7 @@ describe('multipart', function () {
 
       it('correctly parses the file content type', function () {
         assert(parts.files);
-        assert.equal(parts.files.type, 'image/jpeg');
+        assert.equal(parts.files.contentType, 'image/jpeg');
       });
 
       it("correctly parses the file's contents", function () {

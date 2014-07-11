@@ -1,3 +1,4 @@
+var Stream = require('bufferedstream');
 var Part = require('./Part');
 
 // This parser is modified from the one in the node-formidable
@@ -39,16 +40,15 @@ function Parser(boundary, partHandler) {
   this.boundaryChars = {};
 
   var i = this.boundary.length;
-  while (i) {
+  while (i)
     this.boundaryChars[this.boundary[--i]] = true;
-  }
 
   this.state = S.START;
   this.index = null;
   this.flags = 0;
 
   if (typeof partHandler !== 'function')
-    throw new Error('multipart.Parser requires a callback to handle parts');
+    throw new Error('multipart.Parser needs a part handler');
 
   this.onPart = partHandler;
 }
@@ -254,9 +254,8 @@ Parser.prototype.execute = function (buffer) {
 };
 
 Parser.prototype.finish = function () {
-  if (this.state !== S.END) {
+  if (this.state !== S.END)
     throw new Error('Stream ended unexpectedly (state: ' + this.state + ')');
-  }
 };
 
 Parser.prototype._mark = function (name, i) {
@@ -268,15 +267,13 @@ Parser.prototype._clear = function (name) {
 };
 
 Parser.prototype._callback = function (name, buffer, start, end) {
-  if (start !== undefined && start === end) {
+  if (start !== undefined && start === end)
     return;
-  }
 
   var prop = 'on' + name.substr(0, 1).toUpperCase() + name.substr(1);
 
-  if (prop in this) {
+  if (prop in this)
     this[prop](buffer, start, end);
-  }
 };
 
 Parser.prototype._dataCallback = function (name, buffer, clear, i) {
@@ -294,7 +291,8 @@ Parser.prototype._dataCallback = function (name, buffer, clear, i) {
 };
 
 Parser.prototype.onPartBegin = function () {
-  this._part = new Part();
+  this._stream = new Stream;
+  this._part = new Part(this._stream);
   this._headerName = '';
   this._headerValue = '';
 };
@@ -308,7 +306,7 @@ Parser.prototype.onHeaderValue = function (buffer, start, end) {
 };
 
 Parser.prototype.onHeaderEnd = function () {
-  this._part.headers[this._headerName.toLowerCase()] = this._headerValue;
+  this._part.setHeader(this._headerName, this._headerValue);
   this._headerName = '';
   this._headerValue = '';
 };
@@ -318,11 +316,11 @@ Parser.prototype.onHeadersEnd = function () {
 };
 
 Parser.prototype.onPartData = function (buffer, start, end) {
-  this._part.content.emit('data', buffer.slice(start, end));
+  this._stream.write(buffer.slice(start, end));
 };
 
 Parser.prototype.onPartEnd = function () {
-  this._part.content.emit('end');
+  this._stream.end();
 };
 
 module.exports = Parser;

@@ -40,7 +40,7 @@ function basicAuth(app, options) {
     if (request.remoteUser)
       return request.call(app); // Don't overwrite existing remoteUser.
 
-    var authorization = request.headers.authorization;
+    var authorization = request.headers['Authorization'];
     if (!authorization)
       return unauthorized(options.realm);
 

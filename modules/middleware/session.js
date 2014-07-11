@@ -2,7 +2,6 @@ var Promise = require('bluebird');
 var CookieStore = require('./session/CookieStore');
 var decodeBase64 = require('../utils/decodeBase64');
 var encodeBase64 = require('../utils/encodeBase64');
-var setCookie = require('../utils/setCookie');
 
 var MAX_COOKIE_SIZE = 4096;
 
@@ -88,7 +87,7 @@ Session.prototype.call = function (request) {
         if (newCookie === cookie && !expires)
           return response;
 
-        setCookie(response.headers, cookieName, {
+        response.setCookie(cookieName, {
           value: newCookie,
           path: self._path,
           domain: self._domain,
@@ -99,12 +98,12 @@ Session.prototype.call = function (request) {
 
         return response;
       }, function (error) {
-        request.error.write('Error encoding session data: ' + error);
+        request.onError('Error encoding session data: ' + error);
         return response;
       });
     });
   }, function (error) {
-    request.error.write('Error decoding session data: ' + error);
+    request.onError('Error decoding session data: ' + error);
     return request.call(app);
   });
 };

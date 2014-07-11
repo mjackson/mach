@@ -1,89 +1,80 @@
-var Content = require('./Content');
+var d = require('d');
+var Message = require('../Message');
 
 /**
- * A container class for data pertaining to one part of a multipart message.
+ * Part of a multipart HTTP message.
  */
 function Part() {
-  this.headers = {};
-  this.content = new Content;
+  Message.apply(this, arguments);
 }
 
-Part.prototype.on = function () {
-  console.warn('multipart.Part#on is deprecated and will not work in the next major release');
-  return this.content.on.apply(this.content, arguments);
-};
+Part.prototype = Object.create(Message.prototype, {
 
-/**
- * Returns the Content-Type of this part.
- */
-Part.prototype.__defineGetter__('type', function () {
-  return this.headers['content-type'] || null;
-});
+  constructor: d(Part),
 
-/**
- * Returns the Content-Type with any extra parameters stripped
- * (e.g. "text/plain;charset=utf-8" becomes "text/plain").
- */
-Part.prototype.__defineGetter__('mediaType', function () {
-  return (this.type || '').split(/\s*[;,]\s*/)[0].toLowerCase();
-});
+  /**
+   * The value of the Content-Disposition header.
+   */
+  contentDisposition: d.gs(function () {
+    return this.headers['Content-Disposition'];
+  }),
 
-/**
- * Returns the Content-Disposition of this part.
- */
-Part.prototype.__defineGetter__('disposition', function () {
-  return this.headers['content-disposition'] || null;
-});
+  /**
+   * The value of the Content-Id header.
+   */
+  contentID: d.gs(function () {
+    return this.headers['Content-Id'];
+  }),
 
-/**
- * Returns the name of this part.
- */
-Part.prototype.__defineGetter__('name', function () {
-  var disposition = this.disposition;
+  /**
+   * The filename of this part. This is usually present on parts that
+   * originated from a file upload.
+   */
+  filename: d.gs(function () {
+    var contentDisposition = this.contentDisposition;
 
-  var match;
-  if (disposition && (match = disposition.match(/name="([^"]+)"/i))) {
-    return match[1];
-  }
+    if (contentDisposition) {
+      var match = contentDisposition.match(/filename="([^;]*)"/i);
 
-  return this.headers['content-id'] || null;
-});
-
-/**
- * Returns the filename of this part if it originated from a file upload.
- */
-Part.prototype.__defineGetter__('filename', function () {
-  var disposition = this.disposition;
-
-  if (disposition) {
-    var match = disposition.match(/filename="([^;]*)"/i);
-
-    var filename;
-    if (match) {
-      filename = decodeURIComponent(match[1].replace(/\\"/g, '"'));
-    } else {
-      // Match unquoted filename.
-      match = disposition.match(/filename=([^;]+)/i);
+      var filename;
       if (match) {
-        filename = decodeURIComponent(match[1]);
+        filename = decodeURIComponent(match[1].replace(/\\"/g, '"'));
+      } else {
+        // Match unquoted filename.
+        match = contentDisposition.match(/filename=([^;]+)/i);
+
+        if (match)
+          filename = decodeURIComponent(match[1]);
+      }
+
+      if (filename) {
+        // Take the last part of the filename. This handles full Windows
+        // paths given by IE (and possibly other dumb clients).
+        return filename.substr(filename.lastIndexOf('\\') + 1);
       }
     }
+  }),
 
-    if (filename) {
-      // Take the last part of the filename. This handles full Windows
-      // paths given by IE (and possibly other dumb clients).
-      return filename.substr(filename.lastIndexOf('\\') + 1);
-    }
-  }
+  /**
+   * Returns true if this part represents a file upload.
+   */
+  isFile: d.gs(function () {
+    return this.filename != null;
+  }),
 
-  return null;
-});
+  /**
+   * The name of this part.
+   */
+  name: d.gs(function () {
+    var contentDisposition = this.contentDisposition;
 
-/**
- * Returns true if this part represents a file upload.
- */
-Part.prototype.__defineGetter__('isFile', function () {
-  return !!this.filename;
+    var match;
+    if (contentDisposition && (match = contentDisposition.match(/name="([^"]+)"/i)))
+      return match[1];
+
+    return this.contentID;
+  })
+
 });
 
 module.exports = Part;

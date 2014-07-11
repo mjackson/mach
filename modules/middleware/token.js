@@ -1,6 +1,16 @@
 var forbidden = require('../index').forbidden;
-var isSafeRequestMethod = require('../utils/isSafeRequestMethod');
 var makeToken = require('../utils/makeToken');
+
+/**
+ * The set of HTTP request methods that are considered safe because they
+ * do not alter server data.
+ */
+var SAFE_METHODS = {
+  GET: true,
+  HEAD: true,
+  OPTIONS: true,
+  TRACE: true
+};
 
 /**
  * A middleware that helps to prevent Cross-site Request Forgery attacks by
@@ -56,9 +66,9 @@ function verifyToken(app, options) {
     var params = request.params;
 
     if (!session) {
-      request.error.write('No request session. Use mach.session in front of mach.token\n');
+      request.onError('No request session. Use mach.session in front of mach.token');
     } else if (!params) {
-      request.error.write('No request params. Use mach.params in front of mach.token\n');
+      request.onError('No request params. Use mach.params in front of mach.token');
     } else {
       // Get the session token, creating a new one if needed.
       var token = session[sessionKey];
@@ -71,7 +81,7 @@ function verifyToken(app, options) {
 
     // If the request is not a POST we assume it's not a form submission
     // and therefore not modifying anything. Pass it downstream.
-    if (isSafeRequestMethod(request.method))
+    if (SAFE_METHODS[request.method] === true)
       return request.call(app);
 
     return forbidden();

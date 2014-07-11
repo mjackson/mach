@@ -1,28 +1,35 @@
 var fs = require('fs');
 var Promise = require('bluebird');
+var getByteLength = require('./getByteLength');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
 function streamToDisk(part, filePrefix) {
   return new Promise(function (resolve, reject) {
+    var content = part.content;
     var path = makeTemporaryPath(filePrefix);
     var stream = fs.createWriteStream(path);
     var size = 0;
 
-    part.content.on('data', function (chunk) {
-      size += chunk.length;
+    content.on('error', reject);
+
+    content.on('data', function (chunk) {
+      size += getByteLength(chunk);
       stream.write(chunk);
     });
 
-    part.content.on('end', function () {
+    content.on('end', function () {
       stream.end(function () {
         resolve({
           path: path,
           name: part.filename,
-          type: part.type,
+          type: part.contentType,
           size: size
         });
       });
     });
+
+    if (typeof content.resume === 'function')
+      content.resume();
   });
 }
 

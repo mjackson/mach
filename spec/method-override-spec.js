@@ -22,12 +22,16 @@ describe('methodOverride', function () {
     });
 
     describe('but the params middleware is not in front', function () {
-      var error;
+      var errors, errorHandler;
       beforeEach(function () {
-        error = {};
+        errors = [];
+        errorHandler = function (errorMessage) {
+          errors.push(errorMessage);
+        };
+
         return callApp(app, {
           params: { '_method': 'PUT' },
-          error: fakeStream(error)
+          onError: errorHandler
         });
       });
 
@@ -35,8 +39,8 @@ describe('methodOverride', function () {
         expect(lastResponse.buffer).toEqual('GET');
       });
 
-      it('writes to the error stream', function () {
-        expect(error.data).toEqual('No request params. Use mach.params in front of mach.methodOverride\n');
+      it('generates an error message', function () {
+        expect(errors[0]).toEqual('No request params. Use mach.params in front of mach.methodOverride');
       });
     });
   });

@@ -1,3 +1,21 @@
+### HEAD
+
+Breaking changes:
+
+  * All HTTP header names are normalized by default according to RFC 2616
+  * mach.Request expects an error message handler function, not a stream
+  * mach.Request no longer emits "close" events. Use onClose instead
+  * mach.logger expects a log message handler function, not a stream
+
+Improvements:
+
+  * Add mach.Message base class for mach.Request
+  * Add mach.Response that also subclasses mach.Message
+  * Make multipart.Part subclass mach.Message
+  * Always use BufferedStream for message content
+  * Add bufferContent/stringifyContent to Request
+  * Request#call always returns a Response
+
 ### 0.12.0 / 2014-07-17
 
   * mach.stack respects ordering of routes as well as mappings

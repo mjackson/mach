@@ -7,12 +7,12 @@
 function modified(app) {
   return function (request) {
     var checkEtag;
-    var ifNoneMatch = request.headers['if-none-match'];
+    var ifNoneMatch = request.headers['If-None-Match'];
     if (ifNoneMatch)
       checkEtag = stripQuotes(ifNoneMatch);
 
     var checkLastModified;
-    var ifModifiedSince = request.headers['if-modified-since'];
+    var ifModifiedSince = request.headers['If-Modified-Since'];
     if (ifModifiedSince)
       checkLastModified = Date.parse(ifModifiedSince);
 
@@ -41,11 +41,9 @@ function modified(app) {
   };
 }
 
-var NO_CONTENT = new Buffer(0);
-
 function notModifiedResponse(response) {
   response.status = 304;
-  response.content = NO_CONTENT;
+  response.content = '';
   return response;
 }
 

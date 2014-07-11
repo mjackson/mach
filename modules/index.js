@@ -4,11 +4,6 @@
 exports.version = require('../package').version;
 
 /**
- * The default port to use in mach.serve.
- */
-exports.defaultPort = 3333;
-
-/**
  * A map of HTTP status codes to their descriptions.
  */
 exports.STATUS_CODES = {
@@ -68,201 +63,6 @@ exports.STATUS_CODES = {
   509: 'Bandwidth Limit Exceeded',
   510: 'Not Extended',                     // RFC 2774
   511: 'Network Authentication Required'   // RFC 6585
-};
-
-/**
- * HTTP status codes that don't have entities.
- */
-exports.STATUS_WITHOUT_CONTENT = {
-  100: true,
-  101: true,
-  204: true,
-  304: true
-};
-
-var stringifyError = require('./utils/stringifyError');
-
-/**
- * Binds the given app to the "request" event of the given server so that it
- * is called whenever the server receives a new request.
- */
-exports.bind = function (app, nodeServer) {
-  var address = nodeServer.address();
-
-  if (!address)
-    throw new Error('Cannot bind to server that is not listening');
-
-  var serverName, serverPort;
-  if (typeof address === 'string') {
-    serverName = address;
-    serverPort = 0;
-  } else {
-    serverName = address.address;
-    serverPort = address.port;
-  }
-
-  // Allow setting serverName via the SERVER_NAME environment variable.
-  if (process.env.SERVER_NAME)
-    serverName = process.env.SERVER_NAME;
-
-  function requestHandler(nodeRequest, nodeResponse) {
-    var request = makeRequest(nodeRequest, serverName, serverPort);
-
-    request.call(app).then(function (response) {
-      var isHead = request.method === 'HEAD';
-      var isEmpty = isHead || exports.STATUS_WITHOUT_CONTENT[response.status] === true;
-
-      var headers = response.headers;
-
-      if (isEmpty && !isHead)
-        headers['Content-Length'] = 0;
-
-      if (!headers['Date'])
-        headers['Date'] = (new Date).toUTCString();
-
-      nodeResponse.writeHead(response.status, headers);
-
-      var content = response.content;
-
-      if (isEmpty) {
-        nodeResponse.end();
-
-        if (typeof content.destroy === 'function')
-          content.destroy();
-      } else {
-        content.pipe(nodeResponse);
-      }
-    }, function (error) {
-      request.error.write(stringifyError(error) + '\n');
-      nodeResponse.writeHead(500, { 'Content-Type': 'text/plain' });
-      nodeResponse.end('Internal Server Error');
-    });
-  }
-
-  nodeServer.on('request', requestHandler);
-
-  return requestHandler;
-};
-
-var Request = require('./Request');
-var parseURL = require('./utils/parseURL');
-
-function makeRequest(nodeRequest, serverName, serverPort) {
-  var url = parseURL(nodeRequest.url);
-  var request = new Request({
-    protocolVersion: nodeRequest.httpVersion,
-    method: nodeRequest.method,
-    remoteHost: nodeRequest.connection.remoteAddress,
-    remotePort: nodeRequest.connection.remotePort,
-    serverName: serverName,
-    serverPort: serverPort,
-    pathInfo: url.pathname,
-    queryString: url.query || '',
-    headers: nodeRequest.headers,
-    content: nodeRequest
-  });
-
-  nodeRequest.on('close', function () {
-    request.emit('close');
-  });
-
-  return request;
-}
-
-var http = require('http');
-var https = require('https');
-
-/**
- * Creates and starts a node HTTP server that serves the given app. Options may
- * be any of the following:
- *
- *   - host     The host name to accept connections on. Defaults to INADDR_ANY
- *   - port     The port to listen on. Defaults to mach.defaultPort
- *   - socket   Unix socket file to listen on (trumps host/port)
- *   - quiet    Set true to prevent the server from writing startup/shutdown
- *              messages to the console. Defaults to false
- *   - timeout  The timeout to use when gracefully shutting down servers when
- *              SIGINT or SIGTERM are received. If a server doesn't close within
- *              this time (probably because it has open persistent connections)
- *              it is forecefully stopped when the process exits. Defaults to 100,
- *              meaning that servers forcefully shutdown after 100ms
- *   - key      Private key to use for SSL (HTTPS only)
- *   - cert     Public X509 certificate to use (HTTPS only)
- *
- * Note: When setting the timeout, be careful not to exceed any hard timeouts
- * specified by your PaaS. For example, Heroku's dyno manager will not permit
- * a timeout longer than ten seconds. See
- * https://devcenter.heroku.com/articles/dynos#graceful-shutdown-with-sigterm
- *
- * Returns the newly created HTTP server instance.
- */
-exports.serve = function (app, options) {
-  options = options || {};
-
-  if (typeof options === 'number') {
-    options = { port: options };
-  } else if (typeof options === 'string') {
-    options = { socket: options };
-  }
-
-  var nodeServer;
-  if (options.key && options.cert) {
-    nodeServer = https.createServer({ key: options.key, cert: options.cert });
-  } else {
-    nodeServer = http.createServer();
-  }
-
-  function shutdown() {
-    if (!options.quiet)
-      console.log('>> Shutting down...');
-
-    // Force the process to exit if the server doesn't
-    // close all connections within the given timeout.
-    var timer = setTimeout(function () {
-      if (!options.quiet)
-        console.log('>> Exiting');
-
-      process.exit(0);
-    }, options.timeout || 100);
-
-    // Don't let this timer keep the event loop running.
-    timer.unref();
-
-    nodeServer.close();
-  }
-
-  nodeServer.once('listening', function () {
-    exports.bind(app, nodeServer);
-
-    process.once('SIGINT', shutdown);
-    process.once('SIGTERM', shutdown);
-
-    if (!options.quiet) {
-      var address = nodeServer.address();
-      var message = '>> mach web server version ' + exports.version + ' started on node ' + process.versions.node + '\n';
-
-      if (typeof address === 'string') {
-        message += '>> Listening on ' + address;
-      } else {
-        message += '>> Listening on ' + address.address;
-
-        if (address.port)
-          message += ':' + address.port;
-      }
-
-      message += ', use CTRL+C to stop';
-
-      console.log(message);
-    }
-  });
-
-  if (options.socket) {
-    nodeServer.listen(options.socket);
-  } else {
-    nodeServer.listen(options.port || exports.defaultPort, options.host);
-  }
-
-  return nodeServer;
 };
 
 /**
@@ -352,6 +152,8 @@ exports.back = function (request, defaultLocation) {
   return exports.redirect(request.headers.referer || defaultLocation || '/');
 };
 
+var getByteLength = require('./utils/getByteLength');
+
 function textResponse(status, content) {
   content = content || exports.STATUS_CODES[status];
 
@@ -359,7 +161,7 @@ function textResponse(status, content) {
     status: status,
     headers: {
       'Content-Type': 'text/plain',
-      'Content-Length': Buffer.byteLength(content)
+      'Content-Length': getByteLength(content)
     },
     content: content
   };
@@ -452,11 +254,13 @@ var submodules = {
   gzip:             './middleware/gzip',
   logger:           './middleware/logger',
   mapper:           './middleware/mapper',
+  Message:          './Message',
   methodOverride:   './middleware/methodOverride',
   modified:         './middleware/modified',
   multipart:        './multipart',
   params:           './middleware/params',
   Request:          './Request',
+  Response:         './Response',
   rewrite:          './middleware/rewrite',
   router:           './middleware/router',
   session:          './middleware/session',
