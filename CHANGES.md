@@ -11,6 +11,8 @@
   * Removed dependency on microtime module (issue #19)
   * Replace mach.urlMap with mach.map
   * mach.file needs an app argument, same as other middleware
+  * Fixed a bug that prevented mach.mapper from matching when there
+    is no remaining path
 
 ### 0.10.1 / 2014-07-06
 

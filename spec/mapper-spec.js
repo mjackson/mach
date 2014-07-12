@@ -89,6 +89,25 @@ describe('mach.mapper', function () {
         expect(lastResponse.headers['Path-Info']).toEqual('/messages');
       });
     });
+
+    describe('and there is no remaining path', function () {
+      beforeEach(function () {
+        return callApp(app, '/one');
+      });
+
+      it('passes the request through to the mapping', function () {
+        assert(lastResponse);
+        expect(lastResponse.status).toEqual(200);
+      });
+
+      it('puts the matching portion of the URL in the scriptName variable', function () {
+        expect(lastResponse.headers['Script-Name']).toEqual('/one');
+      });
+
+      it('populates the pathInfo variable with /', function () {
+        expect(lastResponse.headers['Path-Info']).toEqual('/');
+      });
+    });
   });
 
 });

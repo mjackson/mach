@@ -55,7 +55,7 @@ Mapper.prototype.call = function (request) {
       continue;
 
     request.scriptName = scriptName + mapping.path;
-    request.pathInfo = remainingPath;
+    request.pathInfo = remainingPath || '/';
 
     return request.call(mapping.app);
   }
