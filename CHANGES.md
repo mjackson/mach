@@ -1,4 +1,4 @@
-### HEAD
+### 0.11.0 / 2014-07-11
 
   * Add route parameters to request.params instead of passing them
     as extra arguments to apps. This cleans up the API by allowing
