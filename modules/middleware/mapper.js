@@ -64,13 +64,6 @@ Mapper.prototype.call = function (request) {
 };
 
 /**
- * Sets the given app as the default for this mapper.
- */
-Mapper.prototype.run = function (app) {
-  this._app = app;
-};
-
-/**
  * Adds a new mapping that runs the given app when the location used in the
  * request matches the given location.
  */
@@ -107,5 +100,12 @@ Mapper.prototype.map = function (location, app) {
 function byMostSpecific(a, b) {
   return (b.path.length - a.path.length) || ((b.host || '').length - (a.host || '').length);
 }
+
+/**
+ * Sets the given app as the default for this mapper.
+ */
+Mapper.prototype.run = function (app) {
+  this._app = app;
+};
 
 module.exports = Mapper;

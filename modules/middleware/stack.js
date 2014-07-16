@@ -1,3 +1,5 @@
+var defaultApp = require('../index').defaultApp;
+var addRoutingMethods = require('../utils/addRoutingMethods');
 var Mapper = require('./mapper');
 var Router = require('./router');
 
@@ -11,21 +13,17 @@ var Router = require('./router');
  * along any additional arguments that it receives directly on to the middleware
  * when the stack is compiled.
  *
- * Other stacks can be created and "mounted" easily at various locations using the
- * `map` method. Calls to `use` and `map` are interleaved so that stacks created using
- * `map` only run after middleware that is placed before them in the stack, and not after.
- *
- * Stacks also have URL-based request routing built in when using a mach.router as the
- * downstream app, which is the default. Any routes that you define run *after* all other
- * middleware in the stack. Also, mapping takes precedence to routing so e.g. if a
- * route matches a mapped location it is ignored.
+ * Other stacks can be "mounted" easily at various locations using the `map`
+ * method. Routes can be added using `route`, `get`, `post`, etc. When a request
+ * is received, all middleware, mappings, and routes run in the order they are
+ * defined in the stack, top to bottom.
  *
  *   var app = mach.stack();
  *
  *   app.use(mach.gzip);
  *   app.use(mach.file, __dirname + '/public');
  *
- *   // Use a little image server to serve requests that begin
+ *   // Use an image server to serve requests that begin
  *   // with /images out of /public/img.
  *   app.map('/images', function (app) {
  *     app.use(mach.file, __dirname + '/public/img');
@@ -54,22 +52,15 @@ function Stack(app) {
   if (!(this instanceof Stack))
     return new Stack(app);
 
-  this._app = app || new Router;
+  this._app = app || defaultApp;
   this._layers = [];
-  this._lastCompiled = 0;
 }
 
 Stack.prototype.call = function (request) {
-  var app = this._compiledApp;
-  var numLayers = this._layers.length;
+  if (!this._compiledApp)
+    this._compiledApp = this._compile();
 
-  // Do we need to recompile?
-  if (!app || this._lastCompiled !== numLayers) {
-    app = this._compiledApp = this._compile();
-    this._lastCompiled = numLayers;
-  }
-
-  return request.call(app);
+  return request.call(this._compiledApp);
 };
 
 Stack.prototype._compile = function () {
@@ -77,7 +68,7 @@ Stack.prototype._compile = function () {
   var app = this._app;
 
   var index = layers.length;
-  while (index > 0)
+  while (index)
     app = layers[--index].call(this, app);
 
   return app;
@@ -86,16 +77,17 @@ Stack.prototype._compile = function () {
 /**
  * Declares that the given `middleware` should be used at the current point
  * in the stack. Any additional arguments to this function are passed along
- * to the middleware with the downstream app as the first argument when
- * the stack is compiled.
+ * to the middleware with the downstream app as the first argument when the
+ * stack is compiled.
  */
 Stack.prototype.use = function (middleware) {
   var middlewareArgs = Array.prototype.slice.call(arguments, 1);
 
   this._layers.push(function (app) {
-    this._mapper = null;
     return middleware.apply(null, [ app ].concat(middlewareArgs));
   });
+
+  this._compiledApp = null;
 };
 
 /**
@@ -109,28 +101,42 @@ Stack.prototype.map = function (location, callback) {
     if (typeof callback === 'function')
       callback(stack);
 
-    var mapper = this._mapper;
-    if (!mapper)
-      mapper = this._mapper = new Mapper(app);
+    if (!(app instanceof Mapper))
+      app = new Mapper(app);
 
-    mapper.map(location, stack);
+    app.map(location, stack);
 
-    return mapper;
+    return app;
   });
+
+  this._compiledApp = null;
 };
 
-[ 'run', 'route', 'get', 'post', 'put', 'patch', 'delete', 'head', 'options' ].forEach(function (methodName) {
-  Stack.prototype[methodName] = function () {
-    var app = this._app;
-    var method = app[methodName];
+/**
+ * Uses a Router to add a route that runs when the path used in the request
+ * matches the pattern. See Router#route.
+ */
+Stack.prototype.route = function (pattern, methods, routeApp) {
+  this._layers.push(function (app) {
+    if (!(app instanceof Router))
+      app = new Router(app);
 
-    // By default, the downstream app is a mach.router, so this should only
-    // ever happen when the user is doing something out of the ordinary.
-    if (typeof method !== 'function')
-      throw new Error('The downstream application for this stack does not support ' + methodName);
+    app.route(pattern, methods, routeApp);
 
-    return method.apply(app, arguments);
-  };
-});
+    return app;
+  });
+
+  this._compiledApp = null;
+};
+
+addRoutingMethods(Stack.prototype);
+
+/**
+ * Sets the given app as the default for this stack.
+ */
+Stack.prototype.run = function (app) {
+  this._app = app;
+  this._compiledApp = null;
+};
 
 module.exports = Stack;

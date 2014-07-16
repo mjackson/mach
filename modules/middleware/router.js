@@ -1,4 +1,5 @@
 var defaultApp = require('../index').defaultApp;
+var addRoutingMethods = require('../utils/addRoutingMethods');
 var compileRoute = require('../utils/compileRoute');
 var isRegExp = require('../utils/isRegExp');
 var mergeProperties = require('../utils/mergeProperties');
@@ -88,16 +89,9 @@ function makeParams(keys, values) {
 }
 
 /**
- * Sets the given app as the default for this router.
- */
-Router.prototype.run = function (app) {
-  this._app = app;
-};
-
-/**
- * Adds a new route that runs the given app when a given pattern matches the
+ * Adds a new route that runs the given app when the pattern matches the
  * path used in the request. If the pattern is a string, it is automatically
- * compiled (see utils/compileRoute.js).
+ * compiled. See utils/compileRoute.js.
  */
 Router.prototype.route = function (pattern, methods, app) {
   if (typeof methods === 'function') {
@@ -135,22 +129,13 @@ Router.prototype.route = function (pattern, methods, app) {
   });
 };
 
-// Add sugar methods for common HTTP verbs. Note that GET defines
-// routes for both GET *and* HEAD requests.
-var methodVerbs = {
-  get: [ 'GET', 'HEAD' ],
-  post: 'POST',
-  put: 'PUT',
-  patch: 'PATCH',
-  delete: 'DELETE',
-  head: 'HEAD',
-  options: 'OPTIONS'
-};
+addRoutingMethods(Router.prototype);
 
-Object.keys(methodVerbs).forEach(function (method) {
-  Router.prototype[method] = function (pattern, app) {
-    return this.route(pattern, methodVerbs[method], app);
-  };
-});
+/**
+ * Sets the given app as the default for this router.
+ */
+Router.prototype.run = function (app) {
+  this._app = app;
+};
 
 module.exports = Router;

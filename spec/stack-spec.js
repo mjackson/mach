@@ -12,9 +12,13 @@ describe('mach.stack', function () {
     });
   });
 
+  app.get('/home', function (request) {
+    return 'welcome home!';
+  });
+
   app.use(addHeader, 'Three');
 
-  describe('when a request is received', function () {
+  describe('a request that does not match any mappings or routes', function () {
     beforeEach(function () {
       return callApp(app, '/');
     });
@@ -26,18 +30,33 @@ describe('mach.stack', function () {
     });
   });
 
-  describe('when the request matches a location that is in front of some middleware', function () {
+  describe('a request that matches a location in front of some middleware', function () {
     beforeEach(function () {
       return callApp(app, '/images');
     });
 
-    it('calls all middleware in front of that location, but none after', function () {
+    it('calls all middleware in front of that location', function () {
       assert(lastResponse.headers['One']);
       assert(lastResponse.headers['Two']);
     });
 
-    it("doesn't call any middleware after that location", function () {
-      assert(!lastResponse.headers['Three']);
+    it('does not call any middleware after that location', function () {
+      refute(lastResponse.headers['Three']);
+    });
+  });
+
+  describe('a request that matches a route in front of some middleware', function () {
+    beforeEach(function () {
+      return callApp(app, '/home');
+    });
+
+    it('calls all middlware in front of that route', function () {
+      assert(lastResponse.headers['One']);
+      assert(lastResponse.headers['Two']);
+    });
+
+    it('does not call middleware after that route', function () {
+      refute(lastResponse.headers['Three']);
     });
   });
 });
