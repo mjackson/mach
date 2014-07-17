@@ -1,6 +1,7 @@
 ### HEAD
 
   * mach.stack respects ordering of routes as well as mappings
+  * Add mach.rewrite middleware
 
 ### 0.11.0 / 2014-07-11
 

@@ -457,6 +457,7 @@ var submodules = {
   multipart:        './multipart',
   params:           './middleware/params',
   Request:          './Request',
+  rewrite:          './middleware/rewrite',
   router:           './middleware/router',
   session:          './middleware/session',
   stack:            './middleware/stack',
