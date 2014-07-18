@@ -6,6 +6,7 @@ Breaking changes:
   * mach.Request expects an error message handler function, not a stream
   * mach.Request no longer emits "close" events. Use onClose instead
   * mach.logger expects a log message handler function, not a stream
+  * Removed high-level status-based response helpers (i.e. mach.ok, mach.badRequest, etc.)
 
 Improvements:
 

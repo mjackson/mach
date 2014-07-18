@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var badRequest = require('../index').badRequest;
+var sendText = require('../index').text;
 var decodeBase64 = require('../utils/decodeBase64');
 
 /**
@@ -47,7 +47,7 @@ function basicAuth(app, options) {
     var parts = authorization.split(' ');
     var scheme = parts[0];
     if (scheme.toLowerCase() !== 'basic')
-      return badRequest();
+      return sendText('Bad Request', 403);
 
     var params = decodeBase64(parts[1]).split(':');
     var username = params[0];
@@ -67,14 +67,9 @@ function basicAuth(app, options) {
 function unauthorized(realm) {
   realm = realm || 'Authorization Required';
 
-  return {
-    status: 401,
-    headers: {
-      'Content-Type': 'text/plain',
-      'WWW-Authenticate': 'Basic realm="' + realm + '"'
-    },
-    content: 'Not Authorized'
-  };
+  return sendText('Not Authorized', 401, {
+    'WWW-Authenticate': 'Basic realm="' + realm + '"'
+  });
 }
 
 module.exports = basicAuth;

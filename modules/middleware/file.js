@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var defaultApp = require('../index').defaultApp;
-var forbidden = require('../index').forbidden;
+var sendText = require('../index').text;
 var fileExists = require('../utils/fileExists');
 var isDirectory = require('../utils/isDirectory');
 var makeChecksum = require('../utils/makeChecksum');
@@ -60,7 +60,7 @@ File.prototype.call = function (request) {
 
   var pathInfo = request.pathInfo;
   if (pathInfo.indexOf('..') !== -1)
-    return forbidden();
+    return sendText('Forbidden', 403);
 
   var fullPath = path.join(this._rootDirectory, pathInfo);
   var self = this;

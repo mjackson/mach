@@ -4,6 +4,7 @@ var Stream = require('bufferedstream');
 var Promise = require('bluebird');
 var MaxLengthExceededError = require('./errors/MaxLengthExceededError');
 var bufferStream = require('./utils/bufferStream');
+var getByteLength = require('./utils/getByteLength');
 var mergeProperties = require('./utils/mergeProperties');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 var parseMultipart = require('./utils/parseMultipart');
@@ -30,11 +31,12 @@ var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
  * An HTTP message. The base class for Request and Response.
  */
 function Message(content, headers) {
-  this.content = content;
   this.headers = {};
 
   if (headers)
     this.setHeaders(headers);
+
+  this.content = content;
 }
 
 Object.defineProperties(Message.prototype, {
@@ -45,12 +47,18 @@ Object.defineProperties(Message.prototype, {
   content: d.gs(function () {
     return this._content;
   }, function (value) {
-    if (value == null) {
-      this._content = new Stream(DEFAULT_CONTENT);
-    } else if (value instanceof Stream) {
+    value = value || DEFAULT_CONTENT;
+
+    if (value instanceof Stream) {
       this._content = value;
     } else {
       this._content = new Stream(value);
+
+      if (bops.is(value)) {
+        this.headers['Content-Length'] = getByteLength(value);
+      } else if (value.length != null) {
+        this.headers['Content-Length'] = value.length;
+      }
     }
 
     this._content.pause();

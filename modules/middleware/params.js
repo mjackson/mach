@@ -1,4 +1,4 @@
-var requestEntityTooLarge = require('../index').requestEntityTooLarge;
+var sendText = require('../index').send;
 var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
 var mergeProperties = require('../utils/mergeProperties');
 
@@ -43,7 +43,7 @@ function parseParams(app, options) {
       return request.call(app);
     }, function (error) {
       if (error instanceof MaxLengthExceededError)
-        return requestEntityTooLarge();
+        return sendText('Request Entity Too Large', 413);
 
       throw error;
     });

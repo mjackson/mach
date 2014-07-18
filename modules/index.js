@@ -66,6 +66,14 @@ exports.STATUS_CODES = {
 };
 
 /**
+ * The default application that is used as the root of routers and mappers
+ * when no other app is given.
+ */
+exports.defaultApp = function (request) {
+  return exports.text('Not Found: ' + request.method + ' ' + request.path, 404);
+};
+
+/**
  * A helper for constructing a mach response object with the given
  * content, status, and headers.
  *
@@ -74,7 +82,7 @@ exports.STATUS_CODES = {
  *   }
  */
 exports.send = function (content, status, headers) {
-  return { status: status, headers: headers, content: content };
+  return new exports.Response({ status: status, headers: headers, content: content });
 };
 
 /**
@@ -152,99 +160,9 @@ exports.back = function (request, defaultLocation) {
   return exports.redirect(request.headers.referer || defaultLocation || '/');
 };
 
-var getByteLength = require('./utils/getByteLength');
-
-function textResponse(status, content) {
-  content = content || exports.STATUS_CODES[status];
-
-  return {
-    status: status,
-    headers: {
-      'Content-Type': 'text/plain',
-      'Content-Length': getByteLength(content)
-    },
-    content: content
-  };
-}
-
-function makeTextResponder(status) {
-  return function (content) {
-    return textResponse(status, content);
-  };
-}
-
-/**
- * Returns a text/plain 200 OK response.
- */
-exports.ok = makeTextResponder(200);
-
-/**
- * Returns a text/plain 400 Bad Request response.
- */
-exports.badRequest = makeTextResponder(400);
-
-/**
- * Returns a text/plain 401 Unauthorized response.
- */
-exports.unauthorized = makeTextResponder(401);
-
-/**
- * Returns a text/plain 403 Forbidden response.
- */
-exports.forbidden = makeTextResponder(403);
-
-/**
- * Returns a text/plain 404 Not Found response.
- */
-exports.notFound = makeTextResponder(404);
-
-/**
- * Returns a text/plain 413 Request Entity Too Large response.
- */
-exports.requestEntityTooLarge = makeTextResponder(413);
-
-/**
- * Returns a text/plain 500 Internal Server Error response.
- */
-exports.internalServerError = makeTextResponder(500);
-
-/**
- * The default application that is used as the root of routers and mappers
- * when no other app is given.
- */
-exports.defaultApp = function (request) {
-  return textResponse(404, 'Not Found: ' + request.method + ' ' + request.path);
-};
-
-/**
- * Creates and returns a mach.mapper from the location/app pairs in `map`.
- *
- *   var app = mach.map({
- *
- *     'http://example.com/images': function (request) {
- *       // The hostname used in the request was example.com, and the path
- *       // started with "/images".
- *     },
- *
- *     '/images': function (request) {
- *       // The request path started with "/images".
- *     }
- *
- *   });
- */
-exports.map = function (map, defaultApp) {
-  var mapper = exports.mapper(defaultApp);
-
-  for (var location in map) {
-    if (map.hasOwnProperty(location))
-      mapper.map(location, map[location]);
-  }
-
-  return mapper;
-};
-
 var submodules = {
   basicAuth:        './middleware/basicAuth',
+  bind:             './utils/bindApp',
   catch:            './middleware/catch',
   contentType:      './middleware/contentType',
   errors:           './errors',
@@ -253,6 +171,7 @@ var submodules = {
   headers:          './headers',
   gzip:             './middleware/gzip',
   logger:           './middleware/logger',
+  map:              './utils/makeMapper',
   mapper:           './middleware/mapper',
   Message:          './Message',
   methodOverride:   './middleware/methodOverride',
@@ -263,6 +182,7 @@ var submodules = {
   Response:         './Response',
   rewrite:          './middleware/rewrite',
   router:           './middleware/router',
+  serve:            './utils/serveApp',
   session:          './middleware/session',
   stack:            './middleware/stack',
   token:            './middleware/token',

@@ -1,4 +1,4 @@
-var forbidden = require('../index').forbidden;
+var sendText = require('../index').text;
 var makeToken = require('../utils/makeToken');
 
 /**
@@ -84,7 +84,7 @@ function verifyToken(app, options) {
     if (SAFE_METHODS[request.method] === true)
       return request.call(app);
 
-    return forbidden();
+    return sendText('Forbidden', 403);
   };
 }
 
