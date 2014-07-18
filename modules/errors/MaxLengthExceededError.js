@@ -1,4 +1,4 @@
-var util = require('util');
+var d = require('d');
 var MachError = require('./Error');
 
 function MaxLengthExceededError(maxLength) {
@@ -6,6 +6,10 @@ function MaxLengthExceededError(maxLength) {
   this.maxLength = maxLength;
 }
 
-util.inherits(MaxLengthExceededError, MachError);
+MaxLengthExceededError.prototype = Object.create(MachError.prototype, {
+
+  constructor: d(MaxLengthExceededError)
+
+});
 
 module.exports = MaxLengthExceededError;

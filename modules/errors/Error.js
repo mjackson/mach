@@ -1,4 +1,4 @@
-var util = require('util');
+var d = require('d');
 
 function MachError(message) {
   Error.call(this);
@@ -7,6 +7,10 @@ function MachError(message) {
   this.message = message;
 }
 
-util.inherits(MachError, Error);
+MachError.prototype = Object.create(Error.prototype, {
+
+  constructor: d(MachError)
+
+});
 
 module.exports = MachError;
