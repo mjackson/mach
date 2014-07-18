@@ -72,15 +72,12 @@ function bindApp(app, nodeServer, createRequest) {
 
       nodeResponse.writeHead(response.status, headers);
 
-      var content = response.content;
-
       if (isEmpty) {
         nodeResponse.end();
-
-        if (typeof content.destroy === 'function')
-          content.destroy();
       } else {
+        var content = response.content;
         content.pipe(nodeResponse);
+        content.resume();
       }
     }, function (error) {
       request.onError(stringifyError(error));
