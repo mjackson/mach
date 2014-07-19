@@ -58,6 +58,18 @@ function Router(app) {
   this._routes = {};
 }
 
+Object.defineProperties(Router, {
+
+  /**
+   * A map of routing methods including `get`, `post`, etc. that other
+   * classes that need routing abilities can mix in.
+   *
+   *   Object.defineProperties(MyRouter.prototype, Router.routingMethods);
+   */
+  routingMethods: d(ROUTING_DESCRIPTORS)
+
+});
+
 Object.defineProperties(Router.prototype, {
 
   call: d(function (request) {
@@ -137,13 +149,7 @@ Object.defineProperties(Router.prototype, {
 
 });
 
-Object.defineProperties(Router.prototype, ROUTING_DESCRIPTORS);
-
-Object.defineProperties(Router, {
-
-  routingMethods: d(ROUTING_DESCRIPTORS)
-
-});
+Object.defineProperties(Router.prototype, Router.routingMethods);
 
 function makeParams(keys, values) {
   return keys.reduce(function (params, key, index) {
