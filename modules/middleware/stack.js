@@ -1,5 +1,5 @@
+var d = require('d');
 var defaultApp = require('../index').defaultApp;
-var addRoutingMethods = require('../utils/addRoutingMethods');
 var Mapper = require('./mapper');
 var Router = require('./router');
 
@@ -56,87 +56,91 @@ function Stack(app) {
   this._layers = [];
 }
 
-Stack.prototype.call = function (request) {
-  if (!this._compiledApp)
-    this._compiledApp = this._compile();
+Object.defineProperties(Stack.prototype, {
 
-  return request.call(this._compiledApp);
-};
+  call: d(function (request) {
+    if (!this._compiledApp)
+      this._compiledApp = this._compile();
 
-Stack.prototype._compile = function () {
-  var layers = this._layers;
-  var app = this._app;
+    return request.call(this._compiledApp);
+  }),
 
-  var index = layers.length;
-  while (index)
-    app = layers[--index].call(this, app);
+  _compile: d(function () {
+    var layers = this._layers;
+    var app = this._app;
 
-  return app;
-};
-
-/**
- * Declares that the given `middleware` should be used at the current point
- * in the stack. Any additional arguments to this function are passed along
- * to the middleware with the downstream app as the first argument when the
- * stack is compiled.
- */
-Stack.prototype.use = function (middleware) {
-  var middlewareArgs = Array.prototype.slice.call(arguments, 1);
-
-  this._layers.push(function (app) {
-    return middleware.apply(null, [ app ].concat(middlewareArgs));
-  });
-
-  this._compiledApp = null;
-};
-
-/**
- * Maps the given location to a new stack. The callback will be called with
- * the new stack when the stack is compiled.
- */
-Stack.prototype.map = function (location, callback) {
-  this._layers.push(function (app) {
-    var stack = new Stack;
-
-    if (typeof callback === 'function')
-      callback(stack);
-
-    if (!(app instanceof Mapper))
-      app = new Mapper(app);
-
-    app.map(location, stack);
+    var index = layers.length;
+    while (index)
+      app = layers[--index].call(this, app);
 
     return app;
-  });
+  }),
 
-  this._compiledApp = null;
-};
+  /**
+   * Declares that the given `middleware` should be used at the current point
+   * in the stack. Any additional arguments to this function are passed along
+   * to the middleware with the downstream app as the first argument when the
+   * stack is compiled.
+   */
+  use: d(function (middleware) {
+    var middlewareArgs = Array.prototype.slice.call(arguments, 1);
 
-/**
- * Uses a Router to add a route that runs when the path used in the request
- * matches the pattern. See Router#route.
- */
-Stack.prototype.route = function (pattern, methods, routeApp) {
-  this._layers.push(function (app) {
-    if (!(app instanceof Router))
-      app = new Router(app);
+    this._layers.push(function (app) {
+      return middleware.apply(null, [ app ].concat(middlewareArgs));
+    });
 
-    app.route(pattern, methods, routeApp);
+    this._compiledApp = null;
+  }),
 
-    return app;
-  });
+  /**
+   * Maps the given location to a new stack. The callback will be called with
+   * the new stack when the stack is compiled.
+   */
+  map: d(function (location, callback) {
+    this._layers.push(function (app) {
+      var stack = new Stack;
 
-  this._compiledApp = null;
-};
+      if (typeof callback === 'function')
+        callback(stack);
 
-addRoutingMethods(Stack.prototype);
+      if (!(app instanceof Mapper))
+        app = new Mapper(app);
 
-/**
- * Sets the given app as the default for this stack.
- */
-Stack.prototype.run = function (app) {
-  this._app = app;
-  this._compiledApp = null;
-};
+      app.map(location, stack);
+
+      return app;
+    });
+
+    this._compiledApp = null;
+  }),
+
+  /**
+   * Uses a Router to add a route that runs when the path used in the request
+   * matches the pattern. See Router#route.
+   */
+  route: d(function (pattern, methods, routeApp) {
+    this._layers.push(function (app) {
+      if (!(app instanceof Router))
+        app = new Router(app);
+
+      app.route(pattern, methods, routeApp);
+
+      return app;
+    });
+
+    this._compiledApp = null;
+  }),
+
+  /**
+   * Sets the given app as the default for this stack.
+   */
+  run: d(function (app) {
+    this._app = app;
+    this._compiledApp = null;
+  })
+
+});
+
+Object.defineProperties(Stack.prototype, Router.routingMethods);
 
 module.exports = Stack;

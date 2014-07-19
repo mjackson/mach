@@ -1,8 +1,26 @@
+var d = require('d');
 var defaultApp = require('../index').defaultApp;
-var addRoutingMethods = require('../utils/addRoutingMethods');
 var compileRoute = require('../utils/compileRoute');
 var isRegExp = require('../utils/isRegExp');
 var mergeProperties = require('../utils/mergeProperties');
+
+var ROUTING_METHODS = {
+  get: [ 'GET', 'HEAD' ],
+  post: 'POST',
+  put: 'PUT',
+  patch: 'PATCH',
+  delete: 'DELETE',
+  head: 'HEAD',
+  options: 'OPTIONS'
+};
+
+var ROUTING_DESCRIPTORS = {};
+
+Object.keys(ROUTING_METHODS).forEach(function (method) {
+  ROUTING_DESCRIPTORS[method] = d(function (pattern, app) {
+    return this.route(pattern, ROUTING_METHODS[method], app);
+  });
+});
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
@@ -40,32 +58,92 @@ function Router(app) {
   this._routes = {};
 }
 
-Router.prototype.call = function (request) {
-  var routes = this._routes;
-  var method = request.method;
-  var routesToTry = (routes[method] || []).concat(routes.ANY || []);
+Object.defineProperties(Router.prototype, {
 
-  var route, match;
-  for (var i = 0, len = routesToTry.length; i < len; ++i) {
-    route = routesToTry[i];
+  call: d(function (request) {
+    var routes = this._routes;
+    var method = request.method;
+    var routesToTry = (routes[method] || []).concat(routes.ANY || []);
 
-    // Try to match the route.
-    if (match = route.pattern.exec(request.pathInfo)) {
-      var params = makeParams(route.keys, Array.prototype.slice.call(match, 1));
+    var route, match;
+    for (var i = 0, len = routesToTry.length; i < len; ++i) {
+      route = routesToTry[i];
 
-      if (request.params) {
-        // Route params take precedence above all others.
-        mergeProperties(request.params, params);
-      } else {
-        request.params = params;
+      // Try to match the route.
+      if (match = route.pattern.exec(request.pathInfo)) {
+        var params = makeParams(route.keys, Array.prototype.slice.call(match, 1));
+
+        if (request.params) {
+          // Route params take precedence above all others.
+          mergeProperties(request.params, params);
+        } else {
+          request.params = params;
+        }
+
+        return request.call(route.app);
       }
-
-      return request.call(route.app);
     }
-  }
 
-  return request.call(this._app);
-};
+    return request.call(this._app);
+  }),
+
+  /**
+   * Adds a new route that runs the given app when the pattern matches the
+   * path used in the request. If the pattern is a string, it is automatically
+   * compiled. See utils/compileRoute.js.
+   */
+  route: d(function (pattern, methods, app) {
+    if (typeof methods === 'function') {
+      app = methods;
+      methods = null;
+    }
+
+    app = app || defaultApp;
+
+    if (typeof methods === 'string')
+      methods = [ methods ];
+
+    if (!Array.isArray(methods))
+      methods = [ 'ANY' ];
+
+    var keys = [];
+
+    if (typeof pattern === 'string')
+      pattern = compileRoute(pattern, keys);
+
+    if (!isRegExp(pattern))
+      throw new Error('Pattern must be a RegExp');
+
+    var route = { pattern: pattern, keys: keys, app: app };
+    var routes = this._routes;
+
+    methods.forEach(function (method) {
+      var upperMethod = method.toUpperCase();
+
+      if (routes[upperMethod]) {
+        routes[upperMethod].push(route);
+      } else {
+        routes[upperMethod] = [ route ];
+      }
+    });
+  }),
+
+  /**
+   * Sets the given app as the default for this router.
+   */
+  run: d(function (app) {
+    this._app = app;
+  })
+
+});
+
+Object.defineProperties(Router.prototype, ROUTING_DESCRIPTORS);
+
+Object.defineProperties(Router, {
+
+  routingMethods: d(ROUTING_DESCRIPTORS)
+
+});
 
 function makeParams(keys, values) {
   return keys.reduce(function (params, key, index) {
@@ -87,55 +165,5 @@ function makeParams(keys, values) {
     return params;
   }, {});
 }
-
-/**
- * Adds a new route that runs the given app when the pattern matches the
- * path used in the request. If the pattern is a string, it is automatically
- * compiled. See utils/compileRoute.js.
- */
-Router.prototype.route = function (pattern, methods, app) {
-  if (typeof methods === 'function') {
-    app = methods;
-    methods = null;
-  }
-
-  app = app || defaultApp;
-
-  if (typeof methods === 'string')
-    methods = [ methods ];
-
-  if (!Array.isArray(methods))
-    methods = [ 'ANY' ];
-
-  var keys = [];
-
-  if (typeof pattern === 'string')
-    pattern = compileRoute(pattern, keys);
-
-  if (!isRegExp(pattern))
-    throw new Error('Pattern must be a RegExp');
-
-  var route = { pattern: pattern, keys: keys, app: app };
-  var routes = this._routes;
-
-  methods.forEach(function (method) {
-    var upperMethod = method.toUpperCase();
-
-    if (routes[upperMethod]) {
-      routes[upperMethod].push(route);
-    } else {
-      routes[upperMethod] = [ route ];
-    }
-  });
-};
-
-addRoutingMethods(Router.prototype);
-
-/**
- * Sets the given app as the default for this router.
- */
-Router.prototype.run = function (app) {
-  this._app = app;
-};
 
 module.exports = Router;

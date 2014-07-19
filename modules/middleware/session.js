@@ -1,8 +1,17 @@
+var d = require('d');
 var Promise = require('bluebird');
 var CookieStore = require('./session/CookieStore');
 var decodeBase64 = require('../utils/decodeBase64');
 var encodeBase64 = require('../utils/encodeBase64');
+var makeHash = require('../utils/makeHash');
 
+function makeHashWithSecret(data, secret) {
+  return makeHash(secret ? data + secret : data);
+}
+
+/**
+ * The maximum size of an HTTP cookie.
+ */
 var MAX_COOKIE_SIZE = 4096;
 
 /**
@@ -64,90 +73,88 @@ function Session(app, options) {
   this._app = app;
 }
 
-Session.prototype.call = function (request) {
-  var app = this._app;
-  var cookieName = this._name;
-  var expireAfter = this._expireAfter;
+Object.defineProperties(Session.prototype, {
 
-  if (request.session)
-    return request.call(app); // Don't overwrite the existing session.
+  call: d(function (request) {
+    var app = this._app;
+    var cookieName = this._name;
+    var expireAfter = this._expireAfter;
 
-  var cookie = request.cookies[cookieName];
-  var self = this;
+    if (request.session)
+      return request.call(app); // Don't overwrite the existing session.
 
-  return Promise.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
-    request.session = session || {};
+    var cookie = request.cookies[cookieName];
+    var self = this;
 
-    return request.call(app).then(function (response) {
-      return Promise.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
-        var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
+    return Promise.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
+      request.session = session || {};
 
-        // Don't bother setting the cookie if its value
-        // hasn't changed and there is no expires date.
-        if (newCookie === cookie && !expires)
+      return request.call(app).then(function (response) {
+        return Promise.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
+          var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
+
+          // Don't bother setting the cookie if its value
+          // hasn't changed and there is no expires date.
+          if (newCookie === cookie && !expires)
+            return response;
+
+          response.setCookie(cookieName, {
+            value: newCookie,
+            path: self._path,
+            domain: self._domain,
+            expires: expires,
+            httpOnly: self._isHttpOnly,
+            secure: self._isSecure
+          });
+
           return response;
-
-        response.setCookie(cookieName, {
-          value: newCookie,
-          path: self._path,
-          domain: self._domain,
-          expires: expires,
-          httpOnly: self._isHttpOnly,
-          secure: self._isSecure
+        }, function (error) {
+          request.onError('Error encoding session data: ' + error);
+          return response;
         });
-
-        return response;
-      }, function (error) {
-        request.onError('Error encoding session data: ' + error);
-        return response;
       });
+    }, function (error) {
+      request.onError('Error decoding session data: ' + error);
+      return request.call(app);
     });
-  }, function (error) {
-    request.onError('Error decoding session data: ' + error);
-    return request.call(app);
-  });
-};
+  }),
 
-/**
- * Stores the given session and returns a promise for a value that should be stored
- * in the session cookie to retrieve the session data again on the next request.
- */
-Session.prototype.encodeSession = function (session) {
-  var secret = this._secret;
+  /**
+   * Stores the given session and returns a promise for a value that should be stored
+   * in the session cookie to retrieve the session data again on the next request.
+   */
+  encodeSession: d(function (session) {
+    var secret = this._secret;
 
-  return this._store.save(session).then(function (data) {
-    var cookie = encodeBase64(data + '--' + makeHashWithSecret(data, secret));
+    return this._store.save(session).then(function (data) {
+      var cookie = encodeBase64(data + '--' + makeHashWithSecret(data, secret));
 
-    if (cookie.length > MAX_COOKIE_SIZE)
-      throw new Error('Cookie data size exceeds 4kb; content dropped');
+      if (cookie.length > MAX_COOKIE_SIZE)
+        throw new Error('Cookie data size exceeds 4kb; content dropped');
 
-    return cookie;
-  });
-};
+      return cookie;
+    });
+  }),
 
-/**
- * Decodes the given cookie value and returns a promise for the corresponding session
- * data from the store. Also verifies the hash value to ensure the cookie has not been
- * tampered with. If it has, returns null.
- */
-Session.prototype.decodeCookie = function (cookie) {
-  var value = decodeBase64(cookie);
-  var index = value.lastIndexOf('--');
-  var data = value.substring(0, index);
-  var hash = value.substring(index + 2);
+  /**
+   * Decodes the given cookie value and returns a promise for the corresponding session
+   * data from the store. Also verifies the hash value to ensure the cookie has not been
+   * tampered with. If it has, returns null.
+   */
+  decodeCookie: d(function (cookie) {
+    var value = decodeBase64(cookie);
+    var index = value.lastIndexOf('--');
+    var data = value.substring(0, index);
+    var hash = value.substring(index + 2);
 
-  // Verify the cookie has not been tampered with.
-  if (hash === makeHashWithSecret(data, this._secret))
-    return this._store.load(data);
+    // Verify the cookie has not been tampered with.
+    if (hash === makeHashWithSecret(data, this._secret))
+      return this._store.load(data);
 
-  return null;
-};
+    return null;
+  })
 
-var makeHash = require('../utils/makeHash');
-
-function makeHashWithSecret(data, secret) {
-  return makeHash(secret ? data + secret : data);
-}
+});
 
 module.exports = Session;
 

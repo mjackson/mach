@@ -1,3 +1,4 @@
+var d = require('d');
 var Promise = require('bluebird');
 var defaultApp = require('../index').defaultApp;
 var sendText = require('../index').text;
@@ -51,70 +52,73 @@ function File(app, options) {
   this._useEtag = !!options.useEtag;
 }
 
+var fs = require('fs');
 var path = require('path');
 
-File.prototype.call = function (request) {
-  var method = request.method;
-  if (method !== 'GET' && method !== 'HEAD')
-    return request.call(this._app);
+Object.defineProperties(File.prototype, {
 
-  var pathInfo = request.pathInfo;
-  if (pathInfo.indexOf('..') !== -1)
-    return sendText('Forbidden', 403);
+  call: d(function (request) {
+    var method = request.method;
+    if (method !== 'GET' && method !== 'HEAD')
+      return request.call(this._app);
 
-  var fullPath = path.join(this._rootDirectory, pathInfo);
-  var self = this;
+    var pathInfo = request.pathInfo;
+    if (pathInfo.indexOf('..') !== -1)
+      return sendText('Forbidden', 403);
 
-  return findFile(fullPath).then(function (stat) {
-    // If the request targets a file, send it!
-    if (stat && stat.isFile())
-      return self.sendFile(fullPath, stat);
+    var fullPath = path.join(this._rootDirectory, pathInfo);
+    var self = this;
 
-    // If the request does not target a directory or we don't have any
-    // index files to try, pass the request downstream.
-    if (!stat || (!stat.isDirectory() || !self._indexFiles))
-      return request.call(self._app);
+    return findFile(fullPath).then(function (stat) {
+      // If the request targets a file, send it!
+      if (stat && stat.isFile())
+        return self.sendFile(fullPath, stat);
 
-    // The request targets a directory. Try all the index files in order
-    // to see if we can serve any of them.
-    var indexPaths = self._indexFiles.map(function (file) {
-      return path.join(fullPath, file);
+      // If the request does not target a directory or we don't have any
+      // index files to try, pass the request downstream.
+      if (!stat || (!stat.isDirectory() || !self._indexFiles))
+        return request.call(self._app);
+
+      // The request targets a directory. Try all the index files in order
+      // to see if we can serve any of them.
+      var indexPaths = self._indexFiles.map(function (file) {
+        return path.join(fullPath, file);
+      });
+
+      return Promise.all(indexPaths.map(findFile)).then(function (stats) {
+        for (var i = 0, len = stats.length; i < len; ++i) {
+          if (stats[i])
+            return self.sendFile(indexPaths[i], stats[i]);
+        }
+
+        return request.call(self._app);
+      });
     });
+  }),
 
-    return Promise.all(indexPaths.map(findFile)).then(function (stats) {
-      for (var i = 0, len = stats.length; i < len; ++i) {
-        if (stats[i])
-          return self.sendFile(indexPaths[i], stats[i]);
-      }
+  sendFile: d(function (file, stat) {
+    var response = {
+      status: 200,
+      headers: {
+        'Content-Type': mimeType(file),
+        'Content-Length': stat.size
+      },
+      content: fs.createReadStream(file)
+    };
 
-      return request.call(self._app);
+    if (this._useLastModified)
+      response.headers['Last-Modified'] = stat.mtime.toUTCString();
+
+    if (!this._useEtag)
+      return response;
+
+    return makeChecksum(file).then(function (checksum) {
+      response.headers['ETag'] = checksum;
+      return response;
     });
-  });
-};
+  })
 
-var fs = require('fs');
-
-File.prototype.sendFile = function (file, stat) {
-  var response = {
-    status: 200,
-    headers: {
-      'Content-Type': mimeType(file),
-      'Content-Length': stat.size
-    },
-    content: fs.createReadStream(file)
-  };
-
-  if (this._useLastModified)
-    response.headers['Last-Modified'] = stat.mtime.toUTCString();
-
-  if (!this._useEtag)
-    return response;
-
-  return makeChecksum(file).then(function (checksum) {
-    response.headers['ETag'] = checksum;
-    return response;
-  });
-};
+});
 
 // Attempt to get a stat for the given file. Return null if it does not exist.
 function findFile(file) {

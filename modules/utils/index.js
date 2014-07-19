@@ -1,4 +1,3 @@
-exports.addRoutingMethods                         = require('./addRoutingMethods');
 exports.bufferStream                              = require('./bufferStream');
 exports.compileRoute                              = require('./compileRoute');
 exports.decodeBase64                              = require('./decodeBase64');

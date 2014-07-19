@@ -1,3 +1,4 @@
+var d = require('d');
 var defaultApp = require('../index').defaultApp;
 var escapeRegExp = require('../utils/escapeRegExp');
 
@@ -31,81 +32,85 @@ function Mapper(app) {
   this._mappings = [];
 }
 
-Mapper.prototype.call = function (request) {
-  var mappings = this._mappings;
-  var scriptName = request.scriptName;
-  var pathInfo = request.pathInfo;
-  var host = request.host;
+Object.defineProperties(Mapper.prototype, {
 
-  var mapping, match, remainingPath;
-  for (var i = 0, len = mappings.length; i < len; ++i) {
-    mapping = mappings[i];
+  call: d(function (request) {
+    var mappings = this._mappings;
+    var scriptName = request.scriptName;
+    var pathInfo = request.pathInfo;
+    var host = request.host;
 
-    // Try to match the host.
-    if (mapping.host && mapping.host !== host)
-      continue;
+    var mapping, match, remainingPath;
+    for (var i = 0, len = mappings.length; i < len; ++i) {
+      mapping = mappings[i];
 
-    // Try to match the path.
-    if (!(match = pathInfo.match(mapping.pattern))) 
-      continue;
+      // Try to match the host.
+      if (mapping.host && mapping.host !== host)
+        continue;
 
-    // Skip if the remaining path doesn't start with a "/".
-    remainingPath = match[1];
-    if (remainingPath.length > 0 && remainingPath[0] !== '/')
-      continue;
+      // Try to match the path.
+      if (!(match = pathInfo.match(mapping.pattern))) 
+        continue;
 
-    request.scriptName = scriptName + mapping.path;
-    request.pathInfo = remainingPath || '/';
+      // Skip if the remaining path doesn't start with a "/".
+      remainingPath = match[1];
+      if (remainingPath.length > 0 && remainingPath[0] !== '/')
+        continue;
 
-    return request.call(mapping.app);
-  }
+      request.scriptName = scriptName + mapping.path;
+      request.pathInfo = remainingPath || '/';
 
-  return request.call(this._app);
-};
+      return request.call(mapping.app);
+    }
 
-/**
- * Adds a new mapping that runs the given app when the location used in the
- * request matches the given location.
- */
-Mapper.prototype.map = function (location, app) {
-  var host, path;
+    return request.call(this._app);
+  }),
 
-  // If the location is a fully qualified URL use the host as well.
-  var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
-  if (match) {
-    host = match[1];
-    path = match[2];
-  } else {
-    path = location;
-  }
+  /**
+   * Adds a new mapping that runs the given app when the location used in the
+   * request matches the given location.
+   */
+  map: d(function (location, app) {
+    var host, path;
 
-  if (path.charAt(0) !== '/')
-    throw new Error('Mapping path must start with "/", was "' + path + '"');
+    // If the location is a fully qualified URL use the host as well.
+    var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
+    if (match) {
+      host = match[1];
+      path = match[2];
+    } else {
+      path = location;
+    }
 
-  path = path.replace(/\/$/, '');
+    if (path.charAt(0) !== '/')
+      throw new Error('Mapping path must start with "/", was "' + path + '"');
 
-  var mappings = this._mappings;
-  var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
+    path = path.replace(/\/$/, '');
 
-  mappings.push({
-    host: host,
-    path: path,
-    pattern: pattern,
-    app: app
-  });
+    var mappings = this._mappings;
+    var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
 
-  mappings.sort(byMostSpecific);
-};
+    mappings.push({
+      host: host,
+      path: path,
+      pattern: pattern,
+      app: app
+    });
+
+    mappings.sort(byMostSpecific);
+  }),
+
+  /**
+   * Sets the given app as the default for this mapper.
+   */
+  run: d(function (app) {
+    this._app = app;
+  })
+
+});
 
 function byMostSpecific(a, b) {
   return (b.path.length - a.path.length) || ((b.host || '').length - (a.host || '').length);
 }
-
-/**
- * Sets the given app as the default for this mapper.
- */
-Mapper.prototype.run = function (app) {
-  this._app = app;
-};
 
 module.exports = Mapper;
