@@ -1,7 +1,6 @@
 var d = require('d');
 var bops = require('bops');
 var Stream = require('bufferedstream');
-var Promise = require('bluebird');
 var MaxLengthExceededError = require('./errors/MaxLengthExceededError');
 var bufferStream = require('./utils/bufferStream');
 var getByteLength = require('./utils/getByteLength');
@@ -69,8 +68,6 @@ Object.defineProperties(Message.prototype, {
    */
   contentType: d.gs(function () {
     return this.headers['Content-Type'];
-  }, function (value) {
-    this.headers['Content-Type'] = value;
   }),
 
   /**
@@ -93,14 +90,6 @@ Object.defineProperties(Message.prototype, {
   date: d.gs(function () {
     if (this.headers['Date'])
       return Date.parse(this.headers['Date']);
-  }, function (value) {
-    if (typeof value === 'number')
-      value = new Date(number);
-
-    if (typeof value.toUTCString === 'function')
-      this.headers['Date'] = value.toUTCString();
-
-    throw new Error('Invalid date: ' + value);
   }),
 
   /**
@@ -231,10 +220,12 @@ Object.defineProperties(Message.prototype, {
    * the new value is added separated by a newline.
    */
   addHeader: d(function (headerName, value) {
+    headerName = normalizeHeaderName(headerName);
+
     if (headerName in this.headers) {
-      this.setHeader(headerName, [ this.headers[headerName], value ].join('\n'));
+      this.headers[headerName] = [ this.headers[headerName], value ].join('\n');
     } else {
-      this.setHeader(headerName, value);
+      this.headers[headerName] = value;
     }
   })
 
