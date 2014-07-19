@@ -187,11 +187,11 @@ Request.prototype = Object.create(Message.prototype, {
   /**
    * Returns a string of the hostname:port used in this request.
    */
-  hostWithPort: d.gs(function () {
-    var forwarded = this.headers['X-Forwarded-Host'];
+  host: d.gs(function () {
+    var forwardedHost = this.headers['X-Forwarded-Host'];
 
-    if (forwarded) {
-      var parts = forwarded.split(/,\s?/);
+    if (forwardedHost) {
+      var parts = forwardedHost.split(/,\s?/);
       return parts[parts.length - 1];
     }
 
@@ -207,15 +207,15 @@ Request.prototype = Object.create(Message.prototype, {
   /**
    * Returns the name of the host used in this request.
    */
-  host: d.gs(function () {
-    return this.hostWithPort.replace(/:\d+$/, '');
+  hostname: d.gs(function () {
+    return this.host.replace(/:\d+$/, '');
   }),
 
   /**
    * Returns the port number used in this request.
    */
   port: d.gs(function () {
-    var port = this.hostWithPort.split(':')[1] || this.headers['X-Forwarded-Port'];
+    var port = this.host.split(':')[1] || this.headers['X-Forwarded-Port'];
 
     if (port)
       return parseInt(port, 10);
@@ -230,39 +230,31 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
-   * Returns a URL containing the protocol, hostname, and port of the
-   * original request.
-   */
-  baseURL: d.gs(function () {
-    var protocol = this.protocol;
-    var base = protocol + '//' + this.host;
-    var port = this.port;
-
-    if ((protocol === 'https:' && port !== 443) || (protocol === 'http:' && port !== 80))
-      base += ':' + port;
-
-    return base;
-  }),
-
-  /**
    * The path of this request, without the query string.
    */
-  path: d.gs(function () {
+  pathname: d.gs(function () {
     return this.scriptName + this.pathInfo;
   }),
 
   /**
    * The path of this request, including the query string.
    */
-  fullPath: d.gs(function () {
-    return this.path + (this.queryString ? '?' + this.queryString : '');
+  path: d.gs(function () {
+    return this.pathname + this.search;
+  }),
+
+  /**
+   * The query string of the URL, including the leading question mark.
+   */
+  search: d.gs(function () {
+    return this.queryString ? '?' + this.queryString : '';
   }),
 
   /**
    * The original URL of this request.
    */
   url: d.gs(function () {
-    return this.baseURL + this.fullPath;
+    return this.protocol + '//' + this.host + this.path;
   }),
 
   /**

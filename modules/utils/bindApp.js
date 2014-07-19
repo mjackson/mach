@@ -49,7 +49,7 @@ function bindApp(app, nodeServer, createRequest) {
       serverName: serverName,
       serverPort: serverPort,
       pathInfo: url.pathname,
-      queryString: url.query || '',
+      queryString: url.query,
       headers: nodeRequest.headers,
       content: nodeRequest
     });

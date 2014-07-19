@@ -70,7 +70,7 @@ Mapper.prototype.call = function (request) {
 Mapper.prototype.map = function (location, app) {
   var host, path;
 
-  // If the path is a fully qualified URL use the host as well.
+  // If the location is a fully qualified URL use the host as well.
   var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
   if (match) {
     host = match[1];
@@ -80,7 +80,7 @@ Mapper.prototype.map = function (location, app) {
   }
 
   if (path.charAt(0) !== '/')
-    throw new Error('Path must start with "/", was "' + path + '"');
+    throw new Error('Mapping path must start with "/", was "' + path + '"');
 
   path = path.replace(/\/$/, '');
 

@@ -7,6 +7,11 @@ Breaking changes:
   * mach.Request no longer emits "close" events. Use onClose instead
   * mach.logger expects a log message handler function, not a stream
   * Removed high-level status-based response helpers (i.e. mach.ok, mach.badRequest, etc.)
+  * Renamed Request#hostWithPort => Request#host
+  * Renamed Request#host => Request#hostname
+  * Renamed Request#path => Request#pathname
+  * Renamed Request#fullPath => Request#path
+  * Removed Request#baseURL
 
 Improvements:
 
@@ -14,7 +19,8 @@ Improvements:
   * Add mach.Response that also subclasses mach.Message
   * Make multipart.Part subclass mach.Message
   * Always use BufferedStream for message content
-  * Add bufferContent/stringifyContent to Request
+  * Add Request#bufferContent and Request#stringifyContent
+  * Add Request#search
   * Request#call always returns a Response
 
 ### 0.12.0 / 2014-07-17
