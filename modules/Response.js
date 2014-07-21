@@ -51,9 +51,6 @@ Object.defineProperties(Response, {
    * Creates a Response from the given object based on its type.
    */
   createFromObject: d(function (object) {
-    if (object instanceof Response)
-      return object;
-
     if (typeof object === 'string' || bops.is(object))
       return new Response({ content: object });
 

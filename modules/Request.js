@@ -100,7 +100,10 @@ Request.prototype = Object.create(Message.prototype, {
       if (response == null)
         throw new Error('No response returned from app: ' + app);
 
-      return Response.createFromObject(response);
+      if (!(response instanceof Response))
+        response = Response.createFromObject(response);
+
+      return response;
     });
   }),
 
@@ -185,6 +188,13 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
+   * True if this request was made over SSL.
+   */
+  isSSL: d.gs(function () {
+    return this.protocol === 'https:';
+  }),
+
+  /**
    * Returns a string of the hostname:port used in this request.
    */
   host: d.gs(function () {
@@ -230,17 +240,17 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
+   * The full path of this request, including the query string.
+   */
+  path: d.gs(function () {
+    return this.pathname + this.search;
+  }),
+
+  /**
    * The path of this request, without the query string.
    */
   pathname: d.gs(function () {
     return this.scriptName + this.pathInfo;
-  }),
-
-  /**
-   * The path of this request, including the query string.
-   */
-  path: d.gs(function () {
-    return this.pathname + this.search;
   }),
 
   /**
@@ -251,17 +261,21 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
+   * An object containing the properties and values that were URL-encoded in
+   * the query string.
+   */
+  query: d.gs(function () {
+    if (!this._query)
+      this._query = parseQueryString(this.queryString);
+
+    return this._query;
+  }),
+
+  /**
    * The original URL of this request.
    */
   url: d.gs(function () {
     return this.protocol + '//' + this.host + this.path;
-  }),
-
-  /**
-   * True if this request was made over SSL.
-   */
-  isSSL: d.gs(function () {
-    return this.protocol === 'https:';
   }),
 
   /**
@@ -276,17 +290,6 @@ Request.prototype = Object.create(Message.prototype, {
    */
   remoteHost: d.gs(function () {
     return this.headers['X-Forwarded-For'] || this._remoteHost;
-  }),
-
-  /**
-   * An object containing the properties and values that were URL-encoded in
-   * the query string.
-   */
-  query: d.gs(function () {
-    if (!this._query)
-      this._query = parseQueryString(this.queryString);
-
-    return this._query;
   }),
 
   /**
