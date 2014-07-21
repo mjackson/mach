@@ -11,7 +11,7 @@
     "event-emitter": "^0.3.1",
     "mime": "~1.2.9",
     "qs": "~0.6.5",
-    "strftime": "~0.5.0"
+    "strftime": "^0.8.1"
   },
   "optionalDependencies": {
     "then-redis": "~0.3.8"
