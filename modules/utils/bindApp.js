@@ -12,6 +12,10 @@ var STATUS_WITHOUT_CONTENT = {
   304: true
 };
 
+function defaultRequestFactory(options) {
+  return new Request(options);
+}
+
 /**
  * Binds the given app to the "request" event of the given node HTTP server
  * so that it is called whenever the server receives a new request.
@@ -19,12 +23,12 @@ var STATUS_WITHOUT_CONTENT = {
  * Returns the request handler function.
  */
 function bindApp(app, nodeServer, createRequest) {
-  createRequest = createRequest || Request;
+  createRequest = createRequest || defaultRequestFactory;
 
   var address = nodeServer.address();
 
   if (!address)
-    throw new Error('Cannot bind to server that is not listening');
+    throw new Error('Cannot bind to node server that is not listening');
 
   var serverName, serverPort;
   if (typeof address === 'string') {

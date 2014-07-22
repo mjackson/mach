@@ -4,7 +4,6 @@ var Stream = require('bufferedstream');
 var MaxLengthExceededError = require('./errors/MaxLengthExceededError');
 var bufferStream = require('./utils/bufferStream');
 var getByteLength = require('./utils/getByteLength');
-var mergeProperties = require('./utils/mergeProperties');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 var parseMultipart = require('./utils/parseMultipart');
 var parseQueryString = require('./utils/parseQueryString');

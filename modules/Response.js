@@ -15,9 +15,6 @@ var STATUS_CODES = require('./index').STATUS_CODES;
  *   - status       The HTTP status code
  */
 function Response(options) {
-  if (!(this instanceof Response))
-    return new Response(options);
-
   options = options || {};
 
   Message.call(this, options.content, options.headers);

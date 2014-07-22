@@ -48,9 +48,6 @@ var defaultCloseHandler = function () {};
  *   - pathInfo/path      The path used in the request
  */
 function Request(options) {
-  if (!(this instanceof Request))
-    return new Request(options);
-
   options = options || {};
 
   Message.call(this, options.content, options.headers);
