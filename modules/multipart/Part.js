@@ -69,7 +69,7 @@ Part.prototype = Object.create(Message.prototype, {
     var contentDisposition = this.contentDisposition;
 
     var match;
-    if (contentDisposition && (match = contentDisposition.match(/name="([^"]+)"/i)))
+    if (contentDisposition && (match = contentDisposition.match(/\bname="([^"]+)"/i)))
       return match[1];
 
     return this.contentID;
