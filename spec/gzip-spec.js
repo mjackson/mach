@@ -17,8 +17,9 @@ describe('gzip', function () {
 
     beforeEach(function () {
       return callApp(app, {
-        headers: { 'Accept-Encoding': 'gzip' }
-      }, true);
+        headers: { 'Accept-Encoding': 'gzip' },
+        leaveBuffer: true
+      });
     });
 
     it('sets the Content-Encoding header to "gzip"', function () {
@@ -47,7 +48,7 @@ describe('gzip', function () {
     });
 
     beforeEach(function () {
-      return callApp(app, '/', true);
+      return callApp(app, { leaveBuffer: true });
     });
 
     it('does not encode the content', function () {

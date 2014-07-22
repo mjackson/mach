@@ -1,4 +1,6 @@
+exports.bindApp                                   = require('./bindApp');
 exports.bufferStream                              = require('./bufferStream');
+exports.callApp                                   = require('./callApp');
 exports.compileRoute                              = require('./compileRoute');
 exports.decodeBase64                              = require('./decodeBase64');
 exports.encodeBase64                              = require('./encodeBase64');
@@ -21,6 +23,7 @@ exports.parseMultipart                            = require('./parseMultipart');
 exports.parseQueryString                          = require('./parseQueryString');
 exports.parseURL                                  = require('./parseURL');
 exports.qualityFactorForMediaValue                = require('./qualityFactorForMediaValue');
+exports.serveApp                                  = require('./serveApp');
 exports.statFile                                  = require('./statFile');
 exports.streamPartToDisk                          = require('./streamPartToDisk');
 exports.stringifyError                            = require('./stringifyError');
