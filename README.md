@@ -95,3 +95,7 @@ The Redis session store specs rely on Redis to run successfully. By default they
 * [Q-HTTP](https://github.com/kriskowal/q-http)
 * [JSGI & Jack](http://jackjs.org/)
 * [node.js](http://nodejs.org/)
+
+### License
+
+[MIT](http://opensource.org/licenses/MIT)
