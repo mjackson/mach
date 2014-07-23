@@ -276,7 +276,7 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
-   * True if this request was made using XMLHttpMessage.
+   * True if this request was made using XMLHttpRequest.
    */
   isXHR: d.gs(function () {
     return this.headers['X-Requested-With'] === 'XMLHttpRequest';
