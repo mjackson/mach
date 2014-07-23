@@ -1,3 +1,5 @@
+[![build status](https://secure.travis-ci.org/mjackson/mach.png)](http://travis-ci.org/mjackson/mach)
+
 ## Mach
 
 Mach is a better way to build fully asynchronous web servers using node.js. It has the following goals:
