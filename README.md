@@ -1,8 +1,6 @@
 [![build status](https://secure.travis-ci.org/mjackson/mach.png)](http://travis-ci.org/mjackson/mach)
 
-## Mach
-
-Mach is a better way to build fully asynchronous web servers using node.js. It has the following goals:
+[Mach](https://github.com/mjackson/mach) is a better way to build fully asynchronous web servers using node.js. It has the following goals:
 
   * Simplicity: straightforward mapping of HTTP requests to JavaScript function calls
   * Asynchronous: responses can be deferred using a standard Promises/A+ compatible promise
