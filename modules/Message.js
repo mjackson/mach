@@ -222,7 +222,11 @@ Object.defineProperties(Message.prototype, {
     headerName = normalizeHeaderName(headerName);
 
     if (headerName in this.headers) {
-      this.headers[headerName] = [ this.headers[headerName], value ].join('\n');
+      if (Array.isArray(this.headers[headerName])) {
+        this.headers[headerName].push(value);
+      } else {
+        this.headers[headerName] = [this.headers[headerName], value];
+      }
     } else {
       this.headers[headerName] = value;
     }
