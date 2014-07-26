@@ -29,15 +29,56 @@ var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
  * An HTTP message. The base class for Request and Response.
  */
 function Message(content, headers) {
-  this.headers = {};
+  this._headers = {};
 
   if (headers)
-    this.setHeaders(headers);
+    this.headers = headers;
 
   this.content = content;
 }
 
 Object.defineProperties(Message.prototype, {
+
+  /**
+   * The headers of this message as { headerName, value }.
+   */
+  headers: d.gs(function () {
+    return this._headers;
+  }, function (value) {
+    if (value == null) {
+      this._headers = {};
+    } else {
+      for (var headerName in value) {
+        if (value.hasOwnProperty(headerName))
+          this.setHeader(headerName, value[headerName]);
+      }
+    }
+  }),
+
+  /**
+   * Adds the value to the header with the given name.
+   */
+  addHeader: d(function (headerName, value) {
+    headerName = normalizeHeaderName(headerName);
+
+    var headers = this.headers;
+    if (headerName in headers) {
+      if (Array.isArray(headers[headerName])) {
+        headers[headerName].push(value);
+      } else {
+        headers[headerName] = [ headers[headerName], value ];
+      }
+    } else {
+      headers[headerName] = value;
+    }
+  }),
+
+  /**
+   * Sets the value of a header.
+   */
+  setHeader: d(function (headerName, value) {
+    this.headers[normalizeHeaderName(headerName)] = value;
+  }),
 
   /**
    * The content of this message as a binary stream.
@@ -195,41 +236,6 @@ Object.defineProperties(Message.prototype, {
       return streamPartToDisk(part, uploadPrefix);
 
     return bufferStream(part.content).then(bops.to);
-  }),
-
-  /**
-   * Sets the value of a header.
-   */
-  setHeader: d(function (headerName, value) {
-    this.headers[normalizeHeaderName(headerName)] = value;
-  }),
-
-  /**
-   * Sets the value of many headers at once.
-   */
-  setHeaders: d(function (headers) {
-    for (var headerName in headers) {
-      if (headers.hasOwnProperty(headerName))
-        this.setHeader(headerName, headers[headerName]);
-    }
-  }),
-
-  /**
-   * Adds the value to the header with the given name. If it's already present,
-   * the new value is added separated by a newline.
-   */
-  addHeader: d(function (headerName, value) {
-    headerName = normalizeHeaderName(headerName);
-
-    if (headerName in this.headers) {
-      if (Array.isArray(this.headers[headerName])) {
-        this.headers[headerName].push(value);
-      } else {
-        this.headers[headerName] = [this.headers[headerName], value];
-      }
-    } else {
-      this.headers[headerName] = value;
-    }
   })
 
 });

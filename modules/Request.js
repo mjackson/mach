@@ -87,18 +87,34 @@ Request.prototype = Object.create(Message.prototype, {
    * as the first argument and returns a promise for a Response.
    */
   call: d(function (app) {
+    var response = this._response;
+
+    if (!response)
+      response = this._response = new Response;
+
     try {
-      var response = app.call(this, this);
+      var value = app.call(this, this, response);
     } catch (error) {
       return Promise.reject(error);
     }
 
-    return Promise.resolve(response).then(function (response) {
-      if (response == null)
-        throw new Error('No response returned from app: ' + app);
+    return Promise.resolve(value).then(function (value) {
+      if (value != null) {
+        if (typeof value === 'string' || bops.is(value)) {
+          response.content = value;
+        } else if (typeof value === 'number') {
+          response.status = value;
+        } else {
+          if ('status' in value)
+            response.status = value.status;
 
-      if (!(response instanceof Response))
-        response = Response.createFromObject(response);
+          if ('headers' in value)
+            response.setHeaders(value.headers);
+
+          if ('content' in value)
+            response.content = value.content;
+        }
+      }
 
       return response;
     });

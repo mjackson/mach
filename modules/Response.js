@@ -38,23 +38,41 @@ Response.prototype = Object.create(Message.prototype, {
    */
   setCookie: d(function (name, options) {
     this.addHeader('Set-Cookie', makeCookie(name, options));
-  })
-
-});
-
-Object.defineProperties(Response, {
+  }),
 
   /**
-   * Creates a Response from the given object based on its type.
+   * Redirects the client to the given location. If status is not
+   * given, it defaults to 302 Found.
    */
-  createFromObject: d(function (object) {
-    if (typeof object === 'string' || bops.is(object))
-      return new Response({ content: object });
+  redirect: d(function (status, location) {
+    if (typeof status !== 'number') {
+      location = status;
+      status = 302;
+    }
 
-    if (typeof object === 'number')
-      return new Response({ status: object });
+    this.status = status;
+    this.headers['Location'] = location;
+  }),
 
-    return new Response(object);
+  /**
+   * Writes some data to the content stream, along with an optional status.
+   */
+  send: d(function (status, data) {
+    if (typeof status !== 'number') {
+      this.write(status);
+    } else {
+      this.status = status;
+    }
+
+    if (data)
+      this.write(data);
+  }),
+
+  /**
+   * Writes some data to the content stream.
+   */
+  write: d(function (data) {
+    return this.content.write(data, arguments[1]);
   })
 
 });
