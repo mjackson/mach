@@ -36,4 +36,21 @@ describe('A mach.Message', function () {
 
     });
   });
+
+  describe('bufferContent', function () {
+    it('responds to the message content being set', function () {
+      message.content = 'foo';
+      return message
+        .bufferContent()
+        .then(function(content) {
+          expect(content.toString()).toEqual('foo');
+
+          message.content = 'bar';
+          return message.bufferContent();
+        })
+        .then(function(content) {
+          expect(content.toString()).toEqual('bar');
+        });
+    });
+  });
 });

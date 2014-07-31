@@ -60,6 +60,7 @@ Object.defineProperties(Message.prototype, {
     }
 
     this._content.pause();
+    this._bufferedContent = undefined;
   }),
 
   /**
