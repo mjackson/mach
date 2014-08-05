@@ -1,5 +1,4 @@
 var d = require('d');
-var bops = require('bops');
 var Promise = require('bluebird');
 var Accept = require('./headers/Accept');
 var AcceptCharset = require('./headers/AcceptCharset');

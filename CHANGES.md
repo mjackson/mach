@@ -19,6 +19,7 @@ Improvements:
   * Add mach.Response that also subclasses mach.Message
   * Make multipart.Part subclass mach.Message
   * Always use BufferedStream for message content
+  * Use Browserify's Buffer module for binary content
   * Add Request#bufferContent and Request#stringifyContent
   * Add Request#search
   * Request#call always returns a Response

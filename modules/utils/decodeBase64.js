@@ -1,7 +1,7 @@
-var bops = require('bops');
+var Buffer = require('buffer').Buffer;
 
 function decodeBase64(string) {
-  return bops.to(bops.from(string, 'base64'), arguments[1]);
+  return new Buffer(string, 'base64').toString(arguments[1]);
 }
 
 module.exports = decodeBase64;

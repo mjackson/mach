@@ -1,9 +1,8 @@
 var d = require('d');
-var bops = require('bops');
+var Buffer = require('buffer').Buffer;
 var Stream = require('bufferedstream');
 var MaxLengthExceededError = require('./errors/MaxLengthExceededError');
 var bufferStream = require('./utils/bufferStream');
-var getByteLength = require('./utils/getByteLength');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 var parseMultipart = require('./utils/parseMultipart');
 var parseQueryString = require('./utils/parseQueryString');
@@ -12,7 +11,7 @@ var streamPartToDisk = require('./utils/streamPartToDisk');
 /**
  * The default content to use for new messages.
  */
-var DEFAULT_CONTENT = bops.from('');
+var DEFAULT_CONTENT = new Buffer([]);
 
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
@@ -52,11 +51,8 @@ Object.defineProperties(Message.prototype, {
     } else {
       this._content = new Stream(value);
 
-      if (bops.is(value)) {
-        this.headers['Content-Length'] = getByteLength(value);
-      } else if (value.length != null) {
+      if (value.length != null)
         this.headers['Content-Length'] = value.length;
-      }
     }
 
     this._content.pause();
@@ -140,7 +136,7 @@ Object.defineProperties(Message.prototype, {
    */
   stringifyContent: d(function (maxLength, encoding) {
     return this.bufferContent(maxLength).then(function (chunk) {
-      return bops.to(chunk, encoding);
+      return chunk.toString(encoding);
     });
   }),
 
@@ -195,7 +191,9 @@ Object.defineProperties(Message.prototype, {
     if (part.isFile)
       return streamPartToDisk(part, uploadPrefix);
 
-    return bufferStream(part.content).then(bops.to);
+    return bufferStream(part.content).then(function (chunk) {
+      return chunk.toString();
+    });
   }),
 
   /**

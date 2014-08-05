@@ -1,6 +1,5 @@
-var bops = require('bops');
+var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird');
-var getByteLength = require('./getByteLength');
 var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
 
 /**
@@ -22,7 +21,7 @@ function bufferStream(stream, maxLength) {
     stream.on('error', reject);
 
     stream.on('data', function (chunk) {
-      length += getByteLength(chunk);
+      length += chunk.length;
 
       if (length > maxLength) {
         reject(new MaxLengthExceededError(maxLength));
@@ -32,7 +31,7 @@ function bufferStream(stream, maxLength) {
     });
 
     stream.on('end', function () {
-      resolve(bops.join(chunks));
+      resolve(Buffer.concat(chunks));
     });
 
     if (typeof stream.resume === 'function')

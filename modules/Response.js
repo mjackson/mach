@@ -1,5 +1,5 @@
 var d = require('d');
-var bops = require('bops');
+var Buffer = require('buffer').Buffer;
 var makeCookie = require('./utils/makeCookie');
 var Message = require('./Message');
 
@@ -48,7 +48,7 @@ Object.defineProperties(Response, {
    * Creates a Response from the given object based on its type.
    */
   createFromObject: d(function (object) {
-    if (typeof object === 'string' || bops.is(object))
+    if (typeof object === 'string' || Buffer.isBuffer(object))
       return new Response({ content: object });
 
     if (typeof object === 'number')

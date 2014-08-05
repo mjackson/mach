@@ -1,6 +1,5 @@
 var Promise = require('bluebird');
 var Stream = require('bufferedstream');
-var getByteLength = require('./getByteLength');
 
 // TODO: Refactor to eliminate this circular dependency:
 // Message => parseMultipart => Parser => Part => Message
@@ -42,8 +41,7 @@ function parseMultipart(content, boundary, maxLength, partHandler) {
     content.on('error', reject);
 
     content.on('data', function (chunk) {
-      var length = getByteLength(chunk);
-
+      var length = chunk.length;
       contentLength += length;
 
       if (maxLength && contentLength > maxLength) {

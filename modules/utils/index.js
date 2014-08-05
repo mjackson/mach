@@ -6,7 +6,6 @@ exports.decodeBase64                              = require('./decodeBase64');
 exports.encodeBase64                              = require('./encodeBase64');
 exports.escapeRegExp                              = require('./escapeRegExp');
 exports.fileExists                                = require('./fileExists');
-exports.getByteLength                             = require('./getByteLength');
 exports.isDirectory                               = require('./isDirectory');
 exports.isRegExp                                  = require('./isRegExp');
 exports.makeChecksum                              = require('./makeChecksum');

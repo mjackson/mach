@@ -1,6 +1,5 @@
 var fs = require('fs');
 var Promise = require('bluebird');
-var getByteLength = require('./getByteLength');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
 function streamToDisk(part, filePrefix) {
@@ -13,7 +12,7 @@ function streamToDisk(part, filePrefix) {
     content.on('error', reject);
 
     content.on('data', function (chunk) {
-      size += getByteLength(chunk);
+      size += chunk.length;
       stream.write(chunk);
     });
 

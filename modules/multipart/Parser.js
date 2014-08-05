@@ -1,3 +1,4 @@
+var Buffer = require('buffer').Buffer;
 var Stream = require('bufferedstream');
 var Part = require('./Part');
 
