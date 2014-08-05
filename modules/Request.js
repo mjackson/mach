@@ -21,7 +21,7 @@ if (typeof process !== 'undefined' && process.stderr) {
   };
 }
 
-var defaultCloseHandler = function () {};
+function defaultCloseHandler() {}
 
 /**
  * An HTTP request.
