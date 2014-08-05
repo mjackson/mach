@@ -12,6 +12,7 @@ Breaking changes:
   * Renamed Request#path => Request#pathname
   * Renamed Request#fullPath => Request#path
   * Removed Request#baseURL
+  * Request#port, remotePort, and serverPort are strings instead of numbers
 
 Improvements:
 

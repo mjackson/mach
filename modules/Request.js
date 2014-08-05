@@ -65,9 +65,9 @@ function Request(options) {
   this.protocolVersion = options.protocolVersion || '1.0';
   this.method = (options.method || 'GET').toUpperCase();
   this._remoteHost = options.remoteHost || '';
-  this.remotePort = parseInt(options.remotePort, 10) || 0;
+  this.remotePort = String(options.remotePort || 0);
   this.serverName = options.serverName || '';
-  this.serverPort = parseInt(options.serverPort, 10) || 0;
+  this.serverPort = String(options.serverPort || 0);
   this.queryString = options.queryString || '';
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
@@ -224,13 +224,13 @@ Request.prototype = Object.create(Message.prototype, {
     var port = this.host.split(':')[1] || this.headers['X-Forwarded-Port'];
 
     if (port)
-      return parseInt(port, 10);
+      return port;
 
     if (this.isSSL)
-      return 443;
+      return '443';
 
     if (this.headers['X-Forwarded-Host'])
-      return 80;
+      return '80';
 
     return this.serverPort;
   }),
