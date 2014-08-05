@@ -1,6 +1,6 @@
 var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird');
-var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
+var MaxLengthExceededError = require('../MaxLengthExceededError');
 
 /**
  * Returns a promise for a buffer of all content in the given stream up to

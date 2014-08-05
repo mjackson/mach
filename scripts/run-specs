@@ -1,0 +1,9 @@
+mocha\
+  specs\
+  specs/accept\
+  specs/fs\
+  specs/multipart\
+  specs/redis\
+  specs/server\
+  specs/utils\
+  specs/zlib

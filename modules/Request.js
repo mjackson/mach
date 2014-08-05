@@ -1,12 +1,8 @@
 var d = require('d');
 var Promise = require('bluebird');
-var Accept = require('./headers/Accept');
-var AcceptCharset = require('./headers/AcceptCharset');
-var AcceptEncoding = require('./headers/AcceptEncoding');
-var AcceptLanguage = require('./headers/AcceptLanguage');
 var mergeProperties = require('./utils/mergeProperties');
 var parseCookie = require('./utils/parseCookie');
-var parseQueryString = require('./utils/parseQueryString');
+var parseQuery = require('./utils/parseQuery');
 var Message = require('./Message');
 var Response = require('./Response');
 
@@ -101,46 +97,6 @@ Request.prototype = Object.create(Message.prototype, {
 
       return response;
     });
-  }),
-
-  /**
-   * Returns true if the client accepts the given mediaType.
-   */
-  accepts: d(function (mediaType) {
-    if (!this._acceptHeader)
-      this._acceptHeader = new Accept(this.headers['Accept']);
-
-    return this._acceptHeader.accepts(mediaType);
-  }),
-
-  /**
-   * Returns true if the client accepts the given character set.
-   */
-  acceptsCharset: d(function (charset) {
-    if (!this._acceptCharsetHeader)
-      this._acceptCharsetHeader = new AcceptCharset(this.headers['Accept-Charset']);
-
-    return this._acceptCharsetHeader.accepts(charset);
-  }),
-
-  /**
-   * Returns true if the client accepts the given content encoding.
-   */
-  acceptsEncoding: d(function (encoding) {
-    if (!this._acceptEncodingHeader)
-      this._acceptEncodingHeader = new AcceptEncoding(this.headers['Accept-Encoding']);
-
-    return this._acceptEncodingHeader.accepts(encoding);
-  }),
-
-  /**
-   * Returns true if the client accepts the given content language.
-   */
-  acceptsLanguage: d(function (language) {
-    if (!this._acceptLanguageHeader)
-      this._acceptLanguageHeader = new AcceptLanguage(this.headers['Accept-Language']);
-
-    return this._acceptLanguageHeader.accepts(language);
   }),
 
   /**
@@ -262,7 +218,7 @@ Request.prototype = Object.create(Message.prototype, {
    */
   query: d.gs(function () {
     if (!this._query)
-      this._query = parseQueryString(this.queryString);
+      this._query = parseQuery(this.queryString);
 
     return this._query;
   }),

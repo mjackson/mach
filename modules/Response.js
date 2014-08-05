@@ -1,9 +1,8 @@
 var d = require('d');
 var Buffer = require('buffer').Buffer;
-var makeCookie = require('./utils/makeCookie');
+var statusCodes = require('./utils/statusCodes');
+var stringifyCookie = require('./utils/stringifyCookie');
 var Message = require('./Message');
-
-var STATUS_CODES = require('./index').STATUS_CODES;
 
 /**
  * An HTTP response.
@@ -30,14 +29,14 @@ Response.prototype = Object.create(Message.prototype, {
    * The message that corresponds with the status code.
    */
   statusText: d.gs(function () {
-    return STATUS_CODES[this.status];
+    return statusCodes[this.status];
   }),
 
   /**
    * Sets a cookie with the given name and options.
    */
   setCookie: d(function (name, options) {
-    this.addHeader('Set-Cookie', makeCookie(name, options));
+    this.addHeader('Set-Cookie', stringifyCookie(name, options));
   })
 
 });
