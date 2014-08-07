@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
-var bufferStream = require('./bufferStream');
 var Response = require('../../Response');
+var bufferStream = require('./bufferStream');
 
 var LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';

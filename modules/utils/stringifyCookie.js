@@ -2,12 +2,12 @@
  * Creates a cookie string using the given options, which may be any of
  * the following:
  *
- *   - value
- *   - domain
- *   - path
- *   - expires
- *   - secure
- *   - httpOnly
+ * - value
+ * - domain
+ * - path
+ * - expires
+ * - secure
+ * - httpOnly
  */
 function stringifyCookie(name, options) {
   options = options || {};

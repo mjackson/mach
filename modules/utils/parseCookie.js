@@ -1,7 +1,7 @@
-var querystring = require('querystring');
+var parseQuery = require('./parseQuery');
 
 function parseCookie(cookie) {
-  return querystring.parse(cookie, /[;,] */);
+  return parseQuery(cookie, /[;,] */);
 }
 
 module.exports = parseCookie;

@@ -3,7 +3,7 @@ var mach = module.exports;
 /**
  * The current version of mach.
  */
-mach.version = require('../package').version;
+mach.version = '0.12.0';
 
 mach.Message = require('./Message');
 mach.Request = require('./Request');
@@ -14,5 +14,6 @@ mach.serve = function () {
     'require("mach").serve is deprecated. To run mach as a web server you should require("mach/server") instead.'
   );
 
-  return require('./server').serve.apply(this, arguments);
+  var moduleID = './server'; // Stop Browserify.
+  return require(moduleID).serve.apply(this, arguments);
 };
