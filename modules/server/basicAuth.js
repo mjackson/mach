@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var decodeBase64 = require('./utils/decodeBase64');
 var sendText = require('./utils/responseHelpers').text;
 

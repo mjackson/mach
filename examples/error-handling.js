@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var mach = require('../modules');
 
 mach.serve(function (request) {

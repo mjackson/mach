@@ -1,5 +1,5 @@
 var d = require('d');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var mergeProperties = require('./utils/mergeProperties');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');

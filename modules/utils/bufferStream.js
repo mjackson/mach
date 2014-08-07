@@ -1,5 +1,5 @@
 var Buffer = require('buffer').Buffer;
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var MaxLengthExceededError = require('./MaxLengthExceededError');
 
 /**

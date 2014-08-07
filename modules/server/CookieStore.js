@@ -1,5 +1,5 @@
 var d = require('d');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 
 /**
  * Client-side storage for sessions using HTTP cookies.

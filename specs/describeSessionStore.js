@@ -1,8 +1,10 @@
 require('./helper');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 
 function delay(ms) {
-  return new Promise.delay(ms);
+  return new Promise(function (resolve) {
+    setTimeout(resolve, ms);
+  });
 }
 
 function describeSessionStore(store, skip) {
@@ -82,7 +84,7 @@ function describeSessionStore(store, skip) {
         var session = { count: 1 };
         return store.save(session).then(function (newValue) {
           value = newValue;
-          return delay(store._ttl);
+          return delay(store._ttl + 10);
         });
       });
 

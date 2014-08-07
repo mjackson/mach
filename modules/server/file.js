@@ -1,24 +1,12 @@
 var fs = require('fs');
 var d = require('d');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var defaultApp = require('./utils/defaultApp');
 var getFileChecksum = require('./utils/getFileChecksum');
 var getFileStats = require('./utils/getFileStats');
 var getMimeType = require('./utils/getMimeType');
 var joinPaths = require('./utils/joinPaths');
 var sendText = require('./utils/responseHelpers').text;
-
-/**
- * Returns stats for the given file or null if it doesn't exist.
- */
-function findFile(file) {
-  return getFileStats(file).then(undefined, function (error) {
-    if (error.cause.code === 'ENOENT')
-      return null;
-
-    throw error;
-  });
-}
 
 /**
  * A middleware for serving files efficiently from the file system according
@@ -78,14 +66,14 @@ Object.defineProperties(File.prototype, {
     var path = joinPaths(this._rootDirectory, pathInfo);
     var self = this;
 
-    return findFile(path).then(function (stat) {
+    return getFileStats(path).then(function (stats) {
       // If the request targets a file, send it!
-      if (stat && stat.isFile())
-        return self.sendFile(path, stat);
+      if (stats && stats.isFile())
+        return self.sendFile(path, stats);
 
       // If the request does not target a directory or we don't have any
       // index files to try, pass the request downstream.
-      if (!stat || (!stat.isDirectory() || !self._indexFiles))
+      if (!stats || (!stats.isDirectory() || !self._indexFiles))
         return request.call(self._app);
 
       // The request targets a directory. Try all the index files in order
@@ -94,7 +82,7 @@ Object.defineProperties(File.prototype, {
         return joinPaths(path, file);
       });
 
-      return Promise.all(indexPaths.map(findFile)).then(function (stats) {
+      return Promise.all(indexPaths.map(getFileStats)).then(function (stats) {
         for (var i = 0, len = stats.length; i < len; ++i) {
           if (stats[i])
             return self.sendFile(indexPaths[i], stats[i]);
@@ -105,18 +93,18 @@ Object.defineProperties(File.prototype, {
     });
   }),
 
-  sendFile: d(function (file, stat) {
+  sendFile: d(function (file, stats) {
     var response = {
       status: 200,
       headers: {
         'Content-Type': getMimeType(file),
-        'Content-Length': stat.size
+        'Content-Length': stats.size
       },
       content: fs.createReadStream(file)
     };
 
     if (this._useLastModified)
-      response.headers['Last-Modified'] = stat.mtime.toUTCString();
+      response.headers['Last-Modified'] = stats.mtime.toUTCString();
 
     if (!this._useEtag)
       return response;

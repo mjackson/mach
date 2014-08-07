@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var Response = require('../../Response');
 var bufferStream = require('./bufferStream');
 

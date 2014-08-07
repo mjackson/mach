@@ -1,5 +1,5 @@
 var d = require('d');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var makeToken = require('./utils/makeToken');
 
 function makeUniqueKey(sessions, keyLength) {

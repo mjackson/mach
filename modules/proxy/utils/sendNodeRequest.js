@@ -1,6 +1,6 @@
 var http = require('http');
 var https = require('https');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var Response = require('../../Response');
 
 function sendNodeRequest(options) {

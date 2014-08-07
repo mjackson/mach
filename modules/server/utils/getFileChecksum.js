@@ -1,6 +1,6 @@
 var fs = require('fs');
 var crypto = require('crypto');
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 
 /**
  * Returns a promise for the MD5 checksum of all data in the given file.

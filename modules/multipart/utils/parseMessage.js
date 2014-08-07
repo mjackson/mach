@@ -1,10 +1,24 @@
-var Promise = require('bluebird');
+var Promise = require('bluebird').Promise;
 var Stream = require('bufferedstream');
 var MaxLengthExceededError = require('./MaxLengthExceededError');
 var Parser = require('../Parser');
 
 function defaultPartHandler(part) {
   return part.bufferContent();
+}
+
+function resolveProperties(object) {
+  var keys = Object.keys(object);
+
+  return Promise.all(keys.map(function (key) {
+    return object[key];
+  })).then(function (values) {
+    keys.forEach(function (key, index) {
+      object[key] = values[index];
+    });
+
+    return object;
+  });
 }
 
 /**
@@ -52,7 +66,7 @@ function parseMessage(content, boundary, maxLength, partHandler) {
     content.on('end', function () {
       try {
         parser.finish();
-        resolve(Promise.props(parts));
+        resolve(resolveProperties(parts));
       } catch (error) {
         reject(new Error('Error parsing multipart body: ' + error.message));
       }
