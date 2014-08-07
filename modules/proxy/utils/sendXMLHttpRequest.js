@@ -1,3 +1,4 @@
+var XMLHttpRequest = window.XMLHttpRequest;
 var Promise = require('bluebird').Promise;
 var Response = require('../../Response');
 var bufferStream = require('./bufferStream');
@@ -58,7 +59,13 @@ function sendXMLHttpRequest(options) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest;
 
-    var url = options.protocol + '//' + options.hostname + options.path;
+    var url = options.protocol + '//' + options.hostname;
+
+    if (options.protocol === 'http:' && options.port != 80 || options.protocol === 'https:' && options.port != 443)
+      url += ':' + options.port;
+
+    url += options.path;
+
     xhr.open(options.method, url, true);
 
     if ('withCredentials' in xhr)

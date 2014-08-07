@@ -1,11 +1,9 @@
-var isNode = require('./isNode');
-
 var sendRequest;
-if (isNode()) {
+if (typeof window !== 'undefined') {
+  sendRequest = require('./sendXMLHttpRequest');
+} else {
   var moduleID = './sendNodeRequest'; // Stop Browserify.
   sendRequest = require(moduleID);
-} else {
-  sendRequest = require('./sendXMLHttpRequest');
 }
 
 module.exports = sendRequest;
