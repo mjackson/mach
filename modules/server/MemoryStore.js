@@ -48,10 +48,9 @@ function MemoryStore(options) {
   options = options || {};
 
   this.sessions = {};
-
-  this._keyLength = options.keyLength || 32;
-  this._timer = pruneStore(this, options.purgeInterval || 5000);
-  this._ttl = options.expireAfter
+  this.timer = pruneStore(this, options.purgeInterval || 5000);
+  this.keyLength = options.keyLength || 32;
+  this.ttl = options.expireAfter
     ? (1000 * options.expireAfter) // expireAfter is given in seconds
     : 0;
 }
@@ -74,10 +73,10 @@ Object.defineProperties(MemoryStore.prototype, {
   save: d(function (session) {
     var key = session._id;
     if (!key)
-      key = session._id = makeUniqueKey(this.sessions, this._keyLength);
+      key = session._id = makeUniqueKey(this.sessions, this.keyLength);
 
-    if (this._ttl)
-      session._expiry = Date.now() + this._ttl;
+    if (this.ttl)
+      session._expiry = Date.now() + this.ttl;
 
     this.sessions[key] = session;
 
@@ -95,9 +94,9 @@ Object.defineProperties(MemoryStore.prototype, {
   destroy: d(function () {
     delete this.sessions;
 
-    if (this._timer) {
-      clearInterval(this._timer);
-      delete this._timer;
+    if (this.timer) {
+      clearInterval(this.timer);
+      delete this.timer;
     }
   })
 

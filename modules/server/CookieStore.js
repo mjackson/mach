@@ -18,7 +18,7 @@ var Promise = require('bluebird').Promise;
 function CookieStore(options) {
   options = options || {};
 
-  this._ttl = options.expireAfter
+  this.ttl = options.expireAfter
     ? (1000 * options.expireAfter) // expireAfter is given in seconds
     : 0;
 }
@@ -41,8 +41,8 @@ Object.defineProperties(CookieStore.prototype, {
   }),
 
   save: d(function (session) {
-    if (this._ttl)
-      session._expiry = Date.now() + this._ttl;
+    if (this.ttl)
+      session._expiry = Date.now() + this.ttl;
 
     return Promise.resolve(JSON.stringify(session));
   })

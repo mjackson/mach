@@ -54,11 +54,11 @@ function describeSessionStore(store, skip) {
 
   desc('when it has a TTL', function () {
     beforeEach(function () {
-      store._ttl = 20;
+      store.ttl = 20;
     });
 
     afterEach(function () {
-      delete store._ttl;
+      delete store.ttl;
     });
 
     describe('and a session is not expired', function () {
@@ -84,7 +84,7 @@ function describeSessionStore(store, skip) {
         var session = { count: 1 };
         return store.save(session).then(function (newValue) {
           value = newValue;
-          return delay(store._ttl + 10);
+          return delay(store.ttl + 10);
         });
       });
 
@@ -101,10 +101,10 @@ function describeSessionStore(store, skip) {
       beforeEach(function () {
         var session = { count: 1 };
         return store.save(session).then(function () {
-          return delay(store._ttl / 2).then(function () {
+          return delay(store.ttl / 2).then(function () {
             return store.save(session).then(function (newValue) {
               value = newValue;
-              return delay(store._ttl / 2);
+              return delay(store.ttl / 2);
             });
           });
         });

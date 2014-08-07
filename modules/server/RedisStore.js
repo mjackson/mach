@@ -52,32 +52,42 @@ function makeUniqueKey(client, keyLength) {
 function RedisStore(options) {
   options = options || {};
 
-  var port, host;
-  if (typeof options.url === 'string') {
-    var parsedURL = parseURL(options.url);
-    port = parsedURL.port;
-    host = parsedURL.hostname;
-  }
-
-  this._client = redis.createClient(port, host, options);
-  this._keyLength = options.keyLength || 32;
-  this._ttl = options.expireAfter
+  this.options = options;
+  this.keyLength = options.keyLength || 32;
+  this.ttl = options.expireAfter
     ? (1000 * options.expireAfter) // expireAfter is given in seconds
     : 0;
 }
 
 Object.defineProperties(RedisStore.prototype, {
 
+  getClient: d(function () {
+    if (!this._client) {
+      var options = this.options;
+
+      var port, host;
+      if (typeof options.url === 'string') {
+        var parsedURL = parseURL(options.url);
+        port = parsedURL.port;
+        host = parsedURL.hostname;
+      }
+
+      this._client = redis.createClient(port, host, options);
+    }
+
+    return this._client;
+  }),
+
   load: d(function (value) {
-    return sendCommand(this._client, 'get', [ value ]).then(function (json) {
+    return sendCommand(this.getClient(), 'get', [ value ]).then(function (json) {
       return json ? JSON.parse(json) : {};
     });
   }),
 
   save: d(function (session) {
-    var client = this._client;
-    var keyLength = this._keyLength;
-    var ttl = this._ttl;
+    var client = this.getClient();
+    var keyLength = this.keyLength;
+    var ttl = this.ttl;
 
     return Promise.resolve(session._id || makeUniqueKey(client, keyLength)).then(function (key) {
       session._id = key;
@@ -99,13 +109,13 @@ Object.defineProperties(RedisStore.prototype, {
 
   purge: d(function (key) {
     if (key)
-      return sendCommand(this._client, 'del', [ key ]);
+      return sendCommand(this.getClient(), 'del', [ key ]);
 
-    return sendCommand(this._client, 'flushdb');
+    return sendCommand(this.getClient(), 'flushdb');
   }),
 
   destroy: d(function () {
-    return sendCommand(this._client, 'quit');
+    return sendCommand(this.getClient(), 'quit');
   })
 
 });
