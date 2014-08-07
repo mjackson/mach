@@ -14,7 +14,7 @@
   },
   "optionalDependencies": {
     "es6-promise": "~1.0.0",
-    "then-redis": "~0.3.8"
+    "redis": "~0.11.0"
   },
   "devDependencies": {
     "browserify": "4.x",
