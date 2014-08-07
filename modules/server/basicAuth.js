@@ -40,11 +40,11 @@ function basicAuth(app, options) {
     if (request.remoteUser)
       return request.call(app); // Don't overwrite existing remoteUser.
 
-    var authorization = request.headers['Authorization'];
-    if (!authorization)
+    var auth = request.auth;
+    if (!auth)
       return unauthorized(options.realm);
 
-    var parts = authorization.split(' ');
+    var parts = auth.split(' ');
     var scheme = parts[0];
     if (scheme.toLowerCase() !== 'basic')
       return sendText('Bad Request', 403);

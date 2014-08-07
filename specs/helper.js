@@ -6,13 +6,13 @@ refute = function (condition, message) {
   assert(!condition, message);
 };
 
-var _callApp = require('../modules/utils/callApp');
-
 lastResponse = null;
 
 beforeEach(function () {
   lastResponse = null;
 });
+
+var Request = mach.Request;
 
 /**
  * Calls the app with the given options and buffers the response
@@ -24,8 +24,9 @@ callApp = function (app, options) {
   options = options || {};
 
   var leaveBuffer = !!options.leaveBuffer;
+  var request = Request.create(options);
 
-  return _callApp(app, options).then(function (response) {
+  return request.call(app).then(function (response) {
     lastResponse = response;
 
     return response.bufferContent().then(function (buffer) {

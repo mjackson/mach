@@ -6,13 +6,13 @@ var makeParams = require('./utils/makeParams');
 var mergeProperties = require('./utils/mergeProperties');
 
 var ROUTING_VERBS = {
-  get: [ 'GET', 'HEAD' ],
-  post: 'POST',
-  put: 'PUT',
-  patch: 'PATCH',
   delete: 'DELETE',
+  get: [ 'GET', 'HEAD' ],
   head: 'HEAD',
-  options: 'OPTIONS'
+  options: 'OPTIONS',
+  patch: 'PATCH',
+  post: 'POST',
+  put: 'PUT'
 };
 
 var ROUTING_METHODS = {};

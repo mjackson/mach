@@ -1,1 +1,1 @@
-module.exports = require('util').isRegExp;
+module.exports = require('../../utils/isRegExp');

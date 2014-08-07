@@ -5,9 +5,14 @@ var mach = module.exports;
  */
 mach.version = require('../package').version;
 
-mach.Error = require('./Error');
-mach.MaxLengthExceededError = require('./MaxLengthExceededError');
-
 mach.Message = require('./Message');
 mach.Request = require('./Request');
 mach.Response = require('./Response');
+
+mach.serve = function () {
+  console.warn(
+    'require("mach").serve is deprecated. To run mach as a web server you should require("mach/server") instead.'
+  );
+
+  return require('./server').serve.apply(this, arguments);
+};

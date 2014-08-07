@@ -9,8 +9,8 @@ var Message = require('./Message');
  *
  * Options may be any of the following:
  *
- *   - headers      An object of HTTP headers and values
  *   - content      A readable stream containing the message content
+ *   - headers      An object of HTTP headers and values
  *   - status       The HTTP status code
  */
 function Response(options) {

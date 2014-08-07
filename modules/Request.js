@@ -3,6 +3,8 @@ var Promise = require('bluebird');
 var mergeProperties = require('./utils/mergeProperties');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
+var parseURL = require('./utils/parseURL');
+var stringifyQuery = require('./utils/stringifyQuery');
 var Message = require('./Message');
 var Response = require('./Response');
 
@@ -61,9 +63,9 @@ function Request(options) {
   this.protocolVersion = options.protocolVersion || '1.0';
   this.method = (options.method || 'GET').toUpperCase();
   this._remoteHost = options.remoteHost || '';
-  this.remotePort = String(options.remotePort || 0);
+  this.remotePort = String(options.remotePort || '0');
   this.serverName = options.serverName || '';
-  this.serverPort = String(options.serverPort || 0);
+  this.serverPort = String(options.serverPort || '80');
   this.queryString = options.queryString || '';
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
@@ -72,6 +74,59 @@ function Request(options) {
   if (this.scriptName === '' && this.pathInfo === '')
     this.pathInfo = '/';
 }
+
+Object.defineProperties(Request, {
+
+  /**
+   * Returns a new Request created using the given options, which may
+   * be any of the Request constructor's options or the following:
+   *
+   * - method     The HTTP method (i.e. GET, POST, etc.)
+   * - params     An object of HTTP parameters
+   */
+  create: d(function (options) {
+    if (typeof options === 'string')
+      return Request.createFromURL(options);
+
+    options = options || {};
+
+    // Params may be given as an object.
+    if (options.params) {
+      var queryString = stringifyQuery(options.params);
+
+      if (options.method === 'POST' || options.method === 'PUT') {
+        if (!options.headers)
+          options.headers = {};
+
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        options.content = queryString;
+      } else {
+        options.queryString = queryString;
+        options.content = '';
+      }
+
+      delete options.params;
+    }
+
+    return new Request(options);
+  }),
+
+  /**
+   * Creates and returns new Request using the given URL.
+   */
+  createFromURL: d(function (fromURL) {
+    var url = parseURL(fromURL);
+
+    return new Request({
+      protocol: url.protocol,
+      serverName: url.hostname,
+      serverPort: url.port,
+      pathInfo: url.pathname,
+      queryString: url.query
+    });
+  })
+
+});
 
 Request.prototype = Object.create(Message.prototype, {
 
@@ -97,6 +152,15 @@ Request.prototype = Object.create(Message.prototype, {
 
       return response;
     });
+  }),
+
+  /**
+   * Gets/sets the value of the Authorization header.
+   */
+  auth: d.gs(function () {
+    return this.headers['Authorization'];
+  }, function (value) {
+    this.headers['Authorization'] = value;
   }),
 
   /**

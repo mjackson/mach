@@ -1,4 +1,4 @@
-var MaxLengthExceededError = require('../MaxLengthExceededError');
+var MaxLengthExceededError = require('./utils/MaxLengthExceededError');
 var mergeProperties = require('./utils/mergeProperties');
 var sendText = require('./utils/responseHelpers').text;
 

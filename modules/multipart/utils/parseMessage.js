@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var Stream = require('bufferedstream');
+var MaxLengthExceededError = require('./MaxLengthExceededError');
 var Parser = require('../Parser');
 
 function defaultPartHandler(part) {

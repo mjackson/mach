@@ -52,7 +52,7 @@ function describeSessionStore(store, skip) {
 
   desc('when it has a TTL', function () {
     beforeEach(function () {
-      store._ttl = 10;
+      store._ttl = 20;
     });
 
     afterEach(function () {

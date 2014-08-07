@@ -2,10 +2,6 @@ var parseURL = require('./parseURL');
 var stringifyError = require('./stringifyError');
 var Request = require('../../Request');
 
-function defaultRequestFactory(options) {
-  return new Request(options);
-}
-
 /**
  * HTTP status codes that don't have entities.
  */
@@ -22,9 +18,7 @@ var STATUS_WITHOUT_CONTENT = {
  *
  * Returns the request handler function.
  */
-function bindApp(app, nodeServer, createRequest) {
-  createRequest = createRequest || defaultRequestFactory;
-
+function bindApp(app, nodeServer) {
   var address = nodeServer.address();
 
   if (!address)
@@ -44,12 +38,15 @@ function bindApp(app, nodeServer, createRequest) {
     serverName = process.env.SERVER_NAME;
 
   function requestHandler(nodeRequest, nodeResponse) {
+    var connection = nodeRequest.connection;
     var url = parseURL(nodeRequest.url);
-    var request = createRequest({
+
+    var request = new Request({
+      protocol: url.protocol,
       protocolVersion: nodeRequest.httpVersion,
       method: nodeRequest.method,
-      remoteHost: nodeRequest.connection.remoteAddress,
-      remotePort: nodeRequest.connection.remotePort,
+      remoteHost: connection.remoteAddress,
+      remotePort: connection.remotePort,
       serverName: serverName,
       serverPort: serverPort,
       pathInfo: url.pathname,

@@ -43,12 +43,12 @@ Object.defineProperties(Message.prototype, {
   headers: d.gs(function () {
     return this._headers;
   }, function (value) {
-    if (value == null) {
-      this._headers = {};
-    } else {
+    this._headers = {};
+
+    if (value != null) {
       for (var headerName in value) {
         if (value.hasOwnProperty(headerName))
-          this.setHeader(headerName, value[headerName]);
+          this.addHeader(headerName, value[headerName]);
       }
     }
   }),
@@ -100,10 +100,12 @@ Object.defineProperties(Message.prototype, {
   }),
 
   /**
-   * The value of the Content-Type header.
+   * Gets/sets the value of the Content-Type header.
    */
   contentType: d.gs(function () {
     return this.headers['Content-Type'];
+  }, function (value) {
+    this.headers['Content-Type'] = value;
   }),
 
   /**
