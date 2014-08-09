@@ -1,5 +1,6 @@
 var XMLHttpRequest = window.XMLHttpRequest;
 var Promise = require('bluebird').Promise;
+var Stream = require('bufferedstream');
 var Response = require('../../Response');
 var bufferStream = require('./bufferStream');
 
@@ -52,8 +53,8 @@ function pipeContent(xhr, response, offset) {
   return offset;
 }
 
-var CAN_READ_STATE2 = true;
-var CAN_STREAM_CONTENT = true;
+var READ_HEADERS_RECEIVED_STATE = true;
+var READ_LOADING_STATE = true;
 
 function sendXMLHttpRequest(options) {
   return new Promise(function (resolve, reject) {
@@ -83,37 +84,40 @@ function sendXMLHttpRequest(options) {
       }
     }
 
-    var response = new Response;
+    var response = new Response({ content: new Stream });
     var offset = 0, status;
 
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 2 && CAN_READ_STATE2) {
-        try {
-          status = copyStatusAndHeaders(xhr, response);
-        } catch (error) {
-          CAN_READ_STATE2 = false;
-        }
-      } else if (xhr.readyState === 3 && CAN_STREAM_CONTENT) {
-        if (!status)
-          status = copyStatusAndHeaders(xhr, response);
+    function tryToResolve() {
+      if (!status && (status = copyStatusAndHeaders(xhr, response)) > 0)
+        resolve(response);
+    }
 
+    xhr.onreadystatechange = function () {
+      if (xhr.error)
+        return; // readystatechange triggers before error.
+
+      if (xhr.readyState === 2 && READ_HEADERS_RECEIVED_STATE) {
         try {
+          tryToResolve();
+        } catch (error) {
+          READ_HEADERS_RECEIVED_STATE = false;
+        }
+      } else if (xhr.readyState === 3 && READ_LOADING_STATE) {
+        try {
+          tryToResolve();
           offset = pipeContent(xhr, response, offset);
         } catch (error) {
-          CAN_STREAM_CONTENT = false;
+          READ_LOADING_STATE = false;
         }
       } else if (xhr.readyState === 4) {
-        if (!status)
-          status = copyStatusAndHeaders(xhr, response);
-
-        offset = pipeContent(xhr, response, offset);
-
-        if (xhr.error) {
-          reject(new Error('XMLHttpRequest error: ' + getContent(xhr)));
-        } else {
-          resolve(response);
-        }
+        tryToResolve();
+        pipeContent(xhr, response, offset);
+        response.content.end();
       }
+    };
+
+    xhr.onerror = function () {
+      reject(new Error('XMLHttpRequest error: ' + getContent(xhr)));
     };
 
     if (options.content) {
