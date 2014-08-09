@@ -2,6 +2,8 @@ var d = require('d');
 var bufferStream = require('./utils/bufferStream');
 var parseMessage = require('./utils/parseMessage');
 
+var _parseContent = require('../Message').prototype._parseContent;
+
 function parseMultipartMessage(message, maxLength, uploadPrefix) {
   function partHandler(part) {
     return message.handlePart(part, uploadPrefix);
@@ -16,8 +18,6 @@ function parseMultipartMessage(message, maxLength, uploadPrefix) {
 
   return parseMessage(message.content, message.multipartBoundary, maxLength, partHandler);
 }
-
-var _parseContent = require('../Message').prototype._parseContent;
 
 module.exports = {
 
