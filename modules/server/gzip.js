@@ -21,14 +21,11 @@ function gzip(app, options) {
       if (!shouldGzipContentType(headers['Content-Type']) || !request.acceptsEncoding('gzip'))
         return response;
 
-      var content = response.content;
-      response.content = content.pipe(zlib.createGzip(options));
+      response.content = response.content.pipe(zlib.createGzip(options));
 
-      content.resume();
-
+      delete headers['Content-Length'];
       headers['Content-Encoding'] = 'gzip';
       headers['Vary'] = 'Accept-Encoding';
-      delete headers['Content-Length'];
 
       return response;
     });
