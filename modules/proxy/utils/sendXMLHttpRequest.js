@@ -3,6 +3,7 @@ var Promise = require('bluebird').Promise;
 var Stream = require('bufferedstream');
 var Response = require('../../Response');
 var bufferStream = require('./bufferStream');
+var stringifyURL = require('./stringifyURL');
 
 var LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';
@@ -59,15 +60,7 @@ var READ_LOADING_STATE = true;
 function sendXMLHttpRequest(options) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest;
-
-    var url = options.protocol + '//' + options.hostname;
-
-    if (options.protocol === 'http:' && options.port != 80 || options.protocol === 'https:' && options.port != 443)
-      url += ':' + options.port;
-
-    url += options.path;
-
-    xhr.open(options.method, url, true);
+    xhr.open(options.method, stringifyURL(options), true);
 
     if ('withCredentials' in xhr)
       xhr.withCredentials = ('withCredentials' in options) ? options.withCredentials : true;
