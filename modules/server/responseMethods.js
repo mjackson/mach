@@ -103,13 +103,12 @@ module.exports = {
       if (!stats || !stats.isFile())
         throw new Error('Cannot send file ' + options.path + '; it is not a file');
 
+      response.content = fs.createReadStream(options.path);
       response.headers['Content-Type'] = getMimeType(options.path);
       response.headers['Content-Length'] = stats.size;
 
       if (options.useLastModified)
         response.headers['Last-Modified'] = stats.mtime.toUTCString();
-
-      response.content = fs.createReadStream(options.path);
 
       if (!options.useETag)
         return response;
