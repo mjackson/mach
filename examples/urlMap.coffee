@@ -1,4 +1,4 @@
-mach = require "../modules"
+mach = require "../modules/server"
 
 server = mach.serve mach.logger mach.map
 
