@@ -6,6 +6,11 @@ Object.defineProperties(
 );
 
 Object.defineProperties(
+  mach.Request.prototype,
+  require('./requestMethods')
+);
+
+Object.defineProperties(
   mach.Response.prototype,
   require('./responseMethods')
 );

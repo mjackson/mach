@@ -75,10 +75,11 @@ function bindApp(app, nodeServer) {
 
       if (isEmpty) {
         nodeResponse.end();
+
+        if (typeof response.content.destroy === 'function')
+          response.content.destroy();
       } else {
-        var content = response.content;
-        content.pipe(nodeResponse);
-        content.resume();
+        response.content.pipe(nodeResponse);
       }
     }, function (error) {
       request.onError(stringifyError(error));

@@ -84,7 +84,8 @@ Object.defineProperties(Message.prototype, {
   content: d.gs(function () {
     return this._content;
   }, function (value) {
-    value = value || DEFAULT_CONTENT;
+    if (value == null)
+      value = DEFAULT_CONTENT;
 
     if (value instanceof Stream) {
       this._content = value;
@@ -145,7 +146,7 @@ Object.defineProperties(Message.prototype, {
    * Note: 0 is a valid value for maxLength. It means "no limit".
    */
   bufferContent: d(function (maxLength) {
-    if (!this._bufferedContent)
+    if (this._bufferedContent == null)
       this._bufferedContent = bufferStream(this.content, maxLength);
 
     return this._bufferedContent;

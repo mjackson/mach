@@ -1,6 +1,5 @@
 var MaxLengthExceededError = require('./utils/MaxLengthExceededError');
 var mergeProperties = require('./utils/mergeProperties');
-var sendText = require('./utils/responseHelpers').text;
 
 /**
  * Automatically parses all request parameters and stores them in the `params`
@@ -29,7 +28,7 @@ function parseParams(app, options) {
   var maxLength = options.maxLength;
   var uploadPrefix = options.uploadPrefix;
 
-  return function (request) {
+  return function (request, response) {
     return request.getParams(maxLength, uploadPrefix).then(function (params) {
 
       if (request.params) {
@@ -43,7 +42,7 @@ function parseParams(app, options) {
       return request.call(app);
     }, function (error) {
       if (error instanceof MaxLengthExceededError)
-        return sendText('Request Entity Too Large', 413);
+        return response.sendText(413, 'Request Entity Too Large');
 
       throw error;
     });

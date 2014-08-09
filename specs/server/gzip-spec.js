@@ -1,5 +1,9 @@
 require('./helper');
 
+function compareBuffers(a, b) {
+  expect(a).toEqual(b, 'buffers are not equal');
+}
+
 describe('mach.gzip', function () {
   var testFile = specFile('test.txt');
   var content = readFile(testFile);
@@ -54,7 +58,3 @@ describe('mach.gzip', function () {
     });
   });
 });
-
-function compareBuffers(one, two) {
-  expect(one).toEqual(two, 'buffers are not equal');
-}

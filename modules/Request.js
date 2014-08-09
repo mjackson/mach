@@ -1,6 +1,5 @@
 var d = require('d');
 var Promise = require('bluebird').Promise;
-var mergeProperties = require('./utils/mergeProperties');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
 var parseURL = require('./utils/parseURL');
@@ -131,28 +130,6 @@ Object.defineProperties(Request, {
 Request.prototype = Object.create(Message.prototype, {
 
   constructor: d(Request),
-
-  /**
-   * Calls the given `app` in the scope of this request with this request
-   * as the first argument and returns a promise for a Response.
-   */
-  call: d(function (app) {
-    try {
-      var response = app.call(this, this);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-
-    return Promise.resolve(response).then(function (response) {
-      if (response == null)
-        throw new Error('No response returned from app: ' + app);
-
-      if (!(response instanceof Response))
-        response = Response.createFromObject(response);
-
-      return response;
-    });
-  }),
 
   /**
    * Gets/sets the value of the Authorization header.
@@ -295,91 +272,43 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
-   * True if this request was made using XMLHttpRequest.
+   * Calls the given `app` in the scope of this request with this request
+   * as the first argument and returns a promise for a Response.
    */
-  isXHR: d.gs(function () {
-    return this.headers['X-Requested-With'] === 'XMLHttpRequest';
-  }),
+  call: d(function (app) {
+    var request = this;
+    var response = request._response;
 
-  /**
-   * The IP address of the client.
-   */
-  remoteHost: d.gs(function () {
-    return this.headers['X-Forwarded-For'] || this._remoteHost;
-  }),
+    if (response == null)
+      response = request._response = new Response;
 
-  /**
-   * A high-level method that returns a promise for an object that is the union of
-   * data contained in the request query and body.
-   *
-   *   var maxUploadLimit = Math.pow(2, 20); // 1 mb
-   *
-   *   function app(request) {
-   *     return request.getParams(maxUploadLimit).then(function (params) {
-   *       // params is the union of query and content params
-   *     });
-   *   }
-   *
-   * Note: Content parameters take precedence over query parameters with the same name.
-   */
-  getParams: d(function (maxLength, uploadPrefix) {
-    if (this._params)
-      return this._params;
+    try {
+      var returnValue = typeof app === 'function' ? app(request, response) : app.call(request, response);
+    } catch (error) {
+      return Promise.reject(error);
+    }
 
-    var queryParams = mergeProperties({}, this.query);
+    return Promise.resolve(returnValue).then(function (value) {
+      if (value !== response && value != null) {
+        if (value instanceof Response) {
+          response = request._response = value;
+        } else if (typeof value === 'number') {
+          response.status = value;
+        } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
+          response.content = value;
+        } else {
+          if (value.status != null)
+            response.status = value.status;
 
-    this._params = this.parseContent(maxLength, uploadPrefix).then(function (params) {
-      // Content params take precedence over query params.
-      return mergeProperties(queryParams, params);
-    });
+          if (value.headers != null)
+            response.headers = value.headers;
 
-    return this._params;
-  }),
-
-  /**
-   * A high-level method that returns a promise for an object of all parameters given in
-   * this request filtered by the filter functions given in the filterMap. This provides
-   * a convenient way to get a whitelist of trusted request parameters.
-   *
-   * Keys in the filterMap should correspond to the names of request parameters and values
-   * should be a filter function that is used to coerce the value of that parameter to the
-   * desired output value. Any parameters in the filterMap that were not given in the request
-   * are ignored. Values for which filtering functions return `undefined` are also ignored.
-   *
-   *   // This function parses a list of comma-separated values in
-   *   // a request parameter into an array.
-   *   function parseList(value) {
-   *     return value.split(',');
-   *   }
-   *
-   *   function app(request) {
-   *     return request.filterParams({
-   *       name: String,
-   *       age: Number,
-   *       hobbies: parseList
-   *     }).then(function (params) {
-   *       // params.name will be a string, params.age a number, and params.hobbies an array
-   *       // if they were provided in the request. params won't contain any other properties.
-   *     });
-   *   }
-   */
-  filterParams: d(function (filterMap, maxLength, uploadPrefix) {
-    return this.getParams(maxLength, uploadPrefix).then(function (params) {
-      var filteredParams = {};
-
-      var filter, value;
-      for (var paramName in filterMap) {
-        filter = filterMap[paramName];
-
-        if (typeof filter === 'function' && params.hasOwnProperty(paramName)) {
-          value = filter(params[paramName]);
-
-          if (value !== undefined)
-            filteredParams[paramName] = value;
+          if (value.content != null)
+            response.content = value.content;
         }
       }
 
-      return filteredParams;
+      return response;
     });
   })
 

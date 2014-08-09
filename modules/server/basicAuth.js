@@ -1,6 +1,11 @@
 var Promise = require('bluebird').Promise;
 var decodeBase64 = require('./utils/decodeBase64');
-var sendText = require('./utils/responseHelpers').text;
+
+function unauthorized(response, realm) {
+  realm = realm || 'Authorization Required';
+  response.headers['WWW-Authenticate'] = 'Basic realm="' + realm + '"';
+  response.sendText(401, 'Not Authorized');
+}
 
 /**
  * A middleware that performs basic auth on the incoming request before passing
@@ -34,42 +39,33 @@ function basicAuth(app, options) {
     options = { validate: options };
 
   if (typeof options.validate !== 'function')
-    throw new Error('Missing validation function for basic auth');
+    throw new Error('mach.basicAuth needs a validation function');
 
-  return function (request) {
+  return function (request, response) {
     if (request.remoteUser)
       return request.call(app); // Don't overwrite existing remoteUser.
 
     var auth = request.auth;
     if (!auth)
-      return unauthorized(options.realm);
+      return unauthorized(response, options.realm);
 
-    var parts = auth.split(' ');
+    var parts = auth.split(' ', 2);
     var scheme = parts[0];
     if (scheme.toLowerCase() !== 'basic')
-      return sendText('Bad Request', 403);
+      return response.sendText(400, 'Bad Request');
 
     var params = decodeBase64(parts[1]).split(':');
-    var username = params[0];
-    var password = params[1];
+    var username = params[0], password = params[1];
 
     return Promise.resolve(options.validate(username, password)).then(function (user) {
       if (!user)
-        return unauthorized(options.realm);
+        return unauthorized(response, options.realm);
 
       request.remoteUser = (user === true) ? username : user;
 
       return request.call(app);
     });
   };
-}
-
-function unauthorized(realm) {
-  realm = realm || 'Authorization Required';
-
-  return sendText('Not Authorized', 401, {
-    'WWW-Authenticate': 'Basic realm="' + realm + '"'
-  });
 }
 
 module.exports = basicAuth;

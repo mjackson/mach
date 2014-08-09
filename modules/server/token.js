@@ -1,5 +1,4 @@
 var makeToken = require('./utils/makeToken');
-var sendText = require('./utils/responseHelpers').text;
 
 /**
  * The set of HTTP request methods that are considered safe because they
@@ -61,7 +60,7 @@ function verifyToken(app, options) {
   var sessionKey = options.sessionKey || '_token';
   var byteLength = options.byteLength || 32;
 
-  return function (request) {
+  return function (request, response) {
     var session = request.session;
     var params = request.params;
 
@@ -85,7 +84,7 @@ function verifyToken(app, options) {
     if (SAFE_METHODS[request.method] === true)
       return request.call(app);
 
-    return sendText('Forbidden', 403);
+    return response.sendText(403, 'Forbidden');
   };
 }
 
