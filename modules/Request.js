@@ -1,12 +1,9 @@
 var d = require('d');
-var Promise = require('bluebird');
-var Accept = require('./headers/Accept');
-var AcceptCharset = require('./headers/AcceptCharset');
-var AcceptEncoding = require('./headers/AcceptEncoding');
-var AcceptLanguage = require('./headers/AcceptLanguage');
-var mergeProperties = require('./utils/mergeProperties');
+var Promise = require('bluebird').Promise;
 var parseCookie = require('./utils/parseCookie');
-var parseQueryString = require('./utils/parseQueryString');
+var parseQuery = require('./utils/parseQuery');
+var parseURL = require('./utils/parseURL');
+var stringifyQuery = require('./utils/stringifyQuery');
 var Message = require('./Message');
 var Response = require('./Response');
 
@@ -22,6 +19,16 @@ if (typeof process !== 'undefined' && process.stderr) {
 }
 
 function defaultCloseHandler() {}
+
+function defaultPortForProtocol(protocol) { 
+  if(protocol === 'http:') return '80';
+  if(protocol === 'https:') return '443';
+  return '80';
+}
+
+function isBodyRequest(httpMethod) {
+  return httpMethod === 'POST' || httpMethod === 'PUT' || httpMethod === 'PATCH';
+}
 
 /**
  * An HTTP request.
@@ -61,13 +68,13 @@ function Request(options) {
 
   this.onError = errorHandler;
   this.onClose = closeHandler;
-  this._protocol = options.protocol || 'http:';
+  this._protocol = (options.protocol || 'http:').toLowerCase();
   this.protocolVersion = options.protocolVersion || '1.0';
   this.method = (options.method || 'GET').toUpperCase();
   this._remoteHost = options.remoteHost || '';
-  this.remotePort = String(options.remotePort || 0);
+  this.remotePort = String(options.remotePort || '0');
   this.serverName = options.serverName || '';
-  this.serverPort = String(options.serverPort || 0);
+  this.serverPort = String(options.serverPort || defaultPortForProtocol(this._protocol));
   this.queryString = options.queryString || '';
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
@@ -77,70 +84,70 @@ function Request(options) {
     this.pathInfo = '/';
 }
 
+Object.defineProperties(Request, {
+
+  /**
+   * Returns a new Request created using the given options, which may
+   * be any of the Request constructor's options or the following:
+   *
+   * - method     The HTTP method (i.e. GET, POST, etc.)
+   * - params     An object of HTTP parameters
+   */
+  create: d(function (options) {
+    if (typeof options === 'string')
+      return Request.createFromURL(options);
+
+    options = options || {};
+
+    // Params may be given as an object.
+    if (options.params) {
+      var queryString = stringifyQuery(options.params);
+
+      if (isBodyRequest(options.method)) {
+        if (!options.headers)
+          options.headers = {};
+
+        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        options.content = queryString;
+      } else {
+        options.queryString = queryString;
+        options.content = '';
+      }
+
+      delete options.params;
+    }
+
+    return new Request(options);
+  }),
+
+  /**
+   * Creates and returns new Request using the given URL.
+   */
+  createFromURL: d(function (fromURL) {
+    var url = parseURL(fromURL);
+
+    return new Request({
+      protocol: url.protocol || 'http:',
+      serverName: url.hostname,
+      serverPort: url.port || defaultPortForProtocol(url.protocol),
+      pathInfo: url.pathname,
+      queryString: url.query
+    });
+  })
+
+});
+
 Request.prototype = Object.create(Message.prototype, {
 
   constructor: d(Request),
 
   /**
-   * Calls the given `app` in the scope of this request with this request
-   * as the first argument and returns a promise for a Response.
+   * Gets/sets the value of the Authorization header.
    */
-  call: d(function (app) {
-    try {
-      var response = app.call(this, this);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-
-    return Promise.resolve(response).then(function (response) {
-      if (response == null)
-        throw new Error('No response returned from app: ' + app);
-
-      if (!(response instanceof Response))
-        response = Response.createFromObject(response);
-
-      return response;
-    });
-  }),
-
-  /**
-   * Returns true if the client accepts the given mediaType.
-   */
-  accepts: d(function (mediaType) {
-    if (!this._acceptHeader)
-      this._acceptHeader = new Accept(this.headers['Accept']);
-
-    return this._acceptHeader.accepts(mediaType);
-  }),
-
-  /**
-   * Returns true if the client accepts the given character set.
-   */
-  acceptsCharset: d(function (charset) {
-    if (!this._acceptCharsetHeader)
-      this._acceptCharsetHeader = new AcceptCharset(this.headers['Accept-Charset']);
-
-    return this._acceptCharsetHeader.accepts(charset);
-  }),
-
-  /**
-   * Returns true if the client accepts the given content encoding.
-   */
-  acceptsEncoding: d(function (encoding) {
-    if (!this._acceptEncodingHeader)
-      this._acceptEncodingHeader = new AcceptEncoding(this.headers['Accept-Encoding']);
-
-    return this._acceptEncodingHeader.accepts(encoding);
-  }),
-
-  /**
-   * Returns true if the client accepts the given content language.
-   */
-  acceptsLanguage: d(function (language) {
-    if (!this._acceptLanguageHeader)
-      this._acceptLanguageHeader = new AcceptLanguage(this.headers['Accept-Language']);
-
-    return this._acceptLanguageHeader.accepts(language);
+  auth: d.gs(function () {
+    return this.headers['Authorization'];
+  }, function (value) {
+    this.headers['Authorization'] = value;
   }),
 
   /**
@@ -262,7 +269,7 @@ Request.prototype = Object.create(Message.prototype, {
    */
   query: d.gs(function () {
     if (!this._query)
-      this._query = parseQueryString(this.queryString);
+      this._query = parseQuery(this.queryString);
 
     return this._query;
   }),
@@ -275,91 +282,43 @@ Request.prototype = Object.create(Message.prototype, {
   }),
 
   /**
-   * True if this request was made using XMLHttpRequest.
+   * Calls the given `app` in the scope of this request with this request
+   * as the first argument and returns a promise for a Response.
    */
-  isXHR: d.gs(function () {
-    return this.headers['X-Requested-With'] === 'XMLHttpRequest';
-  }),
+  call: d(function (app) {
+    var request = this;
+    var response = request._response;
 
-  /**
-   * The IP address of the client.
-   */
-  remoteHost: d.gs(function () {
-    return this.headers['X-Forwarded-For'] || this._remoteHost;
-  }),
+    if (response == null)
+      response = request._response = new Response;
 
-  /**
-   * A high-level method that returns a promise for an object that is the union of
-   * data contained in the request query and body.
-   *
-   *   var maxUploadLimit = Math.pow(2, 20); // 1 mb
-   *
-   *   function app(request) {
-   *     return request.getParams(maxUploadLimit).then(function (params) {
-   *       // params is the union of query and content params
-   *     });
-   *   }
-   *
-   * Note: Content parameters take precedence over query parameters with the same name.
-   */
-  getParams: d(function (maxLength, uploadPrefix) {
-    if (this._params)
-      return this._params;
+    try {
+      var returnValue = typeof app === 'function' ? app(request, response) : app.call(request, response);
+    } catch (error) {
+      return Promise.reject(error);
+    }
 
-    var queryParams = mergeProperties({}, this.query);
+    return Promise.resolve(returnValue).then(function (value) {
+      if (value !== response && value != null) {
+        if (value instanceof Response) {
+          response = request._response = value;
+        } else if (typeof value === 'number') {
+          response.status = value;
+        } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
+          response.content = value;
+        } else {
+          if (value.status != null)
+            response.status = value.status;
 
-    this._params = this.parseContent(maxLength, uploadPrefix).then(function (params) {
-      // Content params take precedence over query params.
-      return mergeProperties(queryParams, params);
-    });
+          if (value.headers != null)
+            response.headers = value.headers;
 
-    return this._params;
-  }),
-
-  /**
-   * A high-level method that returns a promise for an object of all parameters given in
-   * this request filtered by the filter functions given in the filterMap. This provides
-   * a convenient way to get a whitelist of trusted request parameters.
-   *
-   * Keys in the filterMap should correspond to the names of request parameters and values
-   * should be a filter function that is used to coerce the value of that parameter to the
-   * desired output value. Any parameters in the filterMap that were not given in the request
-   * are ignored. Values for which filtering functions return `undefined` are also ignored.
-   *
-   *   // This function parses a list of comma-separated values in
-   *   // a request parameter into an array.
-   *   function parseList(value) {
-   *     return value.split(',');
-   *   }
-   *
-   *   function app(request) {
-   *     return request.filterParams({
-   *       name: String,
-   *       age: Number,
-   *       hobbies: parseList
-   *     }).then(function (params) {
-   *       // params.name will be a string, params.age a number, and params.hobbies an array
-   *       // if they were provided in the request. params won't contain any other properties.
-   *     });
-   *   }
-   */
-  filterParams: d(function (filterMap, maxLength, uploadPrefix) {
-    return this.getParams(maxLength, uploadPrefix).then(function (params) {
-      var filteredParams = {};
-
-      var filter, value;
-      for (var paramName in filterMap) {
-        filter = filterMap[paramName];
-
-        if (typeof filter === 'function' && params.hasOwnProperty(paramName)) {
-          value = filter(params[paramName]);
-
-          if (value !== undefined)
-            filteredParams[paramName] = value;
+          if (value.content != null)
+            response.content = value.content;
         }
       }
 
-      return filteredParams;
+      return response;
     });
   })
 

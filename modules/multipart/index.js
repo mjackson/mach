@@ -1,4 +1,11 @@
-exports.Parser = require('./Parser');
-exports.Part = require('./Part');
+var mach = require('../index');
 
-exports.parse = require('../utils/parseMultipart');
+Object.defineProperties(
+  mach.Message.prototype,
+  require('./messageMethods')
+);
+
+mach.MultipartParser = require('./Parser');
+mach.MultipartPart = require('./Part');
+
+module.exports = mach;

@@ -1,17 +1,14 @@
 var d = require('d');
 var Buffer = require('buffer').Buffer;
 var Stream = require('bufferedstream');
-var MaxLengthExceededError = require('./errors/MaxLengthExceededError');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
-var parseMultipart = require('./utils/parseMultipart');
-var parseQueryString = require('./utils/parseQueryString');
-var streamPartToDisk = require('./utils/streamPartToDisk');
+var parseQuery = require('./utils/parseQuery');
 
 /**
  * The default content to use for new messages.
  */
-var DEFAULT_CONTENT = new Buffer([]);
+var DEFAULT_CONTENT = new Buffer([]); // TODO: should this be a method to provide a new instance each time?
 
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
@@ -25,7 +22,9 @@ var DEFAULT_MAX_CONTENT_LENGTH = Math.pow(2, 20); // 1m
 var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
 
 /**
- * An HTTP message. The base class for Request and Response.
+ * An HTTP message.
+ *
+ * The base class for Request and Response.
  */
 function Message(content, headers) {
   this._headers = {};
@@ -44,12 +43,12 @@ Object.defineProperties(Message.prototype, {
   headers: d.gs(function () {
     return this._headers;
   }, function (value) {
-    if (value == null) {
-      this._headers = {};
-    } else {
+    this._headers = {};
+
+    if (value != null) {
       for (var headerName in value) {
         if (value.hasOwnProperty(headerName))
-          this.setHeader(headerName, value[headerName]);
+          this.addHeader(headerName, value[headerName]);
       }
     }
   }),
@@ -85,7 +84,8 @@ Object.defineProperties(Message.prototype, {
   content: d.gs(function () {
     return this._content;
   }, function (value) {
-    value = value || DEFAULT_CONTENT;
+    if (value == null)
+      value = DEFAULT_CONTENT;
 
     if (value instanceof Stream) {
       this._content = value;
@@ -101,10 +101,12 @@ Object.defineProperties(Message.prototype, {
   }),
 
   /**
-   * The value of the Content-Type header.
+   * Gets/sets the value of the Content-Type header.
    */
   contentType: d.gs(function () {
     return this.headers['Content-Type'];
+  }, function (value) {
+    this.headers['Content-Type'] = value;
   }),
 
   /**
@@ -130,25 +132,6 @@ Object.defineProperties(Message.prototype, {
   }),
 
   /**
-   * True if this message is multipart, false otherwise.
-   */
-  isMultipart: d.gs(function () {
-    return this.multipartBoundary != null;
-  }),
-
-  /**
-   * The value that was used as the boundary for multipart content.
-   */
-  multipartBoundary: d.gs(function () {
-    var contentType = this.contentType;
-
-    if (contentType) {
-      var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
-      return match && (match[1] || match[2]);
-    }
-  }),
-
-  /**
    * True if the content of this message is buffered, false otherwise.
    */
   isBuffered: d.gs(function () {
@@ -163,7 +146,7 @@ Object.defineProperties(Message.prototype, {
    * Note: 0 is a valid value for maxLength. It means "no limit".
    */
   bufferContent: d(function (maxLength) {
-    if (!this._bufferedContent)
+    if (this._bufferedContent == null)
       this._bufferedContent = bufferStream(this.content, maxLength);
 
     return this._bufferedContent;
@@ -207,51 +190,17 @@ Object.defineProperties(Message.prototype, {
     if (typeof uploadPrefix !== 'string')
       uploadPrefix = DEFAULT_UPLOAD_PREFIX;
 
-    if (this.mediaType === 'application/json') {
-      this._parsedContent = this.stringifyContent(maxLength).then(JSON.parse);
-    } else if (this.isMultipart) {
-      this._parsedContent = parseMultipartMessage(this, maxLength, uploadPrefix);
-    } else { // Assume content is URL-encoded.
-      this._parsedContent = this.stringifyContent(maxLength).then(parseQueryString);
-    }
+    this._parsedContent = this._parseContent(maxLength, uploadPrefix);
 
     return this._parsedContent;
   }),
 
-  /**
-   * A low-level hook responsible for handling multipart.Part objects when
-   * parsing multipart message content. It should return the value to use for
-   * that part in the parameters hash, or a promise for the value. By default
-   * it streams file uploads to temporary files on disk and converts all other
-   * message parameters to strings.
-   *
-   * This should be overridden if you want to specify some kind of custom handling
-   * for multipart data, such as streaming it directly to a network file storage.
-   */
-  handlePart: d(function (part, uploadPrefix) {
-    if (part.isFile)
-      return streamPartToDisk(part, uploadPrefix);
-
-    return bufferStream(part.content).then(function (chunk) {
-      return chunk.toString();
-    });
+  _parseContent: d(function (maxLength, uploadPrefix) {
+    return this.stringifyContent(maxLength).then(
+      this.mediaType === 'application/json' ? JSON.parse : parseQuery
+    );
   })
 
 });
-
-function parseMultipartMessage(message, maxLength, uploadPrefix) {
-  function partHandler(part) {
-    return message.handlePart(part, uploadPrefix);
-  }
-
-  // If the content has been buffered, use the buffer.
-  if (message.isBuffered) {
-    return message.bufferContent().then(function (content) {
-      return parseMultipart(content, message.multipartBoundary, maxLength, partHandler);
-    });
-  }
-
-  return parseMultipart(message.content, message.multipartBoundary, maxLength, partHandler);
-}
 
 module.exports = Message;
