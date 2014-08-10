@@ -8,7 +8,7 @@ var parseQuery = require('./utils/parseQuery');
 /**
  * The default content to use for new messages.
  */
-var DEFAULT_CONTENT = new Buffer([]);
+var DEFAULT_CONTENT = new Buffer([]); // TODO: should this be a method to provide a new instance each time?
 
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
