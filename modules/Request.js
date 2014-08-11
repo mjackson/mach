@@ -20,6 +20,16 @@ if (typeof process !== 'undefined' && process.stderr) {
 
 function defaultCloseHandler() {}
 
+function defaultPortForProtocol(protocol) { 
+  if(protocol === 'http:') return '80';
+  if(protocol === 'https:') return '443';
+  return '80';
+}
+
+function isBodyRequest(httpMethod) {
+  return httpMethod === 'POST' || httpMethod === 'PUT' || httpMethod === 'PATCH';
+}
+
 /**
  * An HTTP request.
  *
@@ -58,13 +68,13 @@ function Request(options) {
 
   this.onError = errorHandler;
   this.onClose = closeHandler;
-  this._protocol = options.protocol || 'http:';
+  this._protocol = (options.protocol || 'http:').toLowerCase();
   this.protocolVersion = options.protocolVersion || '1.0';
   this.method = (options.method || 'GET').toUpperCase();
   this._remoteHost = options.remoteHost || '';
   this.remotePort = String(options.remotePort || '0');
   this.serverName = options.serverName || '';
-  this.serverPort = String(options.serverPort || '80');
+  this.serverPort = String(options.serverPort || defaultPortForProtocol(this._protocol));
   this.queryString = options.queryString || '';
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
@@ -93,7 +103,7 @@ Object.defineProperties(Request, {
     if (options.params) {
       var queryString = stringifyQuery(options.params);
 
-      if (options.method === 'POST' || options.method === 'PUT') {
+      if (isBodyRequest(options.method)) {
         if (!options.headers)
           options.headers = {};
 
@@ -117,9 +127,9 @@ Object.defineProperties(Request, {
     var url = parseURL(fromURL);
 
     return new Request({
-      protocol: url.protocol,
+      protocol: url.protocol || 'http:',
       serverName: url.hostname,
-      serverPort: url.port,
+      serverPort: url.port || defaultPortForProtocol(url.protocol),
       pathInfo: url.pathname,
       queryString: url.query
     });
