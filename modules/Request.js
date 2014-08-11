@@ -2,8 +2,6 @@ var d = require('d');
 var Promise = require('bluebird').Promise;
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
-var parseURL = require('./utils/parseURL');
-var stringifyQuery = require('./utils/stringifyQuery');
 var Message = require('./Message');
 var Response = require('./Response');
 
@@ -19,16 +17,6 @@ if (typeof process !== 'undefined' && process.stderr) {
 }
 
 function defaultCloseHandler() {}
-
-function defaultPortForProtocol(protocol) { 
-  if(protocol === 'http:') return '80';
-  if(protocol === 'https:') return '443';
-  return '80';
-}
-
-function isBodyRequest(httpMethod) {
-  return httpMethod === 'POST' || httpMethod === 'PUT' || httpMethod === 'PATCH';
-}
 
 /**
  * An HTTP request.
@@ -74,7 +62,7 @@ function Request(options) {
   this._remoteHost = options.remoteHost || '';
   this.remotePort = String(options.remotePort || '0');
   this.serverName = options.serverName || '';
-  this.serverPort = String(options.serverPort || defaultPortForProtocol(this._protocol));
+  this.serverPort = String(options.serverPort || (this.isSSL ? '443' : '80'));
   this.queryString = options.queryString || '';
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
@@ -83,59 +71,6 @@ function Request(options) {
   if (this.scriptName === '' && this.pathInfo === '')
     this.pathInfo = '/';
 }
-
-Object.defineProperties(Request, {
-
-  /**
-   * Returns a new Request created using the given options, which may
-   * be any of the Request constructor's options or the following:
-   *
-   * - method     The HTTP method (i.e. GET, POST, etc.)
-   * - params     An object of HTTP parameters
-   */
-  create: d(function (options) {
-    if (typeof options === 'string')
-      return Request.createFromURL(options);
-
-    options = options || {};
-
-    // Params may be given as an object.
-    if (options.params) {
-      var queryString = stringifyQuery(options.params);
-
-      if (isBodyRequest(options.method)) {
-        if (!options.headers)
-          options.headers = {};
-
-        options.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        options.content = queryString;
-      } else {
-        options.queryString = queryString;
-        options.content = '';
-      }
-
-      delete options.params;
-    }
-
-    return new Request(options);
-  }),
-
-  /**
-   * Creates and returns new Request using the given URL.
-   */
-  createFromURL: d(function (fromURL) {
-    var url = parseURL(fromURL);
-
-    return new Request({
-      protocol: url.protocol || 'http:',
-      serverName: url.hostname,
-      serverPort: url.port || defaultPortForProtocol(url.protocol),
-      pathInfo: url.pathname,
-      queryString: url.query
-    });
-  })
-
-});
 
 Request.prototype = Object.create(Message.prototype, {
 
@@ -293,33 +228,31 @@ Request.prototype = Object.create(Message.prototype, {
       response = request._response = new Response;
 
     try {
-      var returnValue = typeof app === 'function' ? app(request, response) : app.call(request, response);
+      return Promise.resolve(app(request, response)).then(function (value) {
+        if (value !== response && value != null) {
+          if (value instanceof Response) {
+            response = request._response = value;
+          } else if (typeof value === 'number') {
+            response.status = value;
+          } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
+            response.content = value;
+          } else {
+            if (value.status != null)
+              response.status = value.status;
+
+            if (value.headers != null)
+              response.headers = value.headers;
+
+            if (value.content != null)
+              response.content = value.content;
+          }
+        }
+
+        return response;
+      });
     } catch (error) {
       return Promise.reject(error);
     }
-
-    return Promise.resolve(returnValue).then(function (value) {
-      if (value !== response && value != null) {
-        if (value instanceof Response) {
-          response = request._response = value;
-        } else if (typeof value === 'number') {
-          response.status = value;
-        } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
-          response.content = value;
-        } else {
-          if (value.status != null)
-            response.status = value.status;
-
-          if (value.headers != null)
-            response.headers = value.headers;
-
-          if (value.content != null)
-            response.content = value.content;
-        }
-      }
-
-      return response;
-    });
   })
 
 });

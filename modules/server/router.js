@@ -4,24 +4,7 @@ var defaultApp = require('./utils/defaultApp');
 var isRegExp = require('./utils/isRegExp');
 var makeParams = require('./utils/makeParams');
 var mergeProperties = require('./utils/mergeProperties');
-
-var ROUTING_VERBS = {
-  delete: 'DELETE',
-  get: [ 'GET', 'HEAD' ],
-  head: 'HEAD',
-  options: 'OPTIONS',
-  patch: 'PATCH',
-  post: 'POST',
-  put: 'PUT'
-};
-
-var ROUTING_METHODS = {};
-
-Object.keys(ROUTING_VERBS).forEach(function (method) {
-  ROUTING_METHODS[method] = d(function (pattern, app) {
-    return this.route(pattern, ROUTING_VERBS[method], app);
-  });
-});
+var routingMethods = require('./utils/routingMethods');
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
@@ -51,32 +34,12 @@ Object.keys(ROUTING_VERBS).forEach(function (method) {
  *
  * Note: All routes are tried in the order they were defined.
  */
-function Router(app) {
-  if (!(this instanceof Router))
-    return new Router(app);
+function router(app) {
+  app = app || defaultApp;
 
-  this._app = app || defaultApp;
-  this._routes = {};
-}
+  var routes = {};
 
-Object.defineProperties(Router, {
-
-  /**
-   * A map of routing methods including `get`, `post`, etc. that other
-   * classes that need routing abilities can mix in.
-   *
-   *   Object.defineProperties(MyRouter.prototype, Router.routingMethods);
-   */
-  routingMethods: d(ROUTING_METHODS)
-
-});
-
-Object.defineProperties(Router.prototype, ROUTING_METHODS);
-
-Object.defineProperties(Router.prototype, {
-
-  call: d(function (request) {
-    var routes = this._routes;
+  function callRouter(request) {
     var method = request.method;
     var routesToTry = (routes[method] || []).concat(routes.ANY || []);
 
@@ -99,57 +62,63 @@ Object.defineProperties(Router.prototype, {
       }
     }
 
-    return request.call(this._app);
-  }),
+    return request.call(app);
+  }
 
-  /**
-   * Adds a new route that runs the given app when the pattern matches the
-   * path used in the request. If the pattern is a string, it is automatically
-   * compiled. See utils/compileRoute.js.
-   */
-  route: d(function (pattern, methods, app) {
-    if (typeof methods === 'function') {
-      app = methods;
-      methods = null;
-    }
+  Object.defineProperties(callRouter, {
 
-    app = app || defaultApp;
+    /**
+     * Sets the given app as the default for this router.
+     */
+    run: d(function (downstreamApp) {
+      app = downstreamApp;
+    }),
 
-    if (typeof methods === 'string')
-      methods = [ methods ];
-
-    if (!Array.isArray(methods))
-      methods = [ 'ANY' ];
-
-    var keys = [];
-
-    if (typeof pattern === 'string')
-      pattern = compileRoute(pattern, keys);
-
-    if (!isRegExp(pattern))
-      throw new Error('Pattern must be a RegExp');
-
-    var route = { pattern: pattern, keys: keys, app: app };
-    var routes = this._routes;
-
-    methods.forEach(function (method) {
-      var upperMethod = method.toUpperCase();
-
-      if (routes[upperMethod]) {
-        routes[upperMethod].push(route);
-      } else {
-        routes[upperMethod] = [ route ];
+    /**
+     * Adds a new route that runs the given app when the pattern matches the
+     * path used in the request. If the pattern is a string, it is automatically
+     * compiled. See utils/compileRoute.js.
+     */
+    route: d(function (pattern, methods, app) {
+      if (typeof methods === 'function') {
+        app = methods;
+        methods = null;
       }
-    });
-  }),
 
-  /**
-   * Sets the given app as the default for this router.
-   */
-  run: d(function (app) {
-    this._app = app;
-  })
+      app = app || defaultApp;
 
-});
+      if (typeof methods === 'string')
+        methods = [ methods ];
 
-module.exports = Router;
+      if (!Array.isArray(methods))
+        methods = [ 'ANY' ];
+
+      var keys = [];
+
+      if (typeof pattern === 'string')
+        pattern = compileRoute(pattern, keys);
+
+      if (!isRegExp(pattern))
+        throw new Error('Pattern must be a RegExp');
+
+      var route = { pattern: pattern, keys: keys, app: app };
+
+      methods.forEach(function (method) {
+        var upperMethod = method.toUpperCase();
+
+        if (routes[upperMethod]) {
+          routes[upperMethod].push(route);
+        } else {
+          routes[upperMethod] = [ route ];
+        }
+      });
+    })
+
+  });
+
+  Object.defineProperties(callRouter, routingMethods);
+
+  return callRouter;
+}
+
+module.exports = router;

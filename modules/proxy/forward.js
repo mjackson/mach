@@ -1,5 +1,5 @@
 var isRegExp = require('./utils/isRegExp');
-var Proxy = require('./Proxy');
+var proxy = require('./proxy');
 
 function returnTrue() {
   return true;
@@ -7,9 +7,8 @@ function returnTrue() {
 
 /**
  * A middleware that forwards requests that pass the given test function
- * to the given app. If the app is a string, it is used to setup a proxy
- * to that URL. Otherwise it may be a hash of options that are passed to
- * the Proxy constructor.
+ * to the given target. If the target is not an app, it should be a string
+ * or options hash that is used to create a proxy.
  *
  * Example:
  *
@@ -24,7 +23,7 @@ function returnTrue() {
  *   
  *   mach.serve(app);
  */
-function forward(app, targetApp, test) {
+function forward(app, target, test) {
   test = test || returnTrue;
 
   if (isRegExp(test)) {
@@ -36,12 +35,12 @@ function forward(app, targetApp, test) {
     throw new Error('mach.forward needs a test function');
   }
 
-  if (typeof targetApp !== 'function')
-    targetApp = new Proxy(targetApp);
+  if (typeof target !== 'function')
+    target = proxy(target);
 
   return function (request) {
     if (test(request))
-      return request.call(targetApp);
+      return request.call(target);
 
     return request.call(app);
   };

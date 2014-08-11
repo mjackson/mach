@@ -1,13 +1,15 @@
 var mach = require('../proxy');
-var makeRequestMethod = require('./utils/makeRequestMethod');
 
-mach.delete   = makeRequestMethod('DELETE');
-mach.get      = makeRequestMethod('GET');
-mach.head     = makeRequestMethod('HEAD');
-mach.options  = makeRequestMethod('OPTIONS');
-mach.patch    = makeRequestMethod('PATCH');
-mach.post     = makeRequestMethod('POST');
-mach.put      = makeRequestMethod('PUT');
-mach.request  = require('./request');
+mach.call = require('./call');
+
+var callUsingMethod = require('./utils/callUsingMethod');
+
+mach.delete   = callUsingMethod('DELETE');
+mach.get      = callUsingMethod('GET');
+mach.head     = callUsingMethod('HEAD');
+mach.options  = callUsingMethod('OPTIONS');
+mach.patch    = callUsingMethod('PATCH');
+mach.post     = callUsingMethod('POST');
+mach.put      = callUsingMethod('PUT');
 
 module.exports = mach;

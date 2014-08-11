@@ -6,9 +6,6 @@ Object.defineProperties(
 );
 
 mach.forward = require('./forward');
-
-mach.Proxy = require('./Proxy');
-
-mach.send = require('./utils/sendRequest');
+mach.proxy = require('./proxy');
 
 module.exports = mach;

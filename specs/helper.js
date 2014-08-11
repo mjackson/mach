@@ -1,18 +1,17 @@
 assert = require('assert');
 expect = require('expect');
-mach = require('../modules');
 
 refute = function (condition, message) {
   assert(!condition, message);
 };
+
+mach = require('../modules/client');
 
 lastResponse = null;
 
 beforeEach(function () {
   lastResponse = null;
 });
-
-var Request = mach.Request;
 
 /**
  * Calls the app with the given options and buffers the response
@@ -24,9 +23,8 @@ callApp = function (app, options) {
   options = options || {};
 
   var leaveBuffer = !!options.leaveBuffer;
-  var request = Request.create(options);
 
-  return request.call(app).then(function (response) {
+  return mach.call(app, options).then(function (response) {
     lastResponse = response;
 
     return response.bufferContent().then(function (buffer) {

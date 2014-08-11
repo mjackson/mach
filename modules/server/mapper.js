@@ -28,18 +28,12 @@ function byMostSpecific(a, b) {
  * Note: Dispatch is done in such a way that the longest paths are tried first
  * since they are the most specific.
  */
-function Mapper(app) {
-  if (!(this instanceof Mapper))
-    return new Mapper(app);
+function mapper(app) {
+  app = app || defaultApp;
   
-  this._app = app || defaultApp;
-  this._mappings = [];
-}
+  var mappings = [];
 
-Object.defineProperties(Mapper.prototype, {
-
-  call: d(function (request) {
-    var mappings = this._mappings;
+  function callMapper(request) {
     var scriptName = request.scriptName;
     var pathInfo = request.pathInfo;
     var host = request.host;
@@ -67,50 +61,56 @@ Object.defineProperties(Mapper.prototype, {
       return request.call(mapping.app);
     }
 
-    return request.call(this._app);
-  }),
+    return request.call(app);
+  }
 
-  /**
-   * Adds a new mapping that runs the given app when the location used in the
-   * request matches the given location.
-   */
-  map: d(function (location, app) {
-    var host, path;
+  Object.defineProperties(callMapper, {
 
-    // If the location is a fully qualified URL use the host as well.
-    var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
-    if (match) {
-      host = match[1];
-      path = match[2];
-    } else {
-      path = location;
-    }
+    /**
+     * Sets the given app as the default for this mapper.
+     */
+    run: d(function (downstreamApp) {
+      app = downstreamApp;
+    }),
 
-    if (path.charAt(0) !== '/')
-      throw new Error('Mapping path must start with "/", was "' + path + '"');
+    /**
+     * Adds a new mapping that runs the given app when the location used in the
+     * request matches the given location.
+     */
+    map: d(function (location, app) {
+      app = app || defaultApp;
 
-    path = path.replace(/\/$/, '');
+      var host, path;
 
-    var mappings = this._mappings;
-    var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
+      // If the location is a fully qualified URL use the host as well.
+      var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
+      if (match) {
+        host = match[1];
+        path = match[2];
+      } else {
+        path = location;
+      }
 
-    mappings.push({
-      host: host,
-      path: path,
-      pattern: pattern,
-      app: app
-    });
+      if (path.charAt(0) !== '/')
+        throw new Error('Mapping path must start with "/", was "' + path + '"');
 
-    mappings.sort(byMostSpecific);
-  }),
+      path = path.replace(/\/$/, '');
 
-  /**
-   * Sets the given app as the default for this mapper.
-   */
-  run: d(function (app) {
-    this._app = app;
-  })
+      var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
 
-});
+      mappings.push({
+        host: host,
+        path: path,
+        pattern: pattern,
+        app: app
+      });
 
-module.exports = Mapper;
+      mappings.sort(byMostSpecific);
+    })
+
+  });
+
+  return callMapper;
+}
+
+module.exports = mapper;

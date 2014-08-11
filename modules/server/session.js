@@ -5,14 +5,47 @@ var encodeBase64 = require('./utils/encodeBase64');
 var makeHash = require('./utils/makeHash');
 var CookieStore = require('./CookieStore');
 
-function makeHashWithSecret(data, secret) {
-  return makeHash(secret ? data + secret : data);
-}
-
 /**
  * The maximum size of an HTTP cookie.
  */
 var MAX_COOKIE_SIZE = 4096;
+
+/**
+ * Stores the given session and returns a promise for a value that should be stored
+ * in the session cookie to retrieve the session data again on the next request.
+ */
+function encodeSession(session, store, secret) {
+  return store.save(session).then(function (data) {
+    var cookie = encodeBase64(data + '--' + makeHashWithSecret(data, secret));
+
+    if (cookie.length > MAX_COOKIE_SIZE)
+      throw new Error('Cookie data size exceeds 4kb; content dropped');
+
+    return cookie;
+  });
+}
+
+/**
+ * Decodes the given cookie value and returns a promise for the corresponding session
+ * data from the store. Also verifies the hash value to ensure the cookie has not been
+ * tampered with. If it has, returns null.
+ */
+function decodeCookie(cookie, store, secret) {
+  var value = decodeBase64(cookie);
+  var index = value.lastIndexOf('--');
+  var data = value.substring(0, index);
+  var hash = value.substring(index + 2);
+
+  // Verify the cookie has not been tampered with.
+  if (hash === makeHashWithSecret(data, secret))
+    return store.load(data);
+
+  return null;
+}
+
+function makeHashWithSecret(data, secret) {
+  return makeHash(secret ? data + secret : data);
+}
 
 /**
  * A middleware that provides support for HTTP sessions using cookies.
@@ -36,18 +69,22 @@ var MAX_COOKIE_SIZE = 4096;
  * Note: Since cookies are only able to reliably store about 4k of data, if the
  * session cookie payload exceeds that the session will be dropped.
  */
-function Session(app, options) {
-  if (!(this instanceof Session))
-    return new Session(app, options);
-
+function session(app, options) {
   options = options || {};
 
   if (typeof options === 'string')
     options = { secret: options };
 
-  this._secret = options.secret;
+  var secret = options.secret;
+  var name = options.name || '_session';
+  var path = options.path || '/';
+  var domain = options.domain;
+  var expireAfter = options.expireAfter || 0;
+  var httpOnly = ('httpOnly' in options) ? (options.httpOnly || false) : true;
+  var secure = options.secure || false;
+  var store = options.store || new CookieStore(options);
 
-  if (!this._secret) {
+  if (!secret) {
     console.warn([
       'WARNING: There was no "secret" option provided to mach.session! This poses',
       'a security vulnerability because session data will be stored on clients without',
@@ -57,40 +94,17 @@ function Session(app, options) {
     ].join('\n'));
   }
 
-  this._name = options.name || '_session';
-  this._path = options.path || '/';
-  this._domain = options.domain;
-  this._isSecure = options.secure || false;
-  this._expireAfter = options.expireAfter || 0;
-
-  if ('httpOnly' in options) {
-    this._isHttpOnly = options.httpOnly || false;
-  } else {
-    this._isHttpOnly = true;
-  }
-
-  this._store = options.store || new CookieStore(options);
-  this._app = app;
-}
-
-Object.defineProperties(Session.prototype, {
-
-  call: d(function (request) {
-    var app = this._app;
-    var cookieName = this._name;
-    var expireAfter = this._expireAfter;
-
+  return function (request) {
     if (request.session)
       return request.call(app); // Don't overwrite the existing session.
 
-    var cookie = request.cookies[cookieName];
-    var self = this;
+    var cookie = request.cookies[name];
 
-    return Promise.resolve(cookie && self.decodeCookie(cookie)).then(function (session) {
-      request.session = session || {};
+    return Promise.resolve(cookie && decodeCookie(cookie, store, secret)).then(function (object) {
+      request.session = object || {};
 
       return request.call(app).then(function (response) {
-        return Promise.resolve(request.session && self.encodeSession(request.session)).then(function (newCookie) {
+        return Promise.resolve(request.session && encodeSession(request.session, store, secret)).then(function (newCookie) {
           var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
 
           // Don't bother setting the cookie if its value
@@ -98,13 +112,13 @@ Object.defineProperties(Session.prototype, {
           if (newCookie === cookie && !expires)
             return response;
 
-          response.setCookie(cookieName, {
+          response.setCookie(name, {
             value: newCookie,
-            path: self._path,
-            domain: self._domain,
+            path: path,
+            domain: domain,
             expires: expires,
-            httpOnly: self._isHttpOnly,
-            secure: self._isSecure
+            httpOnly: httpOnly,
+            secure: secure
           });
 
           return response;
@@ -117,43 +131,7 @@ Object.defineProperties(Session.prototype, {
       request.onError('Error decoding session data: ' + error);
       return request.call(app);
     });
-  }),
+  };
+}
 
-  /**
-   * Stores the given session and returns a promise for a value that should be stored
-   * in the session cookie to retrieve the session data again on the next request.
-   */
-  encodeSession: d(function (session) {
-    var secret = this._secret;
-
-    return this._store.save(session).then(function (data) {
-      var cookie = encodeBase64(data + '--' + makeHashWithSecret(data, secret));
-
-      if (cookie.length > MAX_COOKIE_SIZE)
-        throw new Error('Cookie data size exceeds 4kb; content dropped');
-
-      return cookie;
-    });
-  }),
-
-  /**
-   * Decodes the given cookie value and returns a promise for the corresponding session
-   * data from the store. Also verifies the hash value to ensure the cookie has not been
-   * tampered with. If it has, returns null.
-   */
-  decodeCookie: d(function (cookie) {
-    var value = decodeBase64(cookie);
-    var index = value.lastIndexOf('--');
-    var data = value.substring(0, index);
-    var hash = value.substring(index + 2);
-
-    // Verify the cookie has not been tampered with.
-    if (hash === makeHashWithSecret(data, this._secret))
-      return this._store.load(data);
-
-    return null;
-  })
-
-});
-
-module.exports = Session;
+module.exports = session;
