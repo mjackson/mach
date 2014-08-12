@@ -1,22 +1,18 @@
 require('./helper');
 
-function compareBuffers(a, b) {
-  expect(a).toEqual(b, 'buffers are not equal');
-}
-
 describe('mach.gzip', function () {
   var testFile = specFile('test.txt');
   var content = readFile(testFile);
   var gzipContent = readFile(testFile + '.gz');
 
-  describe('when the client accepts gzip encoding', function () {
-    var app = mach.gzip(function (request) {
-      return {
-        headers: { 'Content-Type': 'text/plain' },
-        content: content
-      };
-    });
+  var app = mach.gzip(function (request) {
+    return {
+      headers: { 'Content-Type': 'text/plain' },
+      content: content
+    };
+  });
 
+  describe('when the client accepts gzip encoding', function () {
     beforeEach(function () {
       return callApp(app, {
         headers: { 'Accept-Encoding': 'gzip' },
@@ -33,12 +29,20 @@ describe('mach.gzip', function () {
     });
 
     it('gzip-encodes the response content', function () {
-      compareBuffers(lastResponse.buffer, gzipContent);
+      expect(lastResponse.buffer).toEqual(gzipContent);
     });
   });
 
   describe('when the client does not accept gzip encoding', function () {
-    it('does not encode the content');
+    beforeEach(function () {
+      return callApp(app, {
+        leaveBuffer: true
+      });
+    });
+
+    it('does not encode the content', function () {
+      expect(lastResponse.buffer).toEqual(content);
+    });
   });
 
   describe('when the response is a text/event-stream', function () {
@@ -54,7 +58,7 @@ describe('mach.gzip', function () {
     });
 
     it('does not encode the content', function () {
-      compareBuffers(lastResponse.buffer, content);
+      expect(lastResponse.buffer).toEqual(content);
     });
   });
 });
