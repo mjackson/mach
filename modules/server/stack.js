@@ -87,10 +87,10 @@ function stack(app) {
      * stack is compiled.
      */
     use: d(function (middleware) {
-      var middlewareArgs = Array.prototype.slice.call(arguments, 1);
+      var args = Array.prototype.slice.call(arguments, 1);
 
       layers.push(function (app) {
-        return middleware.apply(this, [ app ].concat(middlewareArgs));
+        return middleware.apply(this, [ app ].concat(args));
       });
 
       compiledApp = null;
@@ -102,15 +102,15 @@ function stack(app) {
      */
     map: d(function (location, callback) {
       layers.push(function (app) {
-        var newStack = stack();
+        var s = stack();
 
         if (typeof callback === 'function')
-          callback(newStack);
+          callback(s);
 
         if (typeof app.map !== 'function')
           app = mapper(app);
 
-        app.map(location, newStack);
+        app.map(location, s);
 
         return app;
       });
