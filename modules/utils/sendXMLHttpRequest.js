@@ -1,9 +1,9 @@
 var XMLHttpRequest = window.XMLHttpRequest;
-var Promise = require('bluebird').Promise;
 var Stream = require('bufferedstream');
-var Response = require('../../Response');
+var AbortablePromise = require('./AbortablePromise');
 var bufferStream = require('./bufferStream');
 var stringifyURL = require('./stringifyURL');
+var Response = require('../Response');
 
 var LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';
@@ -58,7 +58,7 @@ var READ_HEADERS_RECEIVED_STATE = true;
 var READ_LOADING_STATE = true;
 
 function sendXMLHttpRequest(options) {
-  return new Promise(function (resolve, reject) {
+  return new AbortablePromise(function (resolve, reject, onAbort) {
     var xhr = new XMLHttpRequest;
     xhr.open(options.method, stringifyURL(options), true);
 
@@ -112,6 +112,16 @@ function sendXMLHttpRequest(options) {
     xhr.onerror = function () {
       reject(new Error('XMLHttpRequest error: ' + getContent(xhr)));
     };
+
+    onAbort(function () {
+      try {
+        xhr.abort();
+      } catch (error) {
+        // Not a problem.
+      }
+
+      resolve();
+    });
 
     if (options.content) {
       bufferStream(options.content).then(function (content) {

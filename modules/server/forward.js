@@ -1,5 +1,5 @@
+var makeProxy = require('./utils/makeProxy');
 var isRegExp = require('./utils/isRegExp');
-var proxy = require('./proxy');
 
 function returnTrue() {
   return true;
@@ -12,7 +12,7 @@ function returnTrue() {
  *
  * Example:
  *
- *   var mach = require('mach/server');
+ *   var mach = require('mach');
  *   var app = mach.stack();
  *
  *   // Forward all requests to example.com.
@@ -23,7 +23,7 @@ function returnTrue() {
  *   
  *   mach.serve(app);
  */
-function forward(app, target, test) {
+function forward(app, targetApp, test) {
   test = test || returnTrue;
 
   if (isRegExp(test)) {
@@ -35,12 +35,12 @@ function forward(app, target, test) {
     throw new Error('mach.forward needs a test function');
   }
 
-  if (typeof target !== 'function')
-    target = proxy(target);
+  if (typeof targetApp !== 'function')
+    targetApp = makeProxy(targetApp);
 
   return function (request) {
     if (test(request))
-      return request.call(target);
+      return request.call(targetApp);
 
     return request.call(app);
   };

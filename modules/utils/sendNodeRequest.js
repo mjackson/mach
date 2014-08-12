@@ -1,15 +1,13 @@
 var http = require('http');
 var https = require('https');
-var Promise = require('bluebird').Promise;
-var Response = require('../../Response');
+var AbortablePromise = require('./AbortablePromise');
+var Response = require('../Response');
 
 function sendNodeRequest(options) {
   var transport = options.protocol === 'https:' ? https : http;
 
-  return new Promise(function (resolve, reject) {
+  return new AbortablePromise(function (resolve, reject, onAbort) {
     var nodeRequest = transport.request(options);
-
-    nodeRequest.on('error', reject);
 
     nodeRequest.on('response', function (nodeResponse) {
       resolve(new Response({
@@ -17,6 +15,13 @@ function sendNodeRequest(options) {
         headers: nodeResponse.headers,
         content: nodeResponse
       }));
+    });
+
+    nodeRequest.on('error', reject);
+
+    onAbort(function () {
+      nodeRequest.abort();
+      resolve();
     });
 
     if (options.content) {

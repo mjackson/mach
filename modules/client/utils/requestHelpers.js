@@ -12,7 +12,7 @@ var methods = [
 ];
 
 methods.forEach(function (method) {
-  exports[method.toLowerCase()] = function (target, options) {
-    return call(target, mergeProperties(options || {}, { method: method }));
+  exports[method.toLowerCase()] = function (app, options) {
+    return call(app, mergeProperties(options || {}, { method: method }));
   };
 });

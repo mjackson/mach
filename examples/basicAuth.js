@@ -1,4 +1,4 @@
-var mach = require('../modules/server')
+var mach = require('../modules')
 var app = mach.stack();
 
 app.use(mach.logger);

@@ -5,7 +5,7 @@ refute = function (condition, message) {
   assert(!condition, message);
 };
 
-mach = require('../modules/client');
+mach = require('../modules');
 
 lastResponse = null;
 

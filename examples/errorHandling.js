@@ -3,7 +3,7 @@
 // the server won't crash.
 
 var Promise = require('bluebird').Promise;
-var mach = require('../modules/server');
+var mach = require('../modules');
 
 mach.serve(function (request) {
   if (Math.random() > 0.75)

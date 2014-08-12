@@ -4,7 +4,7 @@
 // curl http://localhost:5000
 
 var Stream = require('bufferedstream');
-var mach = require('../modules/server');
+var mach = require('../modules');
 
 mach.serve(function (request, response) {
   // Set response.content to the stream you want to send.

@@ -1,10 +1,8 @@
 var d = require('d');
-var sendRequest = require('./utils/sendRequest');
-var parseURL = require('./utils/parseURL');
+var sendRequest = require('./sendRequest');
+var parseURL = require('./parseURL');
 
 /**
- * An HTTP proxy.
- *
  * A mach.proxy is a function that is used to send a request to
  * a remote URL and retrieve the response. Options may be a URL
  * string or an object with any of the following properties:
@@ -16,10 +14,10 @@ var parseURL = require('./utils/parseURL');
  * - path
  *
  * This function is part of the low-level API and can generally be
- * used more conveniently either through the mach.forward middleware
- * or Request#send.
+ * used more conveniently either through the client methods or the
+ * mach.forward middleware.
  */
-function proxy(options) {
+function makeProxy(options) {
   options = options || {};
 
   if (typeof options === 'string')
@@ -48,4 +46,4 @@ function proxy(options) {
   };
 }
 
-module.exports = proxy;
+module.exports = makeProxy;

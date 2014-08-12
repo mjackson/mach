@@ -20,6 +20,7 @@ mach.catch            = require('./catch');
 mach.contentType      = require('./contentType');
 mach.favicon          = require('./favicon');
 mach.file             = require('./file');
+mach.forward          = require('./forward');
 mach.gzip             = require('./gzip');
 mach.logger           = require('./logger');
 mach.mapper           = require('./mapper');
