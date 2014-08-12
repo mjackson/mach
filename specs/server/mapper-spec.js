@@ -14,9 +14,10 @@ describe('mach.mapper', function () {
 
   var app;
   beforeEach(function () {
-    app = mach.mapper();
-    app.map('/one', showInfo);
-    app.map('http://example.org/two', showInfo);
+    app = mach.map({
+      '/one': showInfo,
+      'http://example.org/two': showInfo
+    });
   });
 
   describe('when the request does not match a mapping', function () {

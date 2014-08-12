@@ -1,4 +1,4 @@
-var Mapper = require('../mapper');
+var mapper = require('../mapper');
 
 /**
  * Creates and returns a mach.mapper from the location/app pairs in `map`.
@@ -17,14 +17,14 @@ var Mapper = require('../mapper');
  *   });
  */
 function makeMapper(map, defaultApp) {
-  var mapper = new Mapper(defaultApp);
+  var m = mapper(defaultApp);
 
   for (var location in map) {
     if (map.hasOwnProperty(location))
-      mapper.map(location, map[location]);
+      m.map(location, map[location]);
   }
 
-  return mapper;
+  return m;
 }
 
 module.exports = makeMapper;
