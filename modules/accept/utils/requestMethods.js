@@ -1,8 +1,8 @@
 var d = require('d');
-var Accept = require('./Accept');
-var AcceptCharset = require('./AcceptCharset');
-var AcceptEncoding = require('./AcceptEncoding');
-var AcceptLanguage = require('./AcceptLanguage');
+var Accept = require('../Accept');
+var AcceptCharset = require('../AcceptCharset');
+var AcceptEncoding = require('../AcceptEncoding');
+var AcceptLanguage = require('../AcceptLanguage');
 
 module.exports = {
 

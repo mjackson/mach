@@ -2,17 +2,17 @@ var mach = require('../multipart');
 
 Object.defineProperties(
   mach.Message.prototype,
-  require('./messageMethods')
+  require('./utils/messageMethods')
 );
 
 Object.defineProperties(
   mach.Request.prototype,
-  require('./requestMethods')
+  require('./utils/requestMethods')
 );
 
 Object.defineProperties(
   mach.Response.prototype,
-  require('./responseMethods')
+  require('./utils/responseMethods')
 );
 
 mach.basicAuth        = require('./basicAuth');

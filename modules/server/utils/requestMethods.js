@@ -1,5 +1,5 @@
 var d = require('d');
-var mergeProperties = require('./utils/mergeProperties');
+var mergeProperties = require('./mergeProperties');
 
 module.exports = {
 

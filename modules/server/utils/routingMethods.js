@@ -1,7 +1,6 @@
 var d = require('d');
 
-var routingMethods = {};
-var routingVerbs = {
+var methods = {
   delete: 'DELETE',
   get: [ 'GET', 'HEAD' ],
   head: 'HEAD',
@@ -11,10 +10,8 @@ var routingVerbs = {
   put: 'PUT'
 };
 
-Object.keys(routingVerbs).forEach(function (method) {
-  routingMethods[method] = d(function (pattern, app) {
-    return this.route(pattern, routingVerbs[method], app);
+Object.keys(methods).forEach(function (method) {
+  exports[method] = d(function (pattern, app) {
+    return this.route(pattern, methods[method], app);
   });
 });
-
-module.exports = routingMethods;

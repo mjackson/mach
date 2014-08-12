@@ -1,10 +1,10 @@
 var fs = require('fs');
 var d = require('d');
 var Promise = require('bluebird').Promise;
-var getFileChecksum = require('./utils/getFileChecksum');
-var getFileStats = require('./utils/getFileStats');
-var getMimeType = require('./utils/getMimeType');
-var stringifyCookie = require('./utils/stringifyCookie');
+var getFileChecksum = require('./getFileChecksum');
+var getFileStats = require('./getFileStats');
+var getMimeType = require('./getMimeType');
+var stringifyCookie = require('./stringifyCookie');
 
 module.exports = {
 

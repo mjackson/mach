@@ -1,8 +1,8 @@
 var d = require('d');
-var bufferStream = require('./utils/bufferStream');
-var parseMessage = require('./utils/parseMessage');
+var bufferStream = require('./bufferStream');
+var parseMessage = require('./parseMessage');
 
-var _parseContent = require('../Message').prototype._parseContent;
+var _parseContent = require('../../Message').prototype._parseContent;
 
 function parseMultipartMessage(message, maxLength, uploadPrefix) {
   function partHandler(part) {
@@ -22,6 +22,13 @@ function parseMultipartMessage(message, maxLength, uploadPrefix) {
 module.exports = {
 
   /**
+   * True if this message is multipart, false otherwise.
+   */
+  isMultipart: d.gs(function () {
+    return this.multipartBoundary != null;
+  }),
+
+  /**
    * The value that was used as the boundary for multipart content.
    */
   multipartBoundary: d.gs(function () {
@@ -31,23 +38,6 @@ module.exports = {
       var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
       return match && (match[1] || match[2]);
     }
-  }),
-
-  /**
-   * True if this message is multipart, false otherwise.
-   */
-  isMultipart: d.gs(function () {
-    return this.multipartBoundary != null;
-  }),
-
-  /**
-   * Override Message#_parseContent.
-   */
-  _parseContent: d(function (maxLength, uploadPrefix) {
-    if (this.isMultipart)
-      return parseMultipartMessage(this, maxLength, uploadPrefix);
-
-    return _parseContent.apply(this, arguments);
   }),
 
   /**
@@ -63,6 +53,16 @@ module.exports = {
     return bufferStream(part.content).then(function (chunk) {
       return chunk.toString();
     });
+  }),
+
+  /**
+   * Override Message#_parseContent.
+   */
+  _parseContent: d(function (maxLength, uploadPrefix) {
+    if (this.isMultipart)
+      return parseMultipartMessage(this, maxLength, uploadPrefix);
+
+    return _parseContent.apply(this, arguments);
   })
 
 };

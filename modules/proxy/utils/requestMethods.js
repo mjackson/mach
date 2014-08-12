@@ -1,5 +1,5 @@
 var d = require('d');
-var proxy = require('./proxy');
+var proxy = require('../proxy');
 
 module.exports = {
 

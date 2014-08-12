@@ -2,7 +2,7 @@ var mach = require('../index');
 
 Object.defineProperties(
   mach.Request.prototype,
-  require('./requestMethods')
+  require('./utils/requestMethods')
 );
 
 mach.forward = require('./forward');
