@@ -3,13 +3,29 @@ var MaxLengthExceededError = require('../modules/utils/MaxLengthExceededError');
 var Request = mach.Request;
 
 describe('Request', function () {
-  var request;
-  beforeEach(function () {
-    request = new Request;
+  describe('that uses https', function () {
+    describe('on the standard port', function () {
+      it('does not include the port # in host', function () {
+        var request = new Request({ protocol: 'https:', serverName: 'example.com' });
+        expect(request.host).toEqual('example.com');
+      });
+    });
+
+    describe('on a non-standard port', function () {
+      it('includes the port # in host', function () {
+        var request = new Request({ protocol: 'https:', serverName: 'example.com', serverPort: 5000 });
+        expect(request.host).toEqual('example.com:5000');
+      });
+    });
   });
 
   describe('parseContent', function () {
-    describe('when using a Content-Type that we cannot parse', function () {
+    var request;
+    beforeEach(function () {
+      request = new Request;
+    });
+
+    describe('when using an unknown Content-Type', function () {
       beforeEach(function () {
         request.headers['content-type'] = 'text/plain';
       });

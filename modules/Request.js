@@ -146,7 +146,7 @@ Request.prototype = Object.create(Message.prototype, {
     if (this.headers['Host'])
       return this.headers['Host'];
 
-    if (this.serverPort)
+    if (this.isSSL ? this.serverPort !== '443' : this.serverPort !== '80')
       return this.serverName + ':' + this.serverPort;
 
     return this.serverName;
