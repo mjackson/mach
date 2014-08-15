@@ -11,9 +11,13 @@ mach.Response = require('./Response');
 
 mach.proxy = require('./utils/makeProxy');
 
+var isNode = require('./utils/isNode');
+
 // Always make client methods available.
 require('./client');
 
-// Automatically make server methods available if we're on Node.js.
-if (typeof process !== 'undefined' && Object.prototype.toString.call(process) === '[object process]')
-  [ './accept', './server' ].forEach(require);
+// Make server methods available on Node.js.
+if (isNode()) {
+  var moduleID = './server'; // Stop Browserify.
+  require(moduleID);
+}

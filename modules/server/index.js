@@ -1,4 +1,7 @@
-var mach = require('../multipart');
+var mach = require('../index');
+
+require('../accept');
+require('../multipart');
 
 Object.defineProperties(
   mach.Message.prototype,
