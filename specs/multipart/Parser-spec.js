@@ -2,6 +2,14 @@ require('./helper');
 var parseMessage = require('../../modules/multipart/utils/parseMessage');
 var Parser = mach.MultipartParser;
 
+var fs = require('fs');
+var path = require('path');
+var fixturesDir = path.join(__dirname, 'fixtures');
+
+function getFixture(fixtureName) {
+  return fs.readFileSync(path.join(fixturesDir, fixtureName), arguments[1]);
+}
+
 describe('Parser', function () {
 
   describe('with a boundary of "abc"', function () {
@@ -18,7 +26,7 @@ describe('Parser', function () {
   function beforeEachParseFixture(fixtureName, boundary) {
     boundary = boundary || 'AaB03x';
     beforeEach(function () {
-      var message = readFile(specFile(fixtureName));
+      var message = getFixture(fixtureName);
       return parseMessage(message, boundary, partHandler).then(function (object) {
         parts = object;
       });

@@ -1,9 +1,21 @@
 require('./helper');
 
+var fs = require('fs');
+var path = require('path');
+var fixturesDir = path.join(__dirname, 'fixtures');
+
+function fixturePath(fixtureName) {
+  return path.join(fixturesDir, fixtureName);
+}
+
+function readFile(path) {
+  return fs.readFileSync(path, arguments[1]);
+}
+
 describe('mach.gzip', function () {
-  var testFile = specFile('test.txt');
-  var content = readFile(testFile);
-  var gzipContent = readFile(testFile + '.gz');
+  var testPath = fixturePath('test.txt');
+  var content = readFile(testPath);
+  var gzipContent = readFile(testPath + '.gz');
 
   var app = mach.gzip(function (request) {
     return {

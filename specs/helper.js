@@ -37,17 +37,3 @@ callApp = function (app, options) {
     });
   });
 };
-
-var path = require('path');
-var _files = path.join(__dirname, '_files');
-
-specFile = function () {
-  var pieces = Array.prototype.slice.call(arguments, 0);
-  return path.join.apply(path, [ _files ].concat(pieces));
-};
-
-var fs = require('fs');
-
-readFile = function (filename, encoding) {
-  return fs.readFileSync(filename, encoding);
-};

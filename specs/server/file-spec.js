@@ -1,9 +1,20 @@
 require('./helper');
+
+var fs = require('fs');
 var path = require('path');
+var fixturesDir = path.join(__dirname, 'fixtures');
+
+function fixturePath(fixtureName) {
+  return path.join(fixturesDir, fixtureName);
+}
+
+function readFile(path) {
+  return fs.readFileSync(path, arguments[1]);
+}
 
 describe('mach.file', function () {
   describe('when a large file is requested', function () {
-    var fullPath = specFile('jquery-1.8.3.js');
+    var fullPath = fixturePath('jquery-1.8.3.js');
     var filename = path.basename(fullPath);
     var contents = readFile(fullPath, 'utf8');
     var app = mach.file(null, path.dirname(fullPath));

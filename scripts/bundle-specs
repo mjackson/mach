@@ -1,0 +1,2 @@
+#!/bin/sh
+./node_modules/.bin/browserify specs/browser/tests.js --debug --insert-global-vars Buffer > specs/browser/tests-bundle.js

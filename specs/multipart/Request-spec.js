@@ -1,6 +1,14 @@
 require('./helper');
 var Request = mach.Request;
 
+var fs = require('fs');
+var path = require('path');
+var fixturesDir = path.join(__dirname, 'fixtures');
+
+function getFixture(fixtureName) {
+  return fs.readFileSync(path.join(fixturesDir, fixtureName), arguments[1]);
+}
+
 describe('Request', function () {
   describe('parseContent', function () {
 
@@ -8,7 +16,7 @@ describe('Request', function () {
       describe('when the content is encoded properly', function () {
         var content;
         beforeEach(function () {
-          content = readFile(specFile('content_type_no_filename'));
+          content = getFixture('content_type_no_filename');
           request = new Request({
             headers: { 'Content-Type': 'multipart/form-data; boundary=AaB03x' },
             content: content

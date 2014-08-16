@@ -1,3 +1,4 @@
+var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird').Promise;
 var makeProxy = require('./makeProxy');
 var Response = require('../Response');
