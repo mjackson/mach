@@ -1,13 +1,14 @@
+var escapeRegExp = require('./utils/escapeRegExp');
 var isRegExp = require('./utils/isRegExp');
 
 /**
- * Provides URL rewriting behavior similar to Apache's mod_rewrite. The
- * pathInfo of requests that match the given pattern will be overwritten
- * with the replacement using a simple String.prototype.replace.
+ * A middleware that provides URL rewriting behavior similar to Apache's
+ * mod_rewrite. The pathInfo of requests that match the given pattern is
+ * overwritten with the replacement using a simple String#replace.
  */
 function rewrite(app, pattern, replacement) {
   if (typeof pattern === 'string')
-    pattern = new RegExp('^' + pattern + '$');
+    pattern = new RegExp('^' + escapeRegExp(pattern) + '$');
 
   if (!isRegExp(pattern))
     throw new Error('Rewrite pattern must be a RegExp or String');

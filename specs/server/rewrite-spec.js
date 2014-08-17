@@ -7,6 +7,7 @@ describe('mach.rewrite', function () {
 
   app = mach.rewrite(app, '/abc', '/xyz');
   app = mach.rewrite(app, /\/def/g, '/xyz');
+  app = mach.rewrite(app, '/abc.jpeg', '/def.jpeg');
 
   describe('GET /abc', function () {
     beforeEach(function () {
@@ -35,6 +36,16 @@ describe('mach.rewrite', function () {
 
     it('rewrites the pathInfo properly', function () {
       expect(lastResponse.buffer).toEqual('/xyz/path/xyz');
+    });
+  });
+
+  describe('when the pattern contains special RegExp chars', function () {
+    beforeEach(function () {
+      return callApp(app, '/abcdjpeg');
+    });
+
+    it('properly escapes those chars', function () {
+      expect(lastResponse.buffer).toEqual('/abcdjpeg');
     });
   });
 });
