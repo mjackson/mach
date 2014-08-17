@@ -41,7 +41,7 @@ mach.MemoryStore      = require('./MemoryStore');
 mach.RedisStore       = require('./RedisStore');
 
 mach.bind             = require('./utils/bindApp');
-mach.map              = require('./utils/makeMapper');
+mach.map              = require('./utils/createMapper');
 mach.serve            = require('./utils/serveApp');
 
 module.exports = mach;

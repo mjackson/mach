@@ -1,4 +1,4 @@
-var makeProxy = require('./utils/makeProxy');
+var createProxy = require('./utils/createProxy');
 var isRegExp = require('./utils/isRegExp');
 
 function returnTrue() {
@@ -36,7 +36,7 @@ function forward(app, targetApp, test) {
   }
 
   if (typeof targetApp !== 'function')
-    targetApp = makeProxy(targetApp);
+    targetApp = createProxy(targetApp);
 
   return function (request) {
     if (test(request))

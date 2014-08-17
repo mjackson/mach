@@ -9,14 +9,14 @@ mach.Message = require('./Message');
 mach.Request = require('./Request');
 mach.Response = require('./Response');
 
-mach.proxy = require('./utils/makeProxy');
-
-var isNode = require('./utils/isNode');
+mach.proxy = require('./utils/createProxy');
 
 // Always make client methods available.
 require('./client');
 
 // Make server methods available on Node.js.
+var isNode = require('./utils/isNode');
+
 if (isNode()) {
   var moduleID = './server'; // Stop Browserify.
   require(moduleID);

@@ -17,7 +17,7 @@ var parseURL = require('./parseURL');
  * used more conveniently either through the client methods or the
  * mach.forward middleware.
  */
-function makeProxy(options) {
+function createProxy(options) {
   options = options || {};
 
   if (typeof options === 'string')
@@ -46,4 +46,4 @@ function makeProxy(options) {
   };
 }
 
-module.exports = makeProxy;
+module.exports = createProxy;

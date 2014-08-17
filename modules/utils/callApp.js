@@ -1,13 +1,13 @@
 var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird').Promise;
-var makeProxy = require('./makeProxy');
+var createProxy = require('./createProxy');
 var Response = require('../Response');
 
 function callApp(app, request) {
   app = app || request;
 
   if (typeof app !== 'function')
-    app = makeProxy(app);
+    app = createProxy(app);
 
   var response = request._response;
 

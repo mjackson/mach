@@ -16,7 +16,7 @@ var mapper = require('../mapper');
  *
  *   });
  */
-function makeMapper(map, defaultApp) {
+function createMapper(map, defaultApp) {
   var m = mapper(defaultApp);
 
   for (var location in map) {
@@ -27,4 +27,4 @@ function makeMapper(map, defaultApp) {
   return m;
 }
 
-module.exports = makeMapper;
+module.exports = createMapper;
