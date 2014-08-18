@@ -28,9 +28,9 @@ function makeAbortable(promise, abortHandler) {
  *       }
  *     });
  *   
- *     // Use the onAbort function to register a callback that will
- *     // be called when promise.abort() is called. Note that it is
- *     // still your responsibility to resolve/reject as needed.
+ *     // Use onAbort to register a promise.abort() function. It is the
+ *     // responsibility of this function to abort the execution of the
+ *     // promise and resolve/reject as needed.
  *     onAbort(function () {
  *       request.abort();
  *       reject(new Error('Request was aborted'));
@@ -40,8 +40,10 @@ function makeAbortable(promise, abortHandler) {
  *   promise.abort(); // Calls the onAbort handler.
  */
 function AbortablePromise(resolver) {
-  var abortHandler;
+  if (typeof resolver !== 'function')
+    throw new Error('AbortablePromise needs a resolver function');
 
+  var abortHandler;
   var promise = new Promise(function (resolve, reject) {
     resolver(function () {
       abortHandler = null;
@@ -50,13 +52,20 @@ function AbortablePromise(resolver) {
       abortHandler = null;
       reject.apply(this, arguments);
     }, function (handler) {
+      if (typeof handler !== 'function')
+        throw new Error('onAbort needs a function');
+
       abortHandler = handler;
     });
   });
 
   return makeAbortable(promise, function () {
-    if (abortHandler != null)
-      return abortHandler.apply(this, arguments);
+    if (abortHandler != null) {
+      var handler = abortHandler;
+      abortHandler = null;
+
+      return handler.apply(this, arguments);
+    }
   });
 }
 
