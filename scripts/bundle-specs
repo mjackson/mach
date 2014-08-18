@@ -1,2 +1,2 @@
 #!/bin/sh
-./node_modules/.bin/browserify specs/browser/tests.js --debug --insert-global-vars Buffer > specs/browser/tests-bundle.js
+./node_modules/.bin/browserify specs/browser/tests.js --require es6-promise:bluebird --insert-global-vars Buffer --debug > specs/browser/tests-bundle.js
