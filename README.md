@@ -69,6 +69,14 @@ There is a lot going on in the example above, but comments have been ommitted fo
 
     $ npm install mach
 
+### Building for the Browser
+
+When using Mach in a browser environment, you can save a few bytes by using the [es6-promise shim](https://github.com/jakearchibald/es6-promise) instead of [bluebird](https://github.com/petkaantonov/bluebird).
+
+Using [Browserify](https://github.com/substack/node-browserify):
+
+    $ browserify main.js --require es6-promise:bluebird > main-bundle.js
+
 ### Issues
 
 Please file issues on the [issue tracker on GitHub](https://github.com/machjs/mach/issues).
