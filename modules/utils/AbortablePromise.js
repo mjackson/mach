@@ -1,12 +1,12 @@
 var Promise = require('bluebird').Promise;
 
-function makeAbortable(promise, abortHandler) {
-  promise.abort = abortHandler;
+function makeAbortable(promise, onAbort) {
+  promise.abort = onAbort;
 
   // Hijack promise.then so it returns an abortable promise.
   var _then = promise.then;
   promise.then = function () {
-    return makeAbortable(_then.apply(promise, arguments), abortHandler);
+    return makeAbortable(_then.apply(promise, arguments), onAbort);
   };
 
   return promise;
@@ -43,7 +43,7 @@ function AbortablePromise(resolver) {
   if (typeof resolver !== 'function')
     throw new Error('AbortablePromise needs a resolver function');
 
-  var abortHandler;
+  var abortHandler, onAbort;
   var promise = new Promise(function (resolve, reject) {
     resolver(function () {
       abortHandler = null;
@@ -57,16 +57,23 @@ function AbortablePromise(resolver) {
 
       abortHandler = handler;
     });
-  });
 
-  return makeAbortable(promise, function () {
-    if (abortHandler != null) {
+    onAbort = function () {
+      if (abortHandler == null)
+        return;
+
       var handler = abortHandler;
       abortHandler = null;
 
-      return handler.apply(this, arguments);
-    }
+      try {
+        return handler.apply(this, arguments);
+      } catch (error) {
+        reject(error);
+      }
+    };
   });
+
+  return makeAbortable(promise, onAbort);
 }
 
 module.exports = AbortablePromise;
