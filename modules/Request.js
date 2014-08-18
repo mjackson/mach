@@ -1,8 +1,11 @@
 var d = require('d');
-var callApp = require('./utils/callApp');
+var Buffer = require('buffer').Buffer;
+var Promise = require('bluebird').Promise;
+var createProxy = require('./utils/createProxy');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
 var Message = require('./Message');
+var Response = require('./Response');
 
 var defaultErrorHandler;
 if (typeof process !== 'undefined' && process.stderr) {
@@ -220,7 +223,41 @@ Request.prototype = Object.create(Message.prototype, {
    * as the first argument and returns a promise for a Response.
    */
   call: d(function (app) {
-    return callApp(app, this);
+    if (typeof app !== 'function')
+      app = createProxy(app || this);
+
+    var request = this;
+    var response = request._response;
+
+    if (response == null)
+      response = request._response = new Response;
+
+    try {
+      return Promise.resolve(app(request, response)).then(function (value) {
+        if (value !== response && value != null) {
+          if (value instanceof Response) {
+            response = request._response = value;
+          } else if (typeof value === 'number') {
+            response.status = value;
+          } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
+            response.content = value;
+          } else {
+            if (value.status != null)
+              response.status = value.status;
+
+            if (value.headers != null)
+              response.headers = value.headers;
+
+            if (value.content != null)
+              response.content = value.content;
+          }
+        }
+
+        return response;
+      });
+    } catch (error) {
+      return Promise.reject(error);
+    }
   })
 
 });
