@@ -45,8 +45,13 @@ function AbortablePromise(resolver) {
 
   var abortHandler, onAbort;
   var promise = new Promise(function (resolve, reject) {
-    resolver(function () {
-      abortHandler = null;
+    resolver(function (child) {
+      if (child && typeof child.abort === 'function') {
+        abortHandler = child.abort;
+      } else {
+        abortHandler = null;
+      }
+
       resolve.apply(this, arguments);
     }, function () {
       abortHandler = null;
