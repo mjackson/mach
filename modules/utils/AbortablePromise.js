@@ -1,12 +1,12 @@
 var Promise = require('bluebird').Promise;
 
-function makeAbortable(promise, onAbort) {
-  promise.abort = onAbort;
+function makeAbortable(promise, handler) {
+  promise.abort = handler;
 
   // Hijack promise.then so it returns an abortable promise.
   var _then = promise.then;
   promise.then = function () {
-    return makeAbortable(_then.apply(promise, arguments), onAbort);
+    return makeAbortable(_then.apply(promise, arguments), handler);
   };
 
   return promise;
@@ -43,42 +43,42 @@ function AbortablePromise(resolver) {
   if (typeof resolver !== 'function')
     throw new Error('AbortablePromise needs a resolver function');
 
-  var abortHandler, onAbort;
+  var aborter, handler;
   var promise = new Promise(function (resolve, reject) {
-    resolver(function (child) {
-      if (child && typeof child.abort === 'function') {
-        abortHandler = child.abort;
-      } else {
-        abortHandler = null;
-      }
-
-      resolve.apply(this, arguments);
-    }, function () {
-      abortHandler = null;
-      reject.apply(this, arguments);
-    }, function (handler) {
-      if (typeof handler !== 'function')
-        throw new Error('onAbort needs a function');
-
-      abortHandler = handler;
-    });
-
-    onAbort = function () {
-      if (abortHandler == null)
+    handler = function () {
+      if (aborter == null)
         return;
 
-      var handler = abortHandler;
-      abortHandler = null;
+      var fn = aborter;
+      aborter = null;
 
       try {
-        return handler.apply(this, arguments);
+        return fn.apply(this, arguments);
       } catch (error) {
         reject(error);
       }
     };
+
+    resolver(function (child) {
+      if (child && typeof child.abort === 'function') {
+        aborter = child.abort;
+      } else {
+        aborter = null;
+      }
+
+      resolve.apply(this, arguments);
+    }, function () {
+      aborter = null;
+      reject.apply(this, arguments);
+    }, function (fn) {
+      if (typeof fn !== 'function')
+        throw new Error('onAbort needs a function');
+
+      aborter = fn;
+    });
   });
 
-  return makeAbortable(promise, onAbort);
+  return makeAbortable(promise, handler);
 }
 
 module.exports = AbortablePromise;
