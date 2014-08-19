@@ -39,4 +39,17 @@ describe('compileRoute', function () {
       assert(re.exec('/users/(5)'));
     });
   });
+
+  describe('a pattern with ^ and $', function () {
+    it('has the correct keys', function () {
+      compileRoute('/user$/^:userID', keys);
+      expect(keys).toEqual([ 'userID' ]);
+    });
+
+    it('matches correctly', function () {
+      var re = compileRoute('/user$/^:userID', keys);
+      refute(re.exec('/user$/5'));
+      assert(re.exec('/user$/^5'));
+    });
+  })
 });
