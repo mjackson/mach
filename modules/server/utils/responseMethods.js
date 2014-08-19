@@ -72,7 +72,7 @@ module.exports = {
   sendJSON: d(function (status, json) {
     this.contentType = 'application/json';
 
-    if (typeof status !== number) {
+    if (typeof status !== 'number') {
       json = status;
       status = null;
     }
