@@ -13,13 +13,6 @@ mach.serve(function (request, response) {
   // of node's readables (e.g. fs.createReadStream).
   response.content = new Stream;
 
-  // Delete the Content-Length header to prevent clients
-  // from prematurely closing the connection since we're
-  // sending an indeterminate amount of data. If we know
-  // the length of the data (e.g. the size of a readable
-  // file stream) we would set this accordingly.
-  delete response.headers['Content-Length'];
-
   var timer = setInterval(function () {
     response.content.write((new Date).toString() + '\n');
   }, 1000);

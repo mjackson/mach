@@ -89,11 +89,15 @@ Object.defineProperties(Message.prototype, {
 
     if (value instanceof Stream) {
       this._content = value;
+      delete this.headers['Content-Length'];
     } else {
       this._content = new Stream(value);
 
-      if (value.length != null)
-        this.headers['Content-Length'] = value.length;
+      if (value.length != null) {
+        this.headers['Content-Length'] = String(value.length);
+      } else {
+        delete this.headers['Content-Length'];
+      }
     }
 
     this._content.pause();

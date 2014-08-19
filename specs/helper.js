@@ -5,6 +5,8 @@ refute = function (condition, message) {
   assert(!condition, message);
 };
 
+Buffer = require('buffer').Buffer;
+Stream = require('bufferedstream');
 mach = require('../modules');
 
 lastResponse = null;

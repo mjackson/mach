@@ -8,7 +8,6 @@ describe('Message', function () {
   });
 
   describe('addHeader', function () {
-
     it('normalizes header names', function () {
       message.addHeader('content-type', 'text/html');
       expect(message.headers['Content-Type']).toEqual('text/html');
@@ -33,7 +32,36 @@ describe('Message', function () {
         message.addHeader('Test', 'value');
         expect(message.headers['Test']).toEqual(['previousValue', 'value']);
       });
+    });
+  });
 
+  describe('when content is set to a string', function () {
+    beforeEach(function () {
+      message.content = 'abc';
+    });
+
+    it('sets Content-Length to the length of the string', function () {
+      expect(message.headers['Content-Length']).toEqual(3);
+    });
+  });
+
+  describe('when content is set to a Buffer', function () {
+    beforeEach(function () {
+      message.content = new Buffer('abc');
+    });
+
+    it('sets Content-Length to the size of the buffer', function () {
+      expect(message.headers['Content-Length']).toEqual(3);
+    });
+  });
+
+  describe('when content is set to a Stream', function () {
+    beforeEach(function () {
+      message.content = new Stream;
+    });
+
+    it('removes the Content-Length header', function () {
+      assert(message.headers['Content-Length'] == null);
     });
   });
 
@@ -42,13 +70,13 @@ describe('Message', function () {
       message.content = 'foo';
       return message
         .bufferContent()
-        .then(function(content) {
+        .then(function (content) {
           expect(content.toString()).toEqual('foo');
 
           message.content = 'bar';
           return message.bufferContent();
         })
-        .then(function(content) {
+        .then(function (content) {
           expect(content.toString()).toEqual('bar');
         });
     });
