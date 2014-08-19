@@ -3,4 +3,5 @@
   specs/accept\
   specs/multipart\
   specs/server\
+  specs/server/utils\
   specs/utils
