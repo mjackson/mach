@@ -40,10 +40,10 @@ module.exports = {
    *   response.send(fs.createReadStream('welcome.txt'));
    */
   send: d(function (status, content) {
-    if (typeof status !== 'number') {
-      content = status;
-    } else {
+    if (typeof status === 'number') {
       this.status = status;
+    } else {
+      content = status;
     }
 
     if (content != null)
@@ -72,26 +72,25 @@ module.exports = {
   sendJSON: d(function (status, json) {
     this.contentType = 'application/json';
 
-    if (typeof status !== 'number') {
+    if (typeof status === 'number') {
+      this.status = status;
+    } else {
       json = status;
-      status = null;
     }
 
-    if (typeof json !== 'string')
-      json = JSON.stringify(json);
-
-    this.send(status, json);
+    if (json != null)
+      this.content = typeof json === 'string' ? json : JSON.stringify(json);
   }),
 
   /**
    * Sends a file to the client with the given options.
    */
   sendFile: d(function (status, options, stats) {
-    if (typeof status !== 'number') {
+    if (typeof status === 'number') {
+      this.status = status;
+    } else {
       stats = options;
       options = status;
-    } else {
-      this.status = status;
     }
 
     if (typeof options === 'string')
