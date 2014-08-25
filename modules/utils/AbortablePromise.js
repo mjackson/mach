@@ -43,22 +43,8 @@ function AbortablePromise(resolver) {
   if (typeof resolver !== 'function')
     throw new Error('AbortablePromise needs a resolver function');
 
-  var aborter, handler;
+  var aborter;
   var promise = new Promise(function (resolve, reject) {
-    handler = function () {
-      if (aborter == null)
-        return;
-
-      var fn = aborter;
-      aborter = null;
-
-      try {
-        return fn.apply(this, arguments);
-      } catch (error) {
-        reject(error);
-      }
-    };
-
     resolver(function (child) {
       if (child && typeof child.abort === 'function') {
         aborter = child.abort;
@@ -78,7 +64,19 @@ function AbortablePromise(resolver) {
     });
   });
 
-  return makeAbortable(promise, handler);
+  return makeAbortable(promise, function () {
+    if (aborter == null)
+      return;
+
+    var fn = aborter;
+    aborter = null;
+
+    try {
+      return fn.apply(this, arguments);
+    } catch (error) {
+      reject(error);
+    }
+  });
 }
 
 module.exports = AbortablePromise;
