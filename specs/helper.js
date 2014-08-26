@@ -5,7 +5,6 @@ refute = function (condition, message) {
   assert(!condition, message);
 };
 
-Buffer = require('buffer').Buffer;
 Stream = require('bufferedstream');
 mach = require('../modules');
 
@@ -14,6 +13,8 @@ lastResponse = null;
 beforeEach(function () {
   lastResponse = null;
 });
+
+var binaryTo = require('../modules/utils/binaryTo');
 
 /**
  * Calls the app with the given options and buffers the response
@@ -31,7 +32,7 @@ callApp = function (app, options) {
 
     return response.bufferContent().then(function (buffer) {
       if (!leaveBuffer)
-        buffer = buffer.toString();
+        buffer = binaryTo(buffer, 'utf8');
 
       lastResponse.buffer = buffer;
 

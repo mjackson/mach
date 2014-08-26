@@ -1,4 +1,5 @@
 require('./helper');
+var binaryFrom = require('../modules/utils/binaryFrom');
 var Message = mach.Message;
 
 describe('Message', function () {
@@ -45,9 +46,9 @@ describe('Message', function () {
     });
   });
 
-  describe('when content is set to a Buffer', function () {
+  describe('when content is set to a binary', function () {
     beforeEach(function () {
-      message.content = new Buffer('abc');
+      message.content = binaryFrom('abc');
     });
 
     it('sets Content-Length to the size of the buffer', function () {

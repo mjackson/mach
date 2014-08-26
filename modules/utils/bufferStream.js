@@ -1,5 +1,5 @@
-var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird').Promise;
+var binaryJoin = require('./binaryJoin');
 var MaxLengthExceededError = require('./MaxLengthExceededError');
 
 /**
@@ -31,7 +31,7 @@ function bufferStream(stream, maxLength) {
     });
 
     stream.on('end', function () {
-      resolve(Buffer.concat(chunks));
+      resolve(binaryJoin(chunks));
     });
 
     if (typeof stream.resume === 'function')

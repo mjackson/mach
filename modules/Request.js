@@ -1,6 +1,6 @@
 var d = require('d');
-var Buffer = require('buffer').Buffer;
 var Promise = require('bluebird').Promise;
+var isBinary = require('./utils/isBinary');
 var createProxy = require('./utils/createProxy');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
@@ -239,7 +239,7 @@ Request.prototype = Object.create(Message.prototype, {
             response = request._response = value;
           } else if (typeof value === 'number') {
             response.status = value;
-          } else if (typeof value === 'string' || Buffer.isBuffer(value) || typeof value.pipe === 'function') {
+          } else if (typeof value === 'string' || isBinary(value) || typeof value.pipe === 'function') {
             response.content = value;
           } else {
             if (value.status != null)

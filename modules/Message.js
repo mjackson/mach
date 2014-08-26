@@ -1,6 +1,6 @@
 var d = require('d');
-var Buffer = require('buffer').Buffer;
 var Stream = require('bufferedstream');
+var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 var parseQuery = require('./utils/parseQuery');
@@ -8,7 +8,7 @@ var parseQuery = require('./utils/parseQuery');
 /**
  * The default content to use for new messages.
  */
-var DEFAULT_CONTENT = new Buffer([]); // TODO: should this be a method to provide a new instance each time?
+var DEFAULT_CONTENT = binaryFrom('');
 
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
