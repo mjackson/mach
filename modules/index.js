@@ -14,10 +14,6 @@ mach.proxy = require('./utils/createProxy');
 // Always make client methods available.
 require('./client');
 
-// Make server methods available on Node.js.
-var isNode = require('./utils/isNode');
-
-if (isNode()) {
-  var moduleID = './server'; // Stop Browserify.
-  require(moduleID);
-}
+// Make server methods available on the server.
+if (typeof window === 'undefined')
+  require('./server' + ''); // Stop Browserify.
