@@ -1,6 +1,6 @@
 var parseURL = require('./parseURL');
 var stringifyQuery = require('./stringifyQuery');
-var Request = require('../../Request');
+var Request = require('../Request');
 
 /**
  * Returns a new Request created using the given options, which may
