@@ -1,15 +1,13 @@
-var mach = module.exports;
-
 /**
  * The current version of mach.
  */
-mach.version = '0.12.0';
+exports.version = '0.12.0';
 
-mach.Message = require('./Message');
-mach.Request = require('./Request');
-mach.Response = require('./Response');
+exports.Message = require('./Message');
+exports.Request = require('./Request');
+exports.Response = require('./Response');
 
-mach.proxy = require('./utils/createProxy');
+exports.proxy = require('./utils/createProxy');
 
 // Always make client methods available.
 require('./client');
