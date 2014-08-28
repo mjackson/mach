@@ -1,4 +1,4 @@
-var Promise = require('bluebird').Promise;
+var Promise = require('./Promise');
 var binaryJoin = require('./binaryJoin');
 var MaxLengthExceededError = require('./MaxLengthExceededError');
 

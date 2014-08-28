@@ -1,11 +1,5 @@
 require('./helper');
-var Promise = require('bluebird').Promise;
-
-function delay(ms) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, ms);
-  });
-}
+var delay = require('when/delay');
 
 function describeSessionStore(store, skip) {
   if (!skip) {
@@ -54,7 +48,7 @@ function describeSessionStore(store, skip) {
 
   desc('when it has a TTL', function () {
     beforeEach(function () {
-      store.ttl = 20;
+      store.ttl = 30;
     });
 
     afterEach(function () {

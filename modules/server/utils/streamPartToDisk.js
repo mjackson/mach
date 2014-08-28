@@ -1,5 +1,5 @@
 var fs = require('fs');
-var Promise = require('bluebird').Promise;
+var Promise = require('./Promise');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
 function streamToDisk(part, filePrefix) {

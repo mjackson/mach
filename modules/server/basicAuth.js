@@ -1,4 +1,4 @@
-var Promise = require('bluebird').Promise;
+var Promise = require('./utils/Promise');
 var decodeBase64 = require('./utils/decodeBase64');
 
 function unauthorized(response, realm) {

@@ -1,6 +1,6 @@
 var fs = require('fs');
 var d = require('d');
-var Promise = require('bluebird').Promise;
+var Promise = require('./Promise');
 var getFileChecksum = require('./getFileChecksum');
 var getFileStats = require('./getFileStats');
 var getMimeType = require('./getMimeType');

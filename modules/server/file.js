@@ -1,5 +1,5 @@
 var fs = require('fs');
-var Promise = require('bluebird').Promise;
+var Promise = require('./utils/Promise');
 var defaultApp = require('./utils/defaultApp');
 var getFileStats = require('./utils/getFileStats');
 var joinPaths = require('./utils/joinPaths');

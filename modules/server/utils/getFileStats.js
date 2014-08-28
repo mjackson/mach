@@ -1,5 +1,5 @@
 var fs = require('fs');
-var Promise = require('bluebird').Promise;
+var Promise = require('./Promise');
 
 /**
  * Returns stats for the given file or null if it doesn't exist.

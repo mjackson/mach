@@ -2,7 +2,7 @@
 // You'll get random "hello world"s and "internal server error"s, but
 // the server won't crash.
 
-var Promise = require('bluebird').Promise;
+var Promise = require('when').Promise;
 var mach = require('../modules');
 
 mach.serve(function (request) {

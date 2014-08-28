@@ -4,16 +4,16 @@
   "description": "HTTP for JavaScript",
   "main": "modules/index.js",
   "dependencies": {
-    "bluebird": "~2.1.3",
+    "asap": "git://github.com/kriskowal/asap.git",
     "bodec": "~0.1.0",
     "bufferedstream": "~2.8.0",
     "d": "~0.1.1",
     "mime": "~1.2.9",
-    "qs": "~2.1.0",
-    "strftime": "~0.8.1"
+    "qs": "~2.2.0",
+    "strftime": "~0.8.1",
+    "when": "~3.4.4"
   },
   "optionalDependencies": {
-    "es6-promise": "~1.0.0",
     "redis": "~0.11.0"
   },
   "devDependencies": {

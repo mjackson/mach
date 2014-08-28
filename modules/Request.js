@@ -1,5 +1,5 @@
 var d = require('d');
-var Promise = require('bluebird').Promise;
+var Promise = require('./utils/Promise');
 var isBinary = require('./utils/isBinary');
 var createProxy = require('./utils/createProxy');
 var parseCookie = require('./utils/parseCookie');
