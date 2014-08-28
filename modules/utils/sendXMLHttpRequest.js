@@ -1,6 +1,7 @@
 var XMLHttpRequest = window.XMLHttpRequest;
 var Stream = require('bufferedstream');
 var AbortablePromise = require('./AbortablePromise');
+var binaryTo = require('./binaryTo');
 var bufferStream = require('./bufferStream');
 var stringifyURL = require('./stringifyURL');
 var Response = require('../Response');
@@ -124,8 +125,9 @@ function sendXMLHttpRequest(options) {
     });
 
     if (options.content) {
-      bufferStream(options.content).then(function (content) {
-        xhr.send(content.toString());
+      bufferStream(options.content).then(function (chunk) {
+        // TODO: Try to detect the charset of the content?
+        xhr.send(binaryTo(chunk, 'utf8'));
       }, reject);
     } else {
       xhr.send();

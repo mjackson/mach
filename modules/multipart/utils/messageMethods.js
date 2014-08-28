@@ -1,5 +1,4 @@
 var d = require('d');
-var bufferStream = require('./bufferStream');
 var parseMessage = require('./parseMessage');
 
 var _parseContent = require('../../Message').prototype._parseContent;
@@ -41,6 +40,16 @@ module.exports = {
   }),
 
   /**
+   * Override Message#_parseContent.
+   */
+  _parseContent: d(function (maxLength, uploadPrefix) {
+    if (this.isMultipart)
+      return parseMultipartMessage(this, maxLength, uploadPrefix);
+
+    return _parseContent.apply(this, arguments);
+  }),
+
+  /**
    * A low-level hook responsible for handling multipart.Part objects when
    * parsing multipart message content. It should return the value to use for
    * that part in the parameters hash, or a promise for the value. By default
@@ -50,19 +59,7 @@ module.exports = {
    * for multipart data, such as streaming it directly to a network file storage.
    */
   handlePart: d(function (part, uploadPrefix) {
-    return bufferStream(part.content).then(function (chunk) {
-      return chunk.toString();
-    });
-  }),
-
-  /**
-   * Override Message#_parseContent.
-   */
-  _parseContent: d(function (maxLength, uploadPrefix) {
-    if (this.isMultipart)
-      return parseMultipartMessage(this, maxLength, uploadPrefix);
-
-    return _parseContent.apply(this, arguments);
+    return part.stringifyContent();
   })
 
 };
