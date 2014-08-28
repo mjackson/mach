@@ -1,5 +1,6 @@
 var d = require('d');
 var Stream = require('bufferedstream');
+var binaryTo = require('./utils/binaryTo');
 var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
@@ -164,7 +165,7 @@ Object.defineProperties(Message.prototype, {
    */
   stringifyContent: d(function (maxLength, encoding) {
     return this.bufferContent(maxLength).then(function (chunk) {
-      return chunk.toString(encoding);
+      return binaryTo(chunk, encoding);
     });
   }),
 

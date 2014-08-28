@@ -1,5 +1,6 @@
 require('./helper');
 var binaryFrom = require('../modules/utils/binaryFrom');
+var binaryTo = require('../modules/utils/binaryTo');
 var Message = mach.Message;
 
 describe('Message', function () {
@@ -72,13 +73,13 @@ describe('Message', function () {
       return message
         .bufferContent()
         .then(function (content) {
-          expect(content.toString()).toEqual('foo');
+          expect(binaryTo(content)).toEqual('foo');
 
           message.content = 'bar';
           return message.bufferContent();
         })
         .then(function (content) {
-          expect(content.toString()).toEqual('bar');
+          expect(binaryTo(content)).toEqual('bar');
         });
     });
   });
