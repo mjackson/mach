@@ -4,6 +4,28 @@ var routingMethods = require('./utils/routingMethods');
 var mapper = require('./mapper');
 var router = require('./router');
 
+function mapperCreator(mappings) {
+  return function (app) {
+    app = mapper(app);
+
+    for (var i = 0, len = mappings.length; i < len; ++i)
+      app.map.apply(app, mappings[i]);
+
+    return app;
+  };
+}
+
+function routerCreator(routes) {
+  return function (app) {
+    app = router(app);
+
+    for (var i = 0, len = routes.length; i < len; ++i)
+      app.route.apply(app, routes[i]);
+
+    return app;
+  };
+}
+
 /**
  * A middleware that aids in building complex apps that are fronted by other
  * middleware in a "middleware stack". Also provides several other useful methods
@@ -52,9 +74,16 @@ var router = require('./router');
 function stack(app) {
   app = app || defaultApp;
 
-  var layers = [], compiledApp;
+  var layers = [], mappings = [], routes = [];
+  var compiledApp;
 
   function compile(app) {
+    if (routes.length)
+      app = routerCreator(routes)(app);
+
+    if (mappings.length)
+      app = mapperCreator(mappings)(app);
+
     var index = layers.length;
 
     while (index)
@@ -89,6 +118,12 @@ function stack(app) {
     use: d(function (middleware) {
       var args = Array.prototype.slice.call(arguments, 1);
 
+      if (mappings.length)
+        layers.push(mapperCreator(mappings.splice(0, mappings.length)));
+
+      if (routes.length)
+        layers.push(routerCreator(routes.splice(0, routes.length)));
+
       layers.push(function (app) {
         return middleware.apply(this, [ app ].concat(args));
       });
@@ -97,41 +132,24 @@ function stack(app) {
     }),
 
     /**
-     * Maps the given location to a new stack. The callback will be called with
-     * the new stack when the stack is compiled.
+     * Uses a mapper to map the given location to a new stack, which is
+     * passed to the given callback for configuration.
      */
     map: d(function (location, callback) {
-      layers.push(function (app) {
-        var s = stack();
+      var s = stack();
 
-        if (typeof callback === 'function')
-          callback(s);
+      if (typeof callback === 'function')
+        callback(s);
 
-        if (typeof app.map !== 'function')
-          app = mapper(app);
-
-        app.map(location, s);
-
-        return app;
-      });
-
+      mappings.push([ location, s ]);
       compiledApp = null;
     }),
 
     /**
-     * Uses a Router to add a route that runs when the path used in the request
-     * matches the pattern. See Router#route.
+     * Uses a router to route the given pattern to the given app.
      */
-    route: d(function (pattern, methods, routeApp) {
-      layers.push(function (app) {
-        if (typeof app.route !== 'function')
-          app = router(app);
-
-        app.route(pattern, methods, routeApp);
-
-        return app;
-      });
-
+    route: d(function (pattern, methods, app) {
+      routes.push([ pattern, methods, app ]);
       compiledApp = null;
     })
 

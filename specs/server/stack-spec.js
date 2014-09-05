@@ -25,6 +25,10 @@ describe('mach.stack', function () {
     return 'welcome home!';
   });
 
+  app.get('/:username', function (request) {
+    return 'welcome ' + request.params.username;
+  });
+
   app.use(addHeader, 'Three');
 
   describe('a request that does not match any mappings or routes', function () {
@@ -57,6 +61,10 @@ describe('mach.stack', function () {
   describe('a request that matches a route in front of some middleware', function () {
     beforeEach(function () {
       return callApp(app, '/home');
+    });
+
+    it('calls the correct app', function () {
+      expect(lastResponse.buffer).toEqual('welcome home!');
     });
 
     it('calls all middlware in front of that route', function () {
