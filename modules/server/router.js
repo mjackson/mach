@@ -26,7 +26,7 @@ var routingMethods = require('./utils/routingMethods');
  *   });
  *
  *   app.get('/users/:userID', function (request) {
-  *    var userID = request.params.userID;
+ *     var userID = request.params.userID;
  *     // ...
  *   });
  *
