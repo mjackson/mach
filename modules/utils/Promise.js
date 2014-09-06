@@ -1,10 +1,4 @@
-var asap = require('asap');
-var makePromise = require('when/lib/makePromise');
-var Scheduler = require('when/lib/Scheduler');
-
-var Promise = makePromise({
-  scheduler: new Scheduler(asap)
-});
+var Promise = require('when/lib/Promise');
 
 // TODO: Only do this in dev.
 require('when/monitor')(Promise);

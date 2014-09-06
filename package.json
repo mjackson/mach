@@ -4,7 +4,6 @@
   "description": "HTTP for JavaScript",
   "main": "modules/index.js",
   "dependencies": {
-    "asap": "git://github.com/kriskowal/asap.git",
     "bodec": "~0.1.0",
     "bufferedstream": "~2.8.0",
     "d": "~0.1.1",
