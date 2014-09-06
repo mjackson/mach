@@ -103,7 +103,7 @@ module.exports = {
         throw new Error('Cannot send file ' + options.path + '; it is not a file');
 
       response.content = fs.createReadStream(options.path);
-      response.headers['Content-Type'] = getMimeType(options.path);
+      response.headers['Content-Type'] = options.type || getMimeType(options.path);
       response.headers['Content-Length'] = stats.size;
 
       if (options.useLastModified)
