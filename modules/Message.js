@@ -88,20 +88,15 @@ Object.defineProperties(Message.prototype, {
     if (value == null)
       value = DEFAULT_CONTENT;
 
-    if (value instanceof Stream) {
-      this._content = value;
-      delete this.headers['Content-Length'];
-    } else {
-      this._content = new Stream(value);
+    this._content = value instanceof Stream ? value : new Stream(value);
+    this._content.pause();
 
-      if (value.length != null) {
-        this.headers['Content-Length'] = String(value.length);
-      } else {
-        delete this.headers['Content-Length'];
-      }
+    if (value.length != null) {
+      this.headers['Content-Length'] = String(value.length);
+    } else {
+      delete this.headers['Content-Length'];
     }
 
-    this._content.pause();
     this._bufferedContent = undefined;
   }),
 

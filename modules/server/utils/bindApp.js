@@ -62,7 +62,6 @@ function bindApp(app, nodeServer) {
     request.call(app).then(function (response) {
       var isHead = request.method === 'HEAD';
       var isEmpty = isHead || STATUS_WITHOUT_CONTENT[response.status] === true;
-
       var headers = response.headers;
 
       if (isEmpty && !isHead)
