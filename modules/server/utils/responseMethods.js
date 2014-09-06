@@ -1,8 +1,5 @@
 var fs = require('fs');
 var d = require('d');
-var Promise = require('./Promise');
-var getFileChecksum = require('./getFileChecksum');
-var getFileStats = require('./getFileStats');
 var getMimeType = require('./getMimeType');
 var stringifyCookie = require('./stringifyCookie');
 
@@ -32,7 +29,7 @@ module.exports = {
   /**
    * A quick way to write the status and/or content to the response.
    *
-   * Example:
+   * Examples:
    *
    *   response.send(404);
    *   response.send(404, 'Not Found');
@@ -84,39 +81,24 @@ module.exports = {
 
   /**
    * Sends a file to the client with the given options.
+   *
+   * Examples:
+   *
+   *   response.sendFile('path/to/file.txt');
+   *   response.sendFile(200, 'path/to/file.txt');
    */
-  sendFile: d(function (status, options, stats) {
+  sendFile: d(function (status, options) {
     if (typeof status === 'number') {
       this.status = status;
     } else {
-      stats = options;
       options = status;
     }
 
     if (typeof options === 'string')
-      options = { path: options, useLastModified: true };
+      options = { path: options };
 
-    var response = this;
-
-    return Promise.resolve(stats || getFileStats(options.path)).then(function (stats) {
-      if (!stats || !stats.isFile())
-        throw new Error('Cannot send file ' + options.path + '; it is not a file');
-
-      response.content = fs.createReadStream(options.path);
-      response.headers['Content-Type'] = options.type || getMimeType(options.path);
-      response.headers['Content-Length'] = stats.size;
-
-      if (!('useLastModified' in options) || options.useLastModified)
-        response.headers['Last-Modified'] = stats.mtime.toUTCString();
-
-      if (!options.useETag)
-        return response;
-
-      return getFileChecksum(options.path).then(function (checksum) {
-        response.headers['ETag'] = checksum;
-        return response;
-      });
-    });
+    this.headers['Content-Type'] = options.type || getMimeType(options.path);
+    this.content = fs.createReadStream(options.path);
   })
 
 };
