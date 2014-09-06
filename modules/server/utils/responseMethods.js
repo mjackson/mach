@@ -106,7 +106,7 @@ module.exports = {
       response.headers['Content-Type'] = options.type || getMimeType(options.path);
       response.headers['Content-Length'] = stats.size;
 
-      if (options.useLastModified)
+      if (!('useLastModified' in options) || options.useLastModified)
         response.headers['Last-Modified'] = stats.mtime.toUTCString();
 
       if (!options.useETag)
