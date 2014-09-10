@@ -91,12 +91,6 @@ Object.defineProperties(Message.prototype, {
     this._content = value instanceof Stream ? value : new Stream(value);
     this._content.pause();
 
-    if (value.length != null) {
-      this.headers['Content-Length'] = String(value.length);
-    } else {
-      delete this.headers['Content-Length'];
-    }
-
     this._bufferedContent = undefined;
   }),
 

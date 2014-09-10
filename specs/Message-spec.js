@@ -37,36 +37,6 @@ describe('Message', function () {
     });
   });
 
-  describe('when content is set to a string', function () {
-    beforeEach(function () {
-      message.content = 'abc';
-    });
-
-    it('sets Content-Length to the length of the string', function () {
-      expect(message.headers['Content-Length']).toEqual(3);
-    });
-  });
-
-  describe('when content is set to a binary', function () {
-    beforeEach(function () {
-      message.content = binaryFrom('abc');
-    });
-
-    it('sets Content-Length to the size of the buffer', function () {
-      expect(message.headers['Content-Length']).toEqual(3);
-    });
-  });
-
-  describe('when content is set to a Stream', function () {
-    beforeEach(function () {
-      message.content = new Stream;
-    });
-
-    it('removes the Content-Length header', function () {
-      assert(message.headers['Content-Length'] == null);
-    });
-  });
-
   describe('bufferContent', function () {
     it('responds to the message content being set', function () {
       message.content = 'foo';

@@ -100,6 +100,7 @@ module.exports = {
     if (options.content) {
       this.content = options.content;
     } else if (typeof options.path === 'string') {
+      this.headers['Content-Length'] = fs.statSync(options.path).size;
       this.content = fs.createReadStream(options.path);
     } else {
       throw new Error('Missing file content/path');
@@ -108,8 +109,8 @@ module.exports = {
     if (options.type || options.path)
       this.headers['Content-Type'] = options.type || getMimeType(options.path);
 
-    if (options.size)
-      this.headers['Content-Length'] = options.size;
+    if (options.length || options.size)
+      this.headers['Content-Length'] = options.length || options.size;
   })
 
 };
