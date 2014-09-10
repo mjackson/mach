@@ -97,8 +97,19 @@ module.exports = {
     if (typeof options === 'string')
       options = { path: options };
 
-    this.headers['Content-Type'] = options.type || getMimeType(options.path);
-    this.content = fs.createReadStream(options.path);
+    if (options.content) {
+      this.content = options.content;
+    } else if (typeof options.path === 'string') {
+      this.content = fs.createReadStream(options.path);
+    } else {
+      throw new Error('Missing file content/path');
+    }
+
+    if (options.type || options.path)
+      this.headers['Content-Type'] = options.type || getMimeType(options.path);
+
+    if (options.size)
+      this.headers['Content-Length'] = options.size;
   })
 
 };
