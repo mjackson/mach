@@ -88,8 +88,12 @@ Object.defineProperties(Message.prototype, {
     if (value == null)
       value = DEFAULT_CONTENT;
 
-    this._content = value instanceof Stream ? value : new Stream(value);
-    this._content.pause();
+    if (value instanceof Stream) {
+      this._content = value;
+      value.pause();
+    } else {
+      this._content = new Stream(value);
+    }
 
     this._bufferedContent = undefined;
   }),
