@@ -5,17 +5,17 @@ require('../multipart');
 
 Object.defineProperties(
   mach.Message.prototype,
-  require('./utils/messageMethods')
+  require('./MessageProperties')
 );
 
 Object.defineProperties(
   mach.Request.prototype,
-  require('./utils/requestMethods')
+  require('./RequestProperties')
 );
 
 Object.defineProperties(
   mach.Response.prototype,
-  require('./utils/responseMethods')
+  require('./ResponseProperties')
 );
 
 mach.basicAuth        = require('./basicAuth');

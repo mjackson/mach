@@ -2,7 +2,7 @@ var mach = require('../index');
 
 Object.defineProperties(
   mach.Request.prototype,
-  require('./utils/requestMethods')
+  require('./RequestProperties')
 );
 
 mach.Accept = require('./Accept');

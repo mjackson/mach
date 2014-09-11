@@ -1,10 +1,10 @@
 var d = require('d');
+var RoutingProperties = require('./RoutingProperties');
 var compileRoute = require('./utils/compileRoute');
 var defaultApp = require('./utils/defaultApp');
 var isRegExp = require('./utils/isRegExp');
 var makeParams = require('./utils/makeParams');
 var mergeProperties = require('./utils/mergeProperties');
-var routingMethods = require('./utils/routingMethods');
 
 /**
  * A middleware that provides pattern-based routing for URL's, with optional
@@ -116,7 +116,7 @@ function router(app) {
 
   });
 
-  Object.defineProperties(callRouter, routingMethods);
+  Object.defineProperties(callRouter, RoutingProperties);
 
   return callRouter;
 }

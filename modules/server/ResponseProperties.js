@@ -1,7 +1,7 @@
 var fs = require('fs');
 var d = require('d');
-var getMimeType = require('./getMimeType');
-var stringifyCookie = require('./stringifyCookie');
+var getMimeType = require('../utils/getMimeType');
+var stringifyCookie = require('../utils/stringifyCookie');
 
 module.exports = {
 

@@ -1,7 +1,7 @@
 var d = require('d');
-var streamPartToDisk = require('./streamPartToDisk');
+var streamPartToDisk = require('./utils/streamPartToDisk');
 
-var _handlePart = require('../../Message').prototype.handlePart;
+var _handlePart = require('../Message').prototype.handlePart;
 
 module.exports = {
 

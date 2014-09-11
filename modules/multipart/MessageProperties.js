@@ -1,7 +1,7 @@
 var d = require('d');
-var parseMessage = require('./parseMessage');
+var parseMessage = require('./utils/parseMessage');
 
-var _parseContent = require('../../Message').prototype._parseContent;
+var _parseContent = require('../Message').prototype._parseContent;
 
 function parseMultipartMessage(message, maxLength, uploadPrefix) {
   function partHandler(part) {

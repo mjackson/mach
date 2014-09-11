@@ -2,7 +2,7 @@ var mach = require('../index');
 
 Object.defineProperties(
   mach.Message.prototype,
-  require('./utils/messageMethods')
+  require('./MessageProperties')
 );
 
 mach.MultipartParser = require('./Parser');

@@ -1,6 +1,6 @@
 var d = require('d');
 var defaultApp = require('./utils/defaultApp');
-var routingMethods = require('./utils/routingMethods');
+var RoutingProperties = require('./RoutingProperties');
 var mapper = require('./mapper');
 var router = require('./router');
 
@@ -155,7 +155,7 @@ function stack(app) {
 
   });
 
-  Object.defineProperties(callStack, routingMethods);
+  Object.defineProperties(callStack, RoutingProperties);
 
   return callStack;
 }
