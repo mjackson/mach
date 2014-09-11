@@ -9,12 +9,10 @@ var MaxLengthExceededError = require('./MaxLengthExceededError');
 function bufferStream(stream, maxLength) {
   maxLength = maxLength || Infinity;
 
-  return new Promise(function (resolve, reject) {
-    if (!stream.readable) {
-      reject(new Error('Cannot buffer stream that is not readable'));
-      return;
-    }
+  if (!stream.readable)
+    throw new Error('Cannot buffer stream that is not readable');
 
+  return new Promise(function (resolve, reject) {
     var chunks = [];
     var length = 0;
 
