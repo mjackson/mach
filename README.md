@@ -79,15 +79,15 @@ Before you run the specs, do an `npm install`.
 
 To run all the specs:
 
-    $ mocha spec
+    $ mocha specs
 
 To run an individual spec:
 
-    $ mocha spec/content-type-spec.js
+    $ mocha specs/content-type-spec.js
 
 The Redis session store specs rely on Redis to run successfully. By default they are skipped, but if you want to run them fire up a Redis server on the default host and port and set the `$WITH_REDIS` environment variable.
 
-    $ WITH_REDIS=1 mocha spec
+    $ WITH_REDIS=1 mocha specs
 
 ### Influences
 
