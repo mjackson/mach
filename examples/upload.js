@@ -15,11 +15,9 @@ app.get('/', function (request) {
   ].join('\n');
 });
 
-app.post('/', function (request) {
-  return {
-    headers: { 'Content-Type': 'text/plain' },
-    content: JSON.stringify(request.params, null, 2)
-  };
+app.post('/', function (request, response) {
+  // Send a pretty-printed version of request.params.
+  response.sendText(JSON.stringify(request.params, null, 2));
 });
 
 mach.serve(app);

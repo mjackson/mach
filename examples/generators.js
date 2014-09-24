@@ -1,6 +1,6 @@
 // To run this example you need to run node in harmony-compat mode.
 // I've tested it with node 0.11.2 like this:
-//   node --harmony prototypes/generators.js
+//   node --harmony examples/generators.js
 
 var mach = require('../modules');
 var app  = mach.stack();
@@ -8,7 +8,7 @@ var Q    = require('q');
 
 function sleep(millis, answer) {
   const deferredResult = Q.defer();
-  setTimeout(function() {
+  setTimeout(function () {
     deferredResult.resolve(answer);
   }, millis);
   return deferredResult.promise;
@@ -16,7 +16,7 @@ function sleep(millis, answer) {
 
 app.use(mach.logger);
 
-app.run(Q.async(function*(request) {
+app.run(Q.async(function *(request) {
   var body = yield request.parseContent();
 
   console.log('Sleeping');

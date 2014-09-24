@@ -1,31 +1,24 @@
-var util = require('util');
-var Stream = require('stream');
-var Readable = Stream.Readable;
+// This example demonstrates how mach can be used to create a server
+// that streams content back to the client. The best way to see the
+// streaming data is probably using curl or netcat, i.e.
+// curl http://localhost:5000
 
-function ContentStream() {
-  Readable.call(this);
-  this._read = function (size) {
-    // no-op
-  };
-}
-
-util.inherits(ContentStream, Readable);
-
+var Stream = require('bufferedstream');
 var mach = require('../modules');
 
-mach.serve(function (request) {
-  var response = {
-    content: new ContentStream
-  };
+mach.serve(function (request, response) {
+  // Set response.content to the stream you want to send.
+  // In this example, the stream is an infinite stream of
+  // timestamps. In normal usage you'll probably use one
+  // of node's readables (e.g. fs.createReadStream).
+  response.content = new Stream;
 
   var timer = setInterval(function () {
-    response.content.push((new Date).toString() + '\n');
+    response.content.write((new Date).toString() + '\n');
   }, 1000);
 
-  request.on('close', function () {
+  request.onClose = function () {
     console.log('client closed connection');
     clearInterval(timer);
-  });
-
-  return response;
+  };
 });

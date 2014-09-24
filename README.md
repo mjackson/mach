@@ -1,14 +1,14 @@
 [![build status](https://secure.travis-ci.org/mjackson/mach.png)](http://travis-ci.org/mjackson/mach)
 
-[Mach](https://github.com/mjackson/mach) is a better way to build fully asynchronous web servers using node.js. It has the following goals:
+[Mach](https://github.com/mjackson/mach) is an HTTP server and client library that runs in both node.js and the browser. It has the following goals:
 
   * Simplicity: straightforward mapping of HTTP requests to JavaScript function calls
   * Asynchronous: responses can be deferred using a standard Promises/A+ compatible promise
   * Streaming: request and response bodies can be streamed
   * Composability: middleware composes easily using promises
-  * Robust: Promises propagate errors up the call stack, simplifying error handling
+  * Robust: promises propagate errors up the call stack, simplifying error handling
 
-"Hello world" in Mach is simple.
+Writing a "Hello world" server in Mach is simple.
 
 ```js
 require("mach").serve(function (request) {
@@ -75,19 +75,21 @@ Please file issues on the [issue tracker on GitHub](https://github.com/machjs/ma
 
 ### Specs
 
-Before you run the specs, do an `npm install`.
+To run the specs in node:
 
-To run all the specs:
-
-    $ mocha spec
-
-To run an individual spec:
-
-    $ mocha spec/content-type-spec.js
+    $ npm install
+    $ ./scripts/run-specs
 
 The Redis session store specs rely on Redis to run successfully. By default they are skipped, but if you want to run them fire up a Redis server on the default host and port and set the `$WITH_REDIS` environment variable.
 
-    $ WITH_REDIS=1 mocha spec
+    $ WITH_REDIS=1 ./scripts/run-specs
+
+To run the specs in a browser, first run:
+
+    $ npm install
+    $ ./scripts/serve-specs
+
+Then open [http://localhost:8080/](http://localhost:8080/) in a browser.
 
 ### Influences
 

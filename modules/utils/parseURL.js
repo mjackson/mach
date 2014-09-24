@@ -1,1 +1,3 @@
-module.exports = require('url').parse;
+module.exports = (typeof window === 'undefined')
+  ? require('url' + '').parse // Stop Browserify.
+  : require('./parseURLUsingDOM');

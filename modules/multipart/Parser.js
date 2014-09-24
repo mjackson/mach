@@ -1,4 +1,4 @@
-var Buffer = require('buffer').Buffer;
+var bodec = require('bodec');
 var Stream = require('bufferedstream');
 var Part = require('./Part');
 
@@ -34,10 +34,8 @@ var HYPHEN = 45;
 var COLON = 58;
 
 function Parser(boundary, partHandler) {
-  this.boundary = new Buffer(boundary.length + 4);
-  this.boundary.write('\r\n--', 'ascii', 0);
-  this.boundary.write(boundary, 'ascii', 4);
-  this.lookBehind = new Buffer(this.boundary.length + 8);
+  this.boundary = bodec.fromRaw('\r\n--' + boundary);
+  this.lookBehind = bodec.create(this.boundary.length + 8);
   this.boundaryChars = {};
 
   var i = this.boundary.length;
@@ -54,9 +52,9 @@ function Parser(boundary, partHandler) {
   this.onPart = partHandler;
 }
 
-Parser.prototype.execute = function (buffer) {
+Parser.prototype.execute = function (chunk) {
   var self = this,
-      bufferLength = buffer.length,
+      chunkLength = chunk.length,
       prevIndex = this.index,
       index = this.index,
       state = this.state,
@@ -69,8 +67,8 @@ Parser.prototype.execute = function (buffer) {
       c,
       cl;
 
-  for (var i = 0; i < bufferLength; ++i) {
-    c = buffer[i];
+  for (var i = 0; i < chunkLength; ++i) {
+    c = chunk[i];
 
     switch (state) {
     case S.START:
@@ -121,7 +119,7 @@ Parser.prototype.execute = function (buffer) {
           // empty header field
           return i;
         }
-        this._dataCallback('headerName', buffer, true, i);
+        this._dataCallback('headerName', chunk, true, i);
         state = S.HEADER_VALUE_START;
         break;
       }
@@ -140,7 +138,7 @@ Parser.prototype.execute = function (buffer) {
       // fall through
     case S.HEADER_VALUE:
       if (c == CR) {
-        this._dataCallback('headerValue', buffer, true, i);
+        this._dataCallback('headerValue', chunk, true, i);
         this._callback('headerEnd');
         state = S.HEADER_VALUE_ALMOST_DONE;
       }
@@ -168,17 +166,17 @@ Parser.prototype.execute = function (buffer) {
       if (index == 0) {
         // boyer-moore derrived algorithm to safely skip non-boundary data
         i += boundaryEnd;
-        while (i < bufferLength && !(buffer[i] in boundaryChars)) {
+        while (i < chunkLength && !(chunk[i] in boundaryChars)) {
           i += boundaryLength;
         }
         i -= boundaryEnd;
-        c = buffer[i];
+        c = chunk[i];
       }
 
       if (index < boundaryLength) {
         if (boundary[index] == c) {
           if (index == 0) {
-            this._dataCallback('partData', buffer, true, i);
+            this._dataCallback('partData', chunk, true, i);
           }
           index++;
         } else {
@@ -243,15 +241,15 @@ Parser.prototype.execute = function (buffer) {
     }
   }
 
-  this._dataCallback('headerName', buffer);
-  this._dataCallback('headerValue', buffer);
-  this._dataCallback('partData', buffer);
+  this._dataCallback('headerName', chunk);
+  this._dataCallback('headerValue', chunk);
+  this._dataCallback('partData', chunk);
 
   this.index = index;
   this.state = state;
   this.flags = flags;
 
-  return bufferLength;
+  return chunkLength;
 };
 
 Parser.prototype.finish = function () {
@@ -267,25 +265,25 @@ Parser.prototype._clear = function (name) {
   delete this[name + 'Mark'];
 };
 
-Parser.prototype._callback = function (name, buffer, start, end) {
+Parser.prototype._callback = function (name, chunk, start, end) {
   if (start !== undefined && start === end)
     return;
 
   var prop = 'on' + name.substr(0, 1).toUpperCase() + name.substr(1);
 
   if (prop in this)
-    this[prop](buffer, start, end);
+    this[prop](chunk, start, end);
 };
 
-Parser.prototype._dataCallback = function (name, buffer, clear, i) {
+Parser.prototype._dataCallback = function (name, chunk, clear, i) {
   var prop = name + 'Mark';
 
   if (prop in this) {
     if (!clear) {
-      this._callback(name, buffer, this[prop], buffer.length);
+      this._callback(name, chunk, this[prop], chunk.length);
       this[prop] = 0;
     } else {
-      this._callback(name, buffer, this[prop], i);
+      this._callback(name, chunk, this[prop], i);
       delete this[prop];
     }
   }
@@ -298,12 +296,12 @@ Parser.prototype.onPartBegin = function () {
   this._headerValue = '';
 };
 
-Parser.prototype.onHeaderName = function (buffer, start, end) {
-  this._headerName += buffer.toString('utf8', start, end);
+Parser.prototype.onHeaderName = function (chunk, start, end) {
+  this._headerName += bodec.toUnicode(chunk, start, end);
 };
 
-Parser.prototype.onHeaderValue = function (buffer, start, end) {
-  this._headerValue += buffer.toString('utf8', start, end);
+Parser.prototype.onHeaderValue = function (chunk, start, end) {
+  this._headerValue += bodec.toUnicode(chunk, start, end);
 };
 
 Parser.prototype.onHeaderEnd = function () {
@@ -316,8 +314,8 @@ Parser.prototype.onHeadersEnd = function () {
   this.onPart(this._part);
 };
 
-Parser.prototype.onPartData = function (buffer, start, end) {
-  this._stream.write(buffer.slice(start, end));
+Parser.prototype.onPartData = function (chunk, start, end) {
+  this._stream.write(bodec.slice(chunk, start, end));
 };
 
 Parser.prototype.onPartEnd = function () {

@@ -1,6 +1,6 @@
-var Buffer = require('buffer').Buffer;
-var Promise = require('bluebird');
-var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
+var Promise = require('./Promise');
+var binaryJoin = require('./binaryJoin');
+var MaxLengthExceededError = require('./MaxLengthExceededError');
 
 /**
  * Returns a promise for a buffer of all content in the given stream up to
@@ -9,12 +9,10 @@ var MaxLengthExceededError = require('../errors/MaxLengthExceededError');
 function bufferStream(stream, maxLength) {
   maxLength = maxLength || Infinity;
 
-  return new Promise(function (resolve, reject) {
-    if (!stream.readable) {
-      reject(new Error('Cannot buffer stream that is not readable'));
-      return;
-    }
+  if (!stream.readable)
+    throw new Error('Cannot buffer stream that is not readable');
 
+  return new Promise(function (resolve, reject) {
     var chunks = [];
     var length = 0;
 
@@ -31,7 +29,7 @@ function bufferStream(stream, maxLength) {
     });
 
     stream.on('end', function () {
-      resolve(Buffer.concat(chunks));
+      resolve(binaryJoin(chunks));
     });
 
     if (typeof stream.resume === 'function')

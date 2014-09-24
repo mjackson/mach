@@ -1,0 +1,2 @@
+#!/bin/sh
+node_modules/.bin/browserify specs/browser/tests.js --detect-globals false --debug > specs/browser/tests-bundle.js
