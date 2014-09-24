@@ -69,6 +69,8 @@ function Request(options) {
   this.scriptName = options.scriptName || '';
   this.pathInfo = options.pathInfo || options.path || '';
 
+  if(options.hasOwnProperty('withCredentials')) this.withCredentials = options.withCredentials;
+
   // Make sure pathInfo is at least '/'.
   if (this.scriptName === '' && this.pathInfo === '')
     this.pathInfo = '/';

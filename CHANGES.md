@@ -24,6 +24,7 @@ Improvements:
   * Add Request#bufferContent and Request#stringifyContent
   * Add Request#search
   * Request#call always returns a Response
+  * Pass withCredentials through when making requests as a client
 
 ### 0.12.0 / 2014-07-17
 
