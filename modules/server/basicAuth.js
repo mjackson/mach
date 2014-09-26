@@ -4,7 +4,7 @@ var decodeBase64 = require('./utils/decodeBase64');
 function unauthorized(response, realm) {
   realm = realm || 'Authorization Required';
   response.headers['WWW-Authenticate'] = 'Basic realm="' + realm + '"';
-  response.sendText(401, 'Not Authorized');
+  response.text(401, 'Not Authorized');
 }
 
 /**
@@ -52,7 +52,7 @@ function basicAuth(app, options) {
     var parts = auth.split(' ', 2);
     var scheme = parts[0];
     if (scheme.toLowerCase() !== 'basic')
-      return response.sendText(400, 'Bad Request');
+      return response.text(400, 'Bad Request');
 
     var params = decodeBase64(parts[1]).split(':');
     var username = params[0], password = params[1];

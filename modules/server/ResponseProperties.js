@@ -50,7 +50,7 @@ module.exports = {
   /**
    * Sends the given text in a text/plain response.
    */
-  sendText: d(function (status, text) {
+  text: d(function (status, text) {
     this.contentType = 'text/plain';
     this.send(status, text);
   }),
@@ -58,7 +58,7 @@ module.exports = {
   /**
    * Sends the given HTML in a text/html response.
    */
-  sendHTML: d(function (status, html) {
+  html: d(function (status, html) {
     this.contentType = 'text/html';
     this.send(status, html);
   }),
@@ -66,7 +66,7 @@ module.exports = {
   /**
    * Sends the given JSON in an application/json response.
    */
-  sendJSON: d(function (status, json) {
+  json: d(function (status, json) {
     this.contentType = 'application/json';
 
     if (typeof status === 'number') {
@@ -84,10 +84,10 @@ module.exports = {
    *
    * Examples:
    *
-   *   response.sendFile('path/to/file.txt');
-   *   response.sendFile(200, 'path/to/file.txt');
+   *   response.file('path/to/file.txt');
+   *   response.file(200, 'path/to/file.txt');
    */
-  sendFile: d(function (status, options) {
+  file: d(function (status, options) {
     if (typeof status === 'number') {
       this.status = status;
     } else {

@@ -61,13 +61,13 @@ function file(app, options) {
 
     // Reject paths that contain "..".
     if (pathInfo.indexOf('..') !== -1)
-      return response.sendText(403, 'Forbidden');
+      return response.text(403, 'Forbidden');
 
     var path = joinPaths(rootDirectory, pathInfo);
 
     return getFileStats(path).then(function (stats) {
       if (stats && stats.isFile())
-        return response.sendFile(makeOptions(path), stats);
+        return response.file(makeOptions(path), stats);
 
       if (!stats || (!stats.isDirectory() || !indexFiles))
         return request.call(app);
@@ -80,7 +80,7 @@ function file(app, options) {
       return Promise.all(indexPaths.map(getFileStats)).then(function (stats) {
         for (var i = 0, len = stats.length; i < len; ++i) {
           if (stats[i])
-            return response.sendFile(makeOptions(indexPaths[i]), stats[i]);
+            return response.file(makeOptions(indexPaths[i]), stats[i]);
         }
 
         return request.call(app);

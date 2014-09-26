@@ -42,7 +42,7 @@ function parseParams(app, options) {
       return request.call(app);
     }, function (error) {
       if (error instanceof MaxLengthExceededError)
-        return response.sendText(413, 'Request Entity Too Large');
+        return response.text(413, 'Request Entity Too Large');
 
       throw error;
     });

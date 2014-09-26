@@ -17,7 +17,7 @@ app.get('/', function (request) {
 
 app.post('/', function (request, response) {
   // Send a pretty-printed version of request.params.
-  response.sendText(JSON.stringify(request.params, null, 2));
+  response.text(JSON.stringify(request.params, null, 2));
 });
 
 mach.serve(app);

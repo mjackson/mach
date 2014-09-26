@@ -84,7 +84,7 @@ function verifyToken(app, options) {
     if (SAFE_METHODS[request.method] === true)
       return request.call(app);
 
-    return response.sendText(403, 'Forbidden');
+    return response.text(403, 'Forbidden');
   };
 }
 
