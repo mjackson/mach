@@ -3,6 +3,26 @@ var MaxLengthExceededError = require('../modules/utils/MaxLengthExceededError');
 var Request = mach.Request;
 
 describe('Request', function () {
+
+  describe('withCredentials', function() {
+    it('does not have withCredentials if it was not set', function() {
+      var request = new Request({});
+      expect(request.hasOwnProperty('withCredentials')).toEqual(false);
+    });
+
+    it('has with credentials when it is set', function() {
+      var request = new Request({ withCredentials: false });
+      expect(request.hasOwnProperty('withCredentials')).toEqual(true);
+      expect(request.withCredentials).toEqual(false);
+    });
+
+    it('has with credentials when it is set to true', function() {
+      var request = new Request({ withCredentials: true });
+      expect(request.hasOwnProperty('withCredentials')).toEqual(true);
+      expect(request.withCredentials).toEqual(true);
+    });
+  });
+
   describe('that uses https', function () {
     describe('on the standard port', function () {
       it('does not include the port # in host', function () {

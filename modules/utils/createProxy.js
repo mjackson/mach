@@ -33,7 +33,7 @@ function createProxy(options) {
   var path = options.path || '';
 
   return function (request) {
-    return sendRequest({
+    var requestOptions = {
       method: request.method,
       protocol: protocol,
       auth: auth,
@@ -42,7 +42,11 @@ function createProxy(options) {
       path: path,
       headers: request.headers,
       content: request.content
-    });
+    };
+
+    if(options.hasOwnProperty('withCredentials')) requestOptions.withCredentials = options.withCredentials;
+
+    return sendRequest(requestOptions);
   };
 }
 
