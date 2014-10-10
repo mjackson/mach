@@ -35,7 +35,7 @@ describe('mach.mapper', function () {
       beforeEach(function () {
         return callApp(app, {
           headers: {
-            Host: 'example.com'
+            Host: 'example.com:8080'
           },
           path: '/two'
         });
@@ -70,7 +70,7 @@ describe('mach.mapper', function () {
       beforeEach(function () {
         return callApp(app, {
           headers: {
-            Host: 'example.org'
+            Host: 'example.org:8080'
           },
           path: '/two/messages'
         });

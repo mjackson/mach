@@ -27,7 +27,7 @@ var escapeRegExp = require('../utils/escapeRegExp');
 function Mapper(app) {
   if (!(this instanceof Mapper))
     return new Mapper(app);
-  
+
   this._app = app || defaultApp;
   this._mappings = [];
 }
@@ -38,7 +38,7 @@ Object.defineProperties(Mapper.prototype, {
     var mappings = this._mappings;
     var scriptName = request.scriptName;
     var pathInfo = request.pathInfo;
-    var host = request.host;
+    var host = request.host.split(":")[0];
 
     var mapping, match, remainingPath;
     for (var i = 0, len = mappings.length; i < len; ++i) {
@@ -49,7 +49,7 @@ Object.defineProperties(Mapper.prototype, {
         continue;
 
       // Try to match the path.
-      if (!(match = pathInfo.match(mapping.pattern))) 
+      if (!(match = pathInfo.match(mapping.pattern)))
         continue;
 
       // Skip if the remaining path doesn't start with a "/".

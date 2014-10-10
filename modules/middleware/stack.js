@@ -100,8 +100,18 @@ Object.defineProperties(Stack.prototype, {
     this._layers.push(function (app) {
       var stack = new Stack;
 
-      if (typeof callback === 'function')
-        callback(stack);
+      switch (typeof callback) {
+        case 'function':
+          callback(stack);
+          break;
+
+        case 'undefined':
+          break;
+
+        default:
+          throw new Error("stack.map expected to be passed a callback.  Did you mean to pass in `substack => substack.run(app)`?");
+          break;
+      }
 
       if (!(app instanceof Mapper))
         app = new Mapper(app);
