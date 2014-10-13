@@ -1,4 +1,4 @@
-var irregularHeaderNames = require('./irregularHeaderNames');
+var IrregularHeaderNames = require('./IrregularHeaderNames');
 
 /**
  * Normalizes HTTP header names according to RFC 2616.
@@ -6,8 +6,8 @@ var irregularHeaderNames = require('./irregularHeaderNames');
 function normalizeHeaderName(headerName) {
   headerName = headerName.toLowerCase();
 
-  if (headerName in irregularHeaderNames)
-    return irregularHeaderNames[headerName];
+  if (headerName in IrregularHeaderNames)
+    return IrregularHeaderNames[headerName];
 
   return headerName.replace(/(^|-)([a-z])/g, function (match, dash, letter) {
     return dash + letter.toUpperCase();

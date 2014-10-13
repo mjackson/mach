@@ -1,10 +1,10 @@
 require('./helper');
-var statusCodes = require('../utils/statusCodes');
+var StatusCodes = require('../utils/StatusCodes');
 var Response = mach.Response;
 
 describe('Response', function () {
 
-  Object.keys(statusCodes).forEach(function (status) {
+  Object.keys(StatusCodes).forEach(function (status) {
     describe('with status ' + status, function () {
       var response;
       beforeEach(function () {
@@ -12,7 +12,7 @@ describe('Response', function () {
       });
 
       it('has the correct statusText', function () {
-        expect(response.statusText).toEqual(statusCodes[status]);
+        expect(response.statusText).toEqual(StatusCodes[status]);
       });
     });
   });

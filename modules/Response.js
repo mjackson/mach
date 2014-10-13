@@ -1,5 +1,5 @@
 var d = require('d');
-var statusCodes = require('./utils/statusCodes');
+var StatusCodes = require('./utils/StatusCodes');
 var Message = require('./Message');
 
 /**
@@ -27,7 +27,7 @@ Response.prototype = Object.create(Message.prototype, {
    * The message that corresponds with the status code.
    */
   statusText: d.gs(function () {
-    return statusCodes[this.status];
+    return StatusCodes[this.status];
   })
 
 });
