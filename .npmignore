@@ -1,2 +1,2 @@
 examples
-spec
+modules/**/__test__

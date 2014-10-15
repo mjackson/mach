@@ -1,5 +1,5 @@
 require('./helper');
-var describeSessionStore = require('../describeSessionStore');
+var describeSessionStore = require('../../__test__/describeSessionStore');
 
 describe('RedisStore', function () {
   var store = new mach.RedisStore({

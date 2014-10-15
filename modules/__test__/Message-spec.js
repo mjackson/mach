@@ -1,6 +1,6 @@
 require('./helper');
-var binaryFrom = require('../modules/utils/binaryFrom');
-var binaryTo = require('../modules/utils/binaryTo');
+var binaryFrom = require('../utils/binaryFrom');
+var binaryTo = require('../utils/binaryTo');
 var Message = mach.Message;
 
 describe('Message', function () {

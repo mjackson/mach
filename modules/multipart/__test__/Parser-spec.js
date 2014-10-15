@@ -1,5 +1,5 @@
 require('./helper');
-var parseMessage = require('../../modules/multipart/utils/parseMessage');
+var parseMessage = require('../utils/parseMessage');
 var Parser = mach.MultipartParser;
 
 var fs = require('fs');

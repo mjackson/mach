@@ -1,5 +1,5 @@
 require('./helper');
-var statusCodes = require('../modules/utils/statusCodes');
+var statusCodes = require('../utils/statusCodes');
 var Response = mach.Response;
 
 describe('Response', function () {

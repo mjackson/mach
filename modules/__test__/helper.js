@@ -6,7 +6,7 @@ refute = function (condition, message) {
 };
 
 Stream = require('bufferedstream');
-mach = require('../modules');
+mach = require('../');
 
 lastResponse = null;
 
@@ -14,7 +14,7 @@ beforeEach(function () {
   lastResponse = null;
 });
 
-var binaryTo = require('../modules/utils/binaryTo');
+var binaryTo = require('../utils/binaryTo');
 
 /**
  * Calls the app with the given options and buffers the response

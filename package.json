@@ -23,7 +23,7 @@
     "uglify-js": "~2.4.15"
   },
   "scripts": {
-    "test": "scripts/run-specs"
+    "test": "mocha \"modules/**/__test__/**/*-spec.js\""
   },
   "repository": {
     "type": "git",

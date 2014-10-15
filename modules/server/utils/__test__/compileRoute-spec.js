@@ -1,5 +1,5 @@
-require('../helper');
-var compileRoute = require('../../../modules/server/utils/compileRoute');
+require('../../__test__/helper');
+var compileRoute = require('../compileRoute');
 
 describe('compileRoute', function () {
   var keys;

@@ -1,7 +1,0 @@
-#!/bin/sh
-node_modules/.bin/mocha specs\
-  specs/accept\
-  specs/multipart\
-  specs/server\
-  specs/server/utils\
-  specs/utils

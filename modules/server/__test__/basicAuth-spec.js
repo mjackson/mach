@@ -1,5 +1,5 @@
 require('./helper');
-var encodeBase64 = require('../../modules/server/utils/encodeBase64');
+var encodeBase64 = require('../../server/utils/encodeBase64');
 
 function makeBasicAuthorization(username, password) {
   return 'Basic ' + encodeBase64(username + ':' + password);

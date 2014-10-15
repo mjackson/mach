@@ -4,7 +4,7 @@
 
 var mach = require('../modules');
 var app  = mach.stack();
-var Q    = require('q');
+var P    = require('bluebird');
 
 function sleep(millis, answer) {
   const deferredResult = Q.defer();

@@ -1,5 +1,5 @@
 require('./helper');
-var MaxLengthExceededError = require('../modules/utils/MaxLengthExceededError');
+var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
 var Request = mach.Request;
 
 describe('Request', function () {

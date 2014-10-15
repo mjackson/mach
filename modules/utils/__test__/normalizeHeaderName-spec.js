@@ -1,6 +1,6 @@
-require('../helper');
-var irregularHeaderNames = require('../../modules/utils/irregularHeaderNames');
-var normalizeHeaderName = require('../../modules/utils/normalizeHeaderName');
+require('../../__test__/helper');
+var irregularHeaderNames = require('../irregularHeaderNames');
+var normalizeHeaderName = require('../normalizeHeaderName');
 
 describe('normalizeHeaderName', function () {
 
