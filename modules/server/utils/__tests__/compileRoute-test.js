@@ -1,4 +1,4 @@
-require('../../__test__/helper');
+require('../../__tests__/helper');
 var compileRoute = require('../compileRoute');
 
 describe('compileRoute', function () {

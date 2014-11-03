@@ -1,4 +1,4 @@
-require('../../__test__/helper');
+require('../../__tests__/helper');
 var irregularHeaderNames = require('../irregularHeaderNames');
 var normalizeHeaderName = require('../normalizeHeaderName');
 
