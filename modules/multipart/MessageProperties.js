@@ -1,5 +1,5 @@
 var d = require('d');
-var parseMessage = require('./utils/parseMessage');
+var parseMessage = require('./parseMessage');
 
 var _parseContent = require('../Message').prototype._parseContent;
 
