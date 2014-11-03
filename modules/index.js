@@ -16,9 +16,9 @@ var mergeProperties = require('./utils/mergeProperties');
   'GET',
   'HEAD',
   'OPTIONS',
-  'PATCH',
   'POST',
-  'PUT'
+  'PUT',
+  'TRACE'
 ].forEach(function (method) {
   exports[method.toLowerCase()] = function (app, options) {
     return exports.call(app, mergeProperties(options || {}, { method: method }));
