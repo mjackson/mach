@@ -1,5 +1,6 @@
-require('./helper');
-var AcceptLanguage = mach.AcceptLanguage;
+var assert = require('assert');
+var expect = require('expect');
+var AcceptLanguage = require('../AcceptLanguage');
 
 describe('AcceptLanguage', function () {
   var header;

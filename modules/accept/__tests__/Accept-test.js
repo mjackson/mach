@@ -1,5 +1,6 @@
-require('./helper');
-var Accept = mach.Accept;
+var assert = require('assert');
+var expect = require('expect');
+var Accept = require('../Accept');
 
 describe('Accept', function () {
   var header;

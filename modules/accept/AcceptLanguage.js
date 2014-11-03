@@ -1,9 +1,9 @@
 var d = require('d');
-var parseMediaValue = require('./utils/parseMediaValue');
-var parseMediaValues = require('./utils/parseMediaValues');
-var qualityFactorForMediaValue = require('./utils/qualityFactorForMediaValue');
-var stringifyMediaValues = require('./utils/stringifyMediaValues');
-var stringifyMediaValueWithoutQualityFactor = require('./utils/stringifyMediaValueWithoutQualityFactor');
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
+var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaValueWithoutQualityFactor');
 
 /**
  * Represents an HTTP Accept-Language header and provides several methods

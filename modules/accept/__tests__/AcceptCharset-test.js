@@ -1,5 +1,6 @@
-require('./helper');
-var AcceptCharset = mach.AcceptCharset;
+var assert = require('assert');
+var expect = require('expect');
+var AcceptCharset = require('../AcceptCharset');
 
 describe('AcceptCharset', function () {
   var header;

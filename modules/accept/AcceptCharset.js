@@ -1,8 +1,8 @@
 var d = require('d');
-var parseMediaValue = require('./utils/parseMediaValue');
-var parseMediaValues = require('./utils/parseMediaValues');
-var qualityFactorForMediaValue = require('./utils/qualityFactorForMediaValue');
-var stringifyMediaValues = require('./utils/stringifyMediaValues');
+var parseMediaValue = require('../utils/parseMediaValue');
+var parseMediaValues = require('../utils/parseMediaValues');
+var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
+var stringifyMediaValues = require('../utils/stringifyMediaValues');
 
 /**
  * Represents an HTTP Accept-Charset header and provides several methods

@@ -1,5 +1,6 @@
-require('./helper');
-var AcceptEncoding = mach.AcceptEncoding;
+var assert = require('assert');
+var expect = require('expect');
+var AcceptEncoding = require('../AcceptEncoding');
 
 describe('AcceptEncoding', function () {
   var header;
