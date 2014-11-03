@@ -1,7 +1,7 @@
-require('./helper');
+var expect = require('expect');
 var binaryFrom = require('../utils/binaryFrom');
 var binaryTo = require('../utils/binaryTo');
-var Message = mach.Message;
+var Message = require('../Message');
 
 describe('Message', function () {
   var message;

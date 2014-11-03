@@ -1,6 +1,7 @@
-require('./helper');
+var assert = require('assert');
+var expect = require('expect');
 var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
-var Request = mach.Request;
+var Request = require('../Request');
 
 describe('Request', function () {
 

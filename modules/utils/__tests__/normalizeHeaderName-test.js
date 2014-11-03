@@ -1,5 +1,5 @@
-require('../../__tests__/helper');
-var irregularHeaderNames = require('../irregularHeaderNames');
+var expect = require('expect');
+var IrregularHeaderNames = require('../IrregularHeaderNames');
 var normalizeHeaderName = require('../normalizeHeaderName');
 
 describe('normalizeHeaderName', function () {
@@ -8,8 +8,8 @@ describe('normalizeHeaderName', function () {
     expect(normalizeHeaderName('content-type')).toEqual('Content-Type');
   });
 
-  Object.keys(irregularHeaderNames).forEach(function (key) {
-    var headerName = irregularHeaderNames[key];
+  Object.keys(IrregularHeaderNames).forEach(function (key) {
+    var headerName = IrregularHeaderNames[key];
 
     it('correctly normalizes ' + headerName, function () {
       expect(normalizeHeaderName(key)).toEqual(headerName);

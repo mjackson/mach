@@ -1,6 +1,6 @@
-require('./helper');
+var expect = require('expect');
 var StatusCodes = require('../utils/StatusCodes');
-var Response = mach.Response;
+var Response = require('../Response');
 
 describe('Response', function () {
 

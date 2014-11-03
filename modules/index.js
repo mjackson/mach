@@ -7,23 +7,8 @@ exports.Message = require('./Message');
 exports.Request = require('./Request');
 exports.Response = require('./Response');
 
-exports.call = require('./utils/callApp');
-exports.proxy = require('./utils/createProxy');
-
-var mergeProperties = require('./utils/mergeProperties');
-
-[ 'DELETE',
-  'GET',
-  'HEAD',
-  'OPTIONS',
-  'POST',
-  'PUT',
-  'TRACE'
-].forEach(function (method) {
-  exports[method.toLowerCase()] = function (app, options) {
-    return exports.call(app, mergeProperties(options || {}, { method: method }));
-  };
-});
+// Make client methods available always.
+require('./client');
 
 // Make server methods available on the server.
 if (typeof window === 'undefined')

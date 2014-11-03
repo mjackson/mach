@@ -5,9 +5,4 @@ Object.defineProperties(
   require('./RequestProperties')
 );
 
-mach.Accept = require('./Accept');
-mach.AcceptCharset = require('./AcceptCharset');
-mach.AcceptEncoding = require('./AcceptEncoding');
-mach.AcceptLanguage = require('./AcceptLanguage');
-
 module.exports = mach;

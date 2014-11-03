@@ -1,5 +1,5 @@
-require('./helper');
-var Response = mach.Response;
+var expect = require('expect');
+var Response = require('../index').Response;
 
 describe('Response', function () {
   var response;
