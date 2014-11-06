@@ -14,20 +14,18 @@ function shouldGzipContentType(contentType) {
  * Options may be any of node's zlib options (see http://nodejs.org/api/zlib.html).
  */
 function gzip(app, options) {
-  return function (request) {
-    return request.call(app).then(function (response) {
+  return function (conn) {
+    return conn.call(app).then(function () {
+      var response = conn.response;
       var headers = response.headers;
 
-      if (!shouldGzipContentType(headers['Content-Type']) || !request.acceptsEncoding('gzip'))
-        return response;
+      if (shouldGzipContentType(headers['Content-Type']) && conn.acceptsEncoding('gzip')) {
+        response.content = response.content.pipe(zlib.createGzip(options));
 
-      response.content = response.content.pipe(zlib.createGzip(options));
-
-      delete headers['Content-Length'];
-      headers['Content-Encoding'] = 'gzip';
-      headers['Vary'] = 'Accept-Encoding';
-
-      return response;
+        delete headers['Content-Length'];
+        headers['Content-Encoding'] = 'gzip';
+        headers['Vary'] = 'Accept-Encoding';
+      }
     });
   };
 }

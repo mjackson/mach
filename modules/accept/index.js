@@ -1,8 +1,8 @@
 var mach = require('../index');
 
 Object.defineProperties(
-  mach.Request.prototype,
-  require('./RequestProperties')
+  mach.Message.prototype,
+  require('./MessageProperties')
 );
 
 module.exports = mach;

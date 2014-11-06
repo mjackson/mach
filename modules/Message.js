@@ -4,6 +4,8 @@ var binaryTo = require('./utils/binaryTo');
 var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
+var stringifyCookie = require('./utils/stringifyCookie');
+var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
 
 /**
@@ -22,10 +24,11 @@ var DEFAULT_MAX_CONTENT_LENGTH = Math.pow(2, 20); // 1m
  */
 var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
 
+var HEADERS_LINE_SEPARATOR = /\r?\n/;
+var HEADER_SEPARATOR = ': ';
+
 /**
  * An HTTP message.
- *
- * The base class for Request and Response.
  */
 function Message(content, headers) {
   this._headers = {};
@@ -46,12 +49,28 @@ Object.defineProperties(Message.prototype, {
   }, function (value) {
     this._headers = {};
 
-    if (value != null) {
-      for (var headerName in value) {
+    if (typeof value === 'string') {
+      value.split(HEADERS_LINE_SEPARATOR).forEach(function (line) {
+        var index = line.indexOf(HEADER_SEPARATOR);
+
+        if (index === -1) {
+          this.addHeader(line, true);
+        } else {
+          this.addHeader(line.substring(0, index), line.substring(index + HEADER_SEPARATOR.length));
+        }
+      }, this);
+    } else if (value != null) {
+      for (var headerName in value)
         if (value.hasOwnProperty(headerName))
           this.addHeader(headerName, value[headerName]);
-      }
     }
+  }),
+
+  /**
+   * Sets the value of a header.
+   */
+  setHeader: d(function (headerName, value) {
+    this.headers[normalizeHeaderName(headerName)] = value;
   }),
 
   /**
@@ -73,10 +92,74 @@ Object.defineProperties(Message.prototype, {
   }),
 
   /**
-   * Sets the value of a header.
+   * An object containing cookies in this message, keyed by name.
    */
-  setHeader: d(function (headerName, value) {
-    this.headers[normalizeHeaderName(headerName)] = value;
+  cookies: d.gs(function () {
+    if (!this._cookies) {
+      var header = this.headers['Cookie'];
+
+      if (header) {
+        var cookies = parseCookie(header);
+
+        // From RFC 2109:
+        // If multiple cookies satisfy the criteria above, they are ordered in
+        // the Cookie header such that those with more specific Path attributes
+        // precede those with less specific. Ordering with respect to other
+        // attributes (e.g., Domain) is unspecified.
+        for (var cookieName in cookies)
+          if (Array.isArray(cookies[cookieName]))
+            cookies[cookieName] = cookies[cookieName][0] || '';
+
+        this._cookies = cookies;
+      } else {
+        this._cookies = {};
+      }
+    }
+
+    return this._cookies;
+  }),
+
+  /**
+   * Sets a cookie with the given name and options.
+   */
+  setCookie: d(function (name, options) {
+    this.addHeader('Set-Cookie', stringifyCookie(name, options));
+  }),
+
+  /**
+   * Gets/sets the value of the Content-Type header.
+   */
+  contentType: d.gs(function () {
+    return this.headers['Content-Type'];
+  }, function (value) {
+    this.headers['Content-Type'] = value;
+  }),
+
+  /**
+   * The media type (type/subtype) portion of the Content-Type header without any
+   * media type parameters. e.g. when Content-Type is "text/plain;charset=utf-8",
+   * the mediaType is "text/plain".
+   *
+   * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
+   */
+  mediaType: d.gs(function () {
+    var contentType = this.contentType;
+
+    if (contentType)
+      return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+  }),
+
+  /**
+   * Returns the character set used to encode the content of this message. e.g.
+   * when Content-Type is "text/plain;charset=utf-8", charset is "utf-8".
+   *
+   * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.4
+   */
+  charset: d.gs(function () {
+    var contentType = this.contentType, match;
+
+    if (contentType && (match = contentType.match(/charset=([\w-]+)/))
+      return match[1];
   }),
 
   /**
@@ -95,38 +178,7 @@ Object.defineProperties(Message.prototype, {
       this._content = new Stream(value);
     }
 
-    this._bufferedContent = undefined;
-  }),
-
-  /**
-   * Gets/sets the value of the Content-Type header.
-   */
-  contentType: d.gs(function () {
-    return this.headers['Content-Type'];
-  }, function (value) {
-    this.headers['Content-Type'] = value;
-  }),
-
-  /**
-   * The media type (type/subtype) portion of the Content-Type header without any
-   * media type parameters. e.g., when Content-Type is "text/plain;charset=utf-8",
-   * the mediaType is "text/plain".
-   *
-   * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
-   */
-  mediaType: d.gs(function () {
-    var contentType = this.contentType;
-
-    if (contentType)
-      return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
-  }),
-
-  /**
-   * A Date object representing the value of the Date header.
-   */
-  date: d.gs(function () {
-    if (this.headers['Date'])
-      return Date.parse(this.headers['Date']);
+    delete this._bufferedContent;
   }),
 
   /**
@@ -157,6 +209,8 @@ Object.defineProperties(Message.prototype, {
    * Note: 0 is a valid value for maxLength. It means "no limit".
    */
   stringifyContent: d(function (maxLength, encoding) {
+    encoding = encoding || this.charset;
+
     return this.bufferContent(maxLength).then(function (chunk) {
       return binaryTo(chunk, encoding);
     });

@@ -1,11 +1,4 @@
 var Promise = require('./utils/Promise');
-var decodeBase64 = require('./utils/decodeBase64');
-
-function unauthorized(response, realm) {
-  realm = realm || 'Authorization Required';
-  response.headers['WWW-Authenticate'] = 'Basic realm="' + realm + '"';
-  response.text(401, 'Not Authorized');
-}
 
 /**
  * A middleware that performs basic auth on the incoming request before passing
@@ -41,29 +34,23 @@ function basicAuth(app, options) {
   if (typeof options.validate !== 'function')
     throw new Error('mach.basicAuth needs a validation function');
 
-  return function (request, response) {
-    if (request.remoteUser)
-      return request.call(app); // Don't overwrite existing remoteUser.
+  var realm = options.realm || 'Authorization Required';
 
-    var auth = request.auth;
-    if (!auth)
-      return unauthorized(response, options.realm);
+  return function (conn) {
+    if (conn.remoteUser)
+      return conn.call(app); // Don't overwrite existing remoteUser.
 
-    var parts = auth.split(' ', 2);
-    var scheme = parts[0];
-    if (scheme.toLowerCase() !== 'basic')
-      return response.text(400, 'Bad Request');
-
-    var params = decodeBase64(parts[1]).split(':');
-    var username = params[0], password = params[1];
+    var credentials = conn.auth.split(':', 2);
+    var username = credentials[0], password = credentials[1];
 
     return Promise.resolve(options.validate(username, password)).then(function (user) {
-      if (!user)
-        return unauthorized(response, options.realm);
+      if (user) {
+        conn.remoteUser = (user === true) ? username : user;
+        return conn.call(app);
+      }
 
-      request.remoteUser = (user === true) ? username : user;
-
-      return request.call(app);
+      conn.response.headers['WWW-Authenticate'] = 'Basic realm="' + realm + '"';
+      conn.text(401, 'Not Authorized');
     });
   };
 }

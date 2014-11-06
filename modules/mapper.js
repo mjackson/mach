@@ -8,8 +8,8 @@ function byMostSpecific(a, b) {
 
 /**
  * A middleware that provides host and/or location-based routing. Modifies the
- * `scriptName` and `pathInfo` request variables for all downstream apps such
- * that the part relevant for dispatch is in `scriptName` and the rest in
+ * `basename` and `pathInfo` request variables for all downstream apps such
+ * that the part relevant for dispatch is in `basename` and the rest in
  * `pathInfo`.
  *
  *   var app = mach.mapper();
@@ -33,10 +33,9 @@ function mapper(app) {
   
   var mappings = [];
 
-  function callMapper(request) {
-    var scriptName = request.scriptName;
-    var pathInfo = request.pathInfo;
-    var host = request.host;
+  function callMapper(conn) {
+    var pathname = conn.pathname;
+    var host = conn.host;
 
     var mapping, match, remainingPath;
     for (var i = 0, len = mappings.length; i < len; ++i) {
@@ -47,7 +46,7 @@ function mapper(app) {
         continue;
 
       // Try to match the path.
-      if (!(match = pathInfo.match(mapping.pattern))) 
+      if (!(match = pathname.match(mapping.pattern))) 
         continue;
 
       // Skip if the remaining path doesn't start with a "/".
@@ -55,13 +54,12 @@ function mapper(app) {
       if (remainingPath.length > 0 && remainingPath[0] !== '/')
         continue;
 
-      request.scriptName = scriptName + mapping.path;
-      request.pathInfo = remainingPath || '/';
+      conn.basename += mapping.path;
 
-      return request.call(mapping.app);
+      return conn.call(mapping.app);
     }
 
-    return request.call(app);
+    return conn.call(app);
   }
 
   Object.defineProperties(callMapper, {

@@ -5,13 +5,13 @@
  *
  * Example:
  *
- *   mach.catch(function (request) {
+ *   mach.catch(function (conn) {
  *     throw 200;
  *   });
  */
 function catchError(app) {
-  return function (request) {
-    return request.call(app).then(undefined, function (reason) {
+  return function (conn) {
+    return conn.call(app).then(undefined, function (reason) {
       if (reason instanceof Error)
         throw reason;
       

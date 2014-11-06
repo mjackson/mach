@@ -27,7 +27,7 @@ function resolveProperties(object) {
  * argument is a function that should be used to resolve the value of
  * a part. It defaults to collecting all the content in a buffer.
  */
-function parseMultipartMessage(content, boundary, maxLength, partHandler) {
+function parseMessage(content, boundary, maxLength, partHandler) {
   if (typeof maxLength === 'function') {
     partHandler = maxLength;
     maxLength = null;
@@ -76,4 +76,4 @@ function parseMultipartMessage(content, boundary, maxLength, partHandler) {
   });
 }
 
-module.exports = parseMultipartMessage;
+module.exports = parseMessage;

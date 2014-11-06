@@ -42,14 +42,14 @@ function methodOverride(app, options) {
   var paramName = options.paramName || '_method';
   var headerName = normalizeHeaderName(options.headerName || 'X-Http-Method-Override');
 
-  return function (request) {
+  return function (conn) {
     var method;
-    if (request.headers[headerName]) {
-      method = request.headers[headerName];
-    } else if (!request.params) {
-      request.onError('No request params. Use mach.params in front of mach.methodOverride');
-    } else if (request.params[paramName]) {
-      method = request.params[paramName];
+    if (conn.request.headers[headerName]) {
+      method = conn.request.headers[headerName];
+    } else if (!conn.params) {
+      conn.onError(new Error('No params! Use mach.params in front of mach.methodOverride'));
+    } else if (conn.params[paramName]) {
+      method = conn.params[paramName];
 
       // If multiple _method parameters were used, use the last one.
       if (Array.isArray(method))
@@ -57,9 +57,9 @@ function methodOverride(app, options) {
     }
 
     if (method)
-      request.method = method.toUpperCase();
+      conn.method = method.toUpperCase();
 
-    return request.call(app);
+    return conn.call(app);
   };
 }
 

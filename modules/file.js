@@ -52,25 +52,24 @@ function file(app, options) {
     };
   }
 
-  return function (request, response) {
-    var method = request.method;
-    var pathInfo = request.pathInfo;
+  return function (conn) {
+    if (conn.method !== 'GET' && conn.method !== 'HEAD')
+      return conn.call(app);
 
-    if (method !== 'GET' && method !== 'HEAD')
-      return request.call(app);
+    var pathname = conn.pathname;
 
     // Reject paths that contain "..".
-    if (pathInfo.indexOf('..') !== -1)
-      return response.text(403, 'Forbidden');
+    if (pathname.indexOf('..') !== -1)
+      return conn.text(403, 'Forbidden');
 
-    var path = joinPaths(rootDirectory, pathInfo);
+    var path = joinPaths(rootDirectory, pathname);
 
     return getFileStats(path).then(function (stats) {
       if (stats && stats.isFile())
-        return response.file(makeOptions(path), stats);
+        return conn.file(makeOptions(path), stats);
 
       if (!stats || (!stats.isDirectory() || !indexFiles))
-        return request.call(app);
+        return conn.call(app);
 
       // Try to serve one of the index files.
       var indexPaths = indexFiles.map(function (indexPath) {
@@ -78,12 +77,11 @@ function file(app, options) {
       });
 
       return Promise.all(indexPaths.map(getFileStats)).then(function (stats) {
-        for (var i = 0, len = stats.length; i < len; ++i) {
+        for (var i = 0, len = stats.length; i < len; ++i)
           if (stats[i])
-            return response.file(makeOptions(indexPaths[i]), stats[i]);
-        }
+            return conn.file(makeOptions(indexPaths[i]), stats[i]);
 
-        return request.call(app);
+        return conn.call(app);
       });
     });
   };

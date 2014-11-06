@@ -1,52 +1,20 @@
-var d = require('d');
-var sendRequest = require('./sendRequest');
-var parseURL = require('./parseURL');
+var Location = require('../Location');
+var proxyRequest = require('./proxyRequest');
 
 /**
- * A mach.proxy is a function that is used to send a request to
- * a remote URL and retrieve the response. Options may be a URL
- * string or an object with any of the following properties:
- *
- * - protocol
- * - auth
- * - hostname
- * - port
- * - path
+ * A mach.proxy is a function that is used to proxy a connection to
+ * a different location.
  *
  * This function is part of the low-level API and can generally be
  * used more conveniently either through the client methods or the
  * mach.forward middleware.
  */
-function createProxy(options) {
-  options = options || {};
+function createProxy(location) {
+  if (!(location instanceof Location))
+    location = new Location(location);
 
-  if (typeof options === 'string')
-    options = parseURL(options);
-
-  if (!options.hostname)
-    throw new Error('mach.proxy needs a hostname');
-
-  var protocol = (options.protocol || 'http:').toLowerCase();
-  var auth = options.auth || '';
-  var hostname = options.hostname;
-  var port = String(options.port || (protocol === 'https:' ? 443 : 80));
-  var path = options.path || '';
-
-  return function (request) {
-    var requestOptions = {
-      method: request.method,
-      protocol: protocol,
-      auth: auth,
-      hostname: hostname,
-      port: port,
-      path: path,
-      headers: request.headers,
-      content: request.content
-    };
-
-    if(options.hasOwnProperty('withCredentials')) requestOptions.withCredentials = options.withCredentials;
-
-    return sendRequest(requestOptions);
+  return function (conn) {
+    return proxyRequest(conn, location);
   };
 }
 

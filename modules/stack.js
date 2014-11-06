@@ -92,11 +92,8 @@ function stack(app) {
     return app;
   }
 
-  function callStack(request) {
-    if (compiledApp == null)
-      compiledApp = compile(app);
-
-    return request.call(compiledApp);
+  function callStack(conn) {
+    return conn.call(compiledApp || (compiledApp = compile(app)));
   }
 
   Object.defineProperties(callStack, {

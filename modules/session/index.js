@@ -94,25 +94,25 @@ function session(app, options) {
     ].join('\n'));
   }
 
-  return function (request) {
-    if (request.session)
-      return request.call(app); // Don't overwrite the existing session.
+  return function (conn) {
+    if (conn.session)
+      return conn.call(app); // Don't overwrite the existing session.
 
-    var cookie = request.cookies[name];
+    var cookie = conn.request.cookies[name];
 
     return Promise.resolve(cookie && decodeCookie(cookie, store, secret)).then(function (object) {
-      request.session = object || {};
+      conn.session = object || {};
 
-      return request.call(app).then(function (response) {
-        return Promise.resolve(request.session && encodeSession(request.session, store, secret)).then(function (newCookie) {
+      return conn.call(app).then(function () {
+        return Promise.resolve(conn.session && encodeSession(conn.session, store, secret)).then(function (newCookie) {
           var expires = expireAfter && new Date(Date.now() + (expireAfter * 1000));
 
           // Don't bother setting the cookie if its value
           // hasn't changed and there is no expires date.
           if (newCookie === cookie && !expires)
-            return response;
+            return;
 
-          response.setCookie(name, {
+          conn.response.setCookie(name, {
             value: newCookie,
             path: path,
             domain: domain,
@@ -120,17 +120,9 @@ function session(app, options) {
             httpOnly: httpOnly,
             secure: secure
           });
-
-          return response;
-        }, function (error) {
-          request.onError('Error encoding session data: ' + error);
-          return response;
-        });
+        }, conn.onError);
       });
-    }, function (error) {
-      request.onError('Error decoding session data: ' + error);
-      return request.call(app);
-    });
+    }, conn.onError);
   };
 }
 

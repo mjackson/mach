@@ -5,14 +5,12 @@
 function contentType(app, defaultType) {
   defaultType = defaultType || 'text/html';
 
-  return function (request) {
-    return request.call(app).then(function (response) {
-      var headers = response.headers;
+  return function (conn) {
+    return conn.call(app).then(function () {
+      var headers = conn.response.headers;
 
       if (!headers['Content-Type'])
         headers['Content-Type'] = defaultType;
-
-      return response;
     });
   };
 }

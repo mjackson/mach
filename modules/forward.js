@@ -28,8 +28,8 @@ function forward(app, targetApp, test) {
 
   if (isRegExp(test)) {
     var pattern = test;
-    test = function (request) {
-      return pattern.test(request.url);
+    test = function (conn) {
+      return pattern.test(conn.href);
     };
   } else if (typeof test !== 'function') {
     throw new Error('mach.forward needs a test function');
@@ -38,11 +38,8 @@ function forward(app, targetApp, test) {
   if (typeof targetApp !== 'function')
     targetApp = createProxy(targetApp);
 
-  return function (request) {
-    if (test(request))
-      return request.call(targetApp);
-
-    return request.call(app);
+  return function (conn) {
+    return conn.call(test(conn) ? targetApp : app);
   };
 }
 

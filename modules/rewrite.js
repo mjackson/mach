@@ -3,7 +3,7 @@ var isRegExp = require('./utils/isRegExp');
 
 /**
  * A middleware that provides URL rewriting behavior similar to Apache's
- * mod_rewrite. The pathInfo of requests that match the given pattern is
+ * mod_rewrite. The pathname of requests that match the given pattern is
  * overwritten with the replacement using a simple String#replace.
  */
 function rewrite(app, pattern, replacement) {
@@ -15,14 +15,14 @@ function rewrite(app, pattern, replacement) {
 
   replacement = replacement || '';
 
-  return function (request) {
-    var pathInfo = request.pathInfo;
+  return function (conn) {
+    var pathname = conn.pathname;
 
-    // Modify the pathInfo if the pattern matches.
-    if (pattern.test(pathInfo))
-      request.pathInfo = pathInfo.replace(pattern, replacement);
+    // Modify the pathname if the pattern matches.
+    if (pattern.test(pathname))
+      conn.location.properties.pathname = conn.basename + pathname.replace(pattern, replacement);
 
-    return request.call(app);
+    return conn.call(app);
   };
 }
 

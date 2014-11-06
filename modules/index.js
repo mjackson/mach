@@ -3,9 +3,9 @@
  */
 exports.version = '0.12.0';
 
+exports.Connection = require('./Connection');
+exports.Location = require('./Location');
 exports.Message = require('./Message');
-exports.Request = require('./Request');
-exports.Response = require('./Response');
 
 // Make client methods available always.
 require('./client');

@@ -39,8 +39,8 @@ function router(app) {
 
   var routes = {};
 
-  function callRouter(request) {
-    var method = request.method;
+  function callRouter(conn) {
+    var method = conn.method;
     var routesToTry = (routes[method] || []).concat(routes.ANY || []);
 
     var route, match;
@@ -48,21 +48,21 @@ function router(app) {
       route = routesToTry[i];
 
       // Try to match the route.
-      if (match = route.pattern.exec(request.pathInfo)) {
+      if (match = route.pattern.exec(conn.pathname)) {
         var params = makeParams(route.keys, Array.prototype.slice.call(match, 1));
 
-        if (request.params) {
+        if (conn.params) {
           // Route params take precedence above all others.
-          mergeProperties(request.params, params);
+          mergeProperties(conn.params, params);
         } else {
-          request.params = params;
+          conn.params = params;
         }
 
-        return request.call(route.app);
+        return conn.call(route.app);
       }
     }
 
-    return request.call(app);
+    return conn.call(app);
   }
 
   Object.defineProperties(callRouter, {

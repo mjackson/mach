@@ -1,30 +1,12 @@
 var XMLHttpRequest = window.XMLHttpRequest;
 var Stream = require('bufferedstream');
 var AbortablePromise = require('./AbortablePromise');
-var binaryTo = require('./binaryTo');
-var bufferStream = require('./bufferStream');
-var stringifyURL = require('./stringifyURL');
-var Response = require('../Response');
 
-var LINE_SEPARATOR = /\r?\n/;
-var HEADER_SEPARATOR = ': ';
+function copyStatusAndHeaders(xhr, conn) {
+  conn.response.headers = xhr.getAllResponseHeaders();
+  conn.status = xhr.status;
 
-function copyStatusAndHeaders(xhr, response) {
-  var headers = xhr.getAllResponseHeaders();
-
-  headers.split(LINE_SEPARATOR).forEach(function (line) {
-    var index = line.indexOf(HEADER_SEPARATOR);
-
-    if (index === -1) {
-      response.addHeader(line, true);
-    } else {
-      response.addHeader(line.substring(0, index), line.substring(index + HEADER_SEPARATOR.length));
-    }
-  });
-
-  response.status = xhr.status;
-
-  return response.status;
+  return conn.status;
 }
 
 function getContent(xhr) {
@@ -39,16 +21,16 @@ function getContent(xhr) {
   return xhr.responseText;
 }
 
-function pipeContent(xhr, response, offset) {
+function pipeContent(xhr, stream, offset) {
   var content = getContent(xhr);
 
   if (content.toString().match(/ArrayBuffer/)) {
-    response.content.write(new Uint8Array(content, offset));
+    stream.write(new Uint8Array(content, offset));
     return content.byteLength;
   }
 
   if (content.length > offset) {
-    response.content.write(content.slice(offset));
+    stream.write(content.slice(offset));
     return content.length;
   }
 
@@ -58,32 +40,30 @@ function pipeContent(xhr, response, offset) {
 var READ_HEADERS_RECEIVED_STATE = true;
 var READ_LOADING_STATE = true;
 
-function sendXMLHttpRequest(options) {
+function proxyRequestUsingDOM(conn, location) {
   return new AbortablePromise(function (resolve, reject, onAbort) {
     var xhr = new XMLHttpRequest;
-    xhr.open(options.method, stringifyURL(options), true);
+    xhr.open(conn.method, location.href, true);
 
-    if ('withCredentials' in xhr)
-      xhr.withCredentials = ('withCredentials' in options) ? options.withCredentials : true;
+    if ('withCredentials' in xhr && conn.withCredentials)
+      xhr.withCredentials = true;
 
     if ('responseType' in xhr)
-      xhr.responseType = options.responseType || 'arraybuffer';
+      xhr.responseType = 'arraybuffer';
 
-    var headers = options.headers;
+    var headers = conn.request.headers;
 
-    if (headers) {
-      for (var headerName in headers) {
+    if (headers)
+      for (var headerName in headers)
         if (headers.hasOwnProperty(headerName))
           xhr.setRequestHeader(headerName, headers[headerName]);
-      }
-    }
 
-    var response = new Response({ content: new Stream });
+    var content = conn.response.content = new Stream;
     var offset = 0, status;
 
     function tryToResolve() {
-      if (!status && (status = copyStatusAndHeaders(xhr, response)) > 0)
-        resolve(response);
+      if (!status && (status = copyStatusAndHeaders(xhr, conn)) > 0)
+        resolve(conn);
     }
 
     xhr.onreadystatechange = function () {
@@ -99,14 +79,14 @@ function sendXMLHttpRequest(options) {
       } else if (xhr.readyState === 3 && READ_LOADING_STATE) {
         try {
           tryToResolve();
-          offset = pipeContent(xhr, response, offset);
+          offset = pipeContent(xhr, content, offset);
         } catch (error) {
           READ_LOADING_STATE = false;
         }
       } else if (xhr.readyState === 4) {
         tryToResolve();
-        pipeContent(xhr, response, offset);
-        response.content.end();
+        pipeContent(xhr, content, offset);
+        content.end();
       }
     };
 
@@ -124,15 +104,10 @@ function sendXMLHttpRequest(options) {
       resolve();
     });
 
-    if (options.content) {
-      bufferStream(options.content).then(function (chunk) {
-        // TODO: Try to detect the charset of the content?
-        xhr.send(binaryTo(chunk, 'utf8'));
-      }, reject);
-    } else {
-      xhr.send();
-    }
+    request.stringifyContent().then(function (content) {
+      xhr.send(content);
+    }, reject);
   });
 }
 
-module.exports = sendXMLHttpRequest;
+module.exports = proxyRequestUsingDOM;

@@ -13,8 +13,9 @@ function notModifiedResponse(response) {
  * and/or Last-Modified headers.
  */
 function modified(app) {
-  return function (request) {
-    return request.call(app).then(function (response) {
+  return function (conn) {
+    return conn.call(app).then(function () {
+      var request = conn.request, response = conn.response;
       var ifNoneMatch = request.headers['If-None-Match'];
 
       if (ifNoneMatch) {
@@ -34,8 +35,6 @@ function modified(app) {
         if (lastModified <= Date.parse(ifModifiedSince))
           return notModifiedResponse(response);
       }
-
-      return response;
     });
   };
 }

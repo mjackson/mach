@@ -31,13 +31,8 @@ Object.defineProperties(
 );
 
 Object.defineProperties(
-  mach.Request.prototype,
-  require('./RequestProperties')
-);
-
-Object.defineProperties(
-  mach.Response.prototype,
-  require('./ResponseProperties')
+  mach.Connection.prototype,
+  require('./ConnectionProperties')
 );
 
 module.exports = mach;

@@ -1,6 +1,4 @@
-var parseURL = require('./parseURL');
-var stringifyError = require('./stringifyError');
-var Request = require('../Request');
+var Connection = require('../Connection');
 
 /**
  * HTTP status codes that don't have entities.
@@ -38,31 +36,28 @@ function bindApp(app, nodeServer) {
     serverName = process.env.SERVER_NAME;
 
   function requestHandler(nodeRequest, nodeResponse) {
-    var connection = nodeRequest.connection;
-    var url = parseURL(nodeRequest.url);
-
-    var request = new Request({
+    var conn = new Connection({
       protocol: url.protocol,
-      protocolVersion: nodeRequest.httpVersion,
+      version: nodeRequest.httpVersion,
       method: nodeRequest.method,
-      remoteHost: connection.remoteAddress,
-      remotePort: connection.remotePort,
-      serverName: serverName,
-      serverPort: serverPort,
-      pathInfo: url.pathname,
-      queryString: url.query,
+      url: nodeRequest.url,
       headers: nodeRequest.headers,
-      content: nodeRequest
+      content: nodeRequest,
+      remoteHost: nodeRequest.connection.remoteAddress,
+      remotePort: nodeRequest.connection.remotePort,
+      serverName: serverName,
+      serverPort: serverPort
     });
 
     nodeRequest.on('close', function () {
-      request.onClose();
+      conn.onClose();
     });
 
-    request.call(app).then(function (response) {
-      var isHead = request.method === 'HEAD';
-      var isEmpty = isHead || STATUS_WITHOUT_CONTENT[response.status] === true;
-      var headers = response.headers;
+    conn.call(app).then(function (response) {
+      var isHead = conn.method === 'HEAD';
+      var isEmpty = isHead || STATUS_WITHOUT_CONTENT[conn.status] === true;
+      var headers = conn.response.headers;
+      var content = conn.response.content;
 
       if (isEmpty && !isHead)
         headers['Content-Length'] = 0;
@@ -70,18 +65,18 @@ function bindApp(app, nodeServer) {
       if (!headers['Date'])
         headers['Date'] = (new Date).toUTCString();
 
-      nodeResponse.writeHead(response.status, headers);
+      nodeResponse.writeHead(conn.status, headers);
 
       if (isEmpty) {
         nodeResponse.end();
 
-        if (typeof response.content.destroy === 'function')
-          response.content.destroy();
+        if (typeof content.destroy === 'function')
+          content.destroy();
       } else {
-        response.content.pipe(nodeResponse);
+        content.pipe(nodeResponse);
       }
     }, function (error) {
-      request.onError(stringifyError(error));
+      conn.onError(error);
       nodeResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       nodeResponse.end('Internal Server Error');
     });

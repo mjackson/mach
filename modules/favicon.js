@@ -5,8 +5,8 @@
 function favicon(app, response) {
   response = response || 404;
 
-  return function (request) {
-    return request.pathname === '/favicon.ico' ? response : request.call(app);
+  return function (conn) {
+    return conn.pathname === '/favicon.ico' ? response : conn.call(app);
   };
 }
 

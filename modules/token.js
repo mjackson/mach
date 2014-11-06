@@ -60,14 +60,13 @@ function verifyToken(app, options) {
   var sessionKey = options.sessionKey || '_token';
   var byteLength = options.byteLength || 32;
 
-  return function (request, response) {
-    var session = request.session;
-    var params = request.params;
+  return function (conn) {
+    var session = conn.session, params = conn.params;
 
     if (!session) {
-      request.onError('No request session. Use mach.session in front of mach.token');
+      conn.onError(new Error('No session! Use mach.session in front of mach.token'));
     } else if (!params) {
-      request.onError('No request params. Use mach.params in front of mach.token');
+      conn.onError(new Error('No params! Use mach.params in front of mach.token'));
     } else {
       var token = session[sessionKey];
 
@@ -76,15 +75,15 @@ function verifyToken(app, options) {
         token = session[sessionKey] = makeToken(byteLength);
 
       if (params[paramName] && params[paramName] === token)
-        return request.call(app);
+        return conn.call(app);
     }
 
     // If the request is not a POST we assume it's not a form submission
     // and therefore not modifying anything. Pass it downstream.
-    if (SAFE_METHODS[request.method] === true)
-      return request.call(app);
+    if (SAFE_METHODS[conn.method] === true)
+      return conn.call(app);
 
-    return response.text(403, 'Forbidden');
+    conn.text(403, 'Forbidden');
   };
 }
 

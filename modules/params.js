@@ -28,21 +28,19 @@ function parseParams(app, options) {
   var maxLength = options.maxLength;
   var uploadPrefix = options.uploadPrefix;
 
-  return function (request, response) {
-    return request.getParams(maxLength, uploadPrefix).then(function (params) {
-
-      if (request.params) {
-        // If the request already has params, they're probably
-        // from the route. Content params take lower precedence.
-        request.params = mergeProperties(params, request.params);
+  return function (conn) {
+    return conn.getParams(maxLength, uploadPrefix).then(function (params) {
+      if (conn.params) {
+        // Route params take precedence over content params.
+        conn.params = mergeProperties(params, conn.params);
       } else {
-        request.params = params;
+        conn.params = params;
       }
 
-      return request.call(app);
+      return conn.call(app);
     }, function (error) {
       if (error instanceof MaxLengthExceededError)
-        return response.text(413, 'Request Entity Too Large');
+        return conn.text(413, 'Request Entity Too Large');
 
       throw error;
     });
