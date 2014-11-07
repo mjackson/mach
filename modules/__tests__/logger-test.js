@@ -1,7 +1,7 @@
 var assert = require('assert');
 var expect = require('expect');
+var callApp = require('../utils/callApp');
 var logger = require('../logger');
-var callApp = require('./callApp');
 
 function zeroLength() {
   return {
@@ -17,18 +17,18 @@ describe('mach.logger', function () {
       messageHandler = function (message) {
         messages.push(message);
       };
-
-      return callApp(logger(zeroLength, messageHandler));
     });
 
     it('logs a content length of 0', function () {
-      assert(messages[0]);
+      return callApp(logger(zeroLength, messageHandler)).then(function (conn) {
+        assert(messages[0]);
 
-      var match = messages[0].match(/\b(\d+) ([0-9\.]+)\b$/);
-      assert(match);
+        var match = messages[0].match(/\b(\d+) ([0-9\.]+)\b$/);
+        assert(match);
 
-      var contentLength = match[1];
-      expect(contentLength).toEqual('0');
+        var contentLength = match[1];
+        expect(contentLength).toEqual('0');
+      });
     });
   });
 });
