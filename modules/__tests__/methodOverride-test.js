@@ -1,25 +1,21 @@
 var expect = require('expect');
-var params = require('../params');
+var callApp = require('../utils/callApp');
 var methodOverride = require('../methodOverride');
-var callApp = require('./callApp');
+var params = require('../params');
 
 describe('methodOverride', function () {
-  var app = methodOverride(function (request) {
-    return request.method;
+  var app = methodOverride(function (conn) {
+    return conn.method;
   });
 
   describe('when the request method is given in a request parameter', function () {
     describe('and the params middleware is in front', function () {
-      var innerApp = params(app);
-
-      beforeEach(function () {
-        return callApp(innerApp, {
-          params: { '_method': 'PUT' }
-        });
-      });
-
       it('sets the request method', function () {
-        expect(lastResponse.buffer).toEqual('PUT');
+        return callApp(params(app), {
+          params: { '_method': 'PUT' }
+        }).then(function (conn) {
+          expect(conn.responseText).toEqual('PUT');
+        });
       });
     });
 
@@ -27,51 +23,43 @@ describe('methodOverride', function () {
       var errors, errorHandler;
       beforeEach(function () {
         errors = [];
-        errorHandler = function (errorMessage) {
-          errors.push(errorMessage);
+        errorHandler = function (error) {
+          errors.push(error);
         };
+      });
 
+      it('does not set the request method and generates an error', function () {
         return callApp(app, {
           params: { '_method': 'PUT' },
           onError: errorHandler
+        }).then(function (conn) {
+          expect(conn.responseText).toEqual('GET');
+          expect(errors.length).toEqual(1);
+          expect(errors[0].message).toEqual('No params! Use mach.params in front of mach.methodOverride');
         });
-      });
-
-      it('does not set the request method', function () {
-        expect(lastResponse.buffer).toEqual('GET');
-      });
-
-      it('generates an error message', function () {
-        expect(errors[0]).toEqual('No request params. Use mach.params in front of mach.methodOverride');
       });
     });
   });
 
   describe('when the request method is given in a request parameter with multiple values', function () {
     describe('and the params middleware is in front', function () {
-      var innerApp = params(app);
-
-      beforeEach(function () {
-        return callApp(innerApp, {
-          params: { '_method': [ 'PUT', 'DELETE' ] }
-        });
-      });
-
       it('sets the request method to the last given value', function () {
-        expect(lastResponse.buffer).toEqual('DELETE');
+        return callApp(params(app), {
+          params: { '_method': [ 'PUT', 'DELETE' ] }
+        }).then(function (conn) {
+          expect(conn.responseText).toEqual('DELETE');
+        });
       });
     });
   });
 
   describe('when the request method is given in an HTTP header', function () {
-    beforeEach(function () {
+    it('sets the request method', function () {
       return callApp(app, {
         headers: { 'X-Http-Method-Override': 'PUT' }
+      }).then(function (conn) {
+        expect(conn.responseText).toEqual('PUT');
       });
-    });
-
-    it('sets the request method', function () {
-      expect(lastResponse.buffer).toEqual('PUT');
     });
   });
 });
