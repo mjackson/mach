@@ -47,7 +47,7 @@ Object.defineProperties(Location.prototype, {
    * The full URL.
    */
   href: d.gs(function () {
-    return this.protocol + '//' + this.host + this.path;
+    return this.protocol + '//' + (this.auth ? this.auth + '@' : '') + this.host + this.path;
   }),
 
   /**
