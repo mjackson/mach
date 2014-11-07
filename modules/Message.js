@@ -31,11 +31,7 @@ var HEADER_SEPARATOR = ': ';
  * An HTTP message.
  */
 function Message(content, headers) {
-  this._headers = {};
-
-  if (headers)
-    this.headers = headers;
-
+  this.headers = headers;
   this.content = content;
 }
 
