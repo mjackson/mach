@@ -7,7 +7,7 @@ var AcceptLanguage = require('./AcceptLanguage');
 module.exports = {
 
   /**
-   * Returns true if the client accepts the given mediaType.
+   * Returns true if the client accepts the given media type.
    */
   accepts: d(function (mediaType) {
     if (!this._acceptHeader)

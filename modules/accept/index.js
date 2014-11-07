@@ -5,4 +5,9 @@ Object.defineProperties(
   require('./MessageProperties')
 );
 
+Object.defineProperties(
+  mach.Connection.prototype,
+  require('./ConnectionProperties')
+);
+
 module.exports = mach;
