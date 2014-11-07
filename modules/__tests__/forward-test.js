@@ -1,6 +1,6 @@
 var expect = require('expect');
+var callApp = require('../utils/callApp');
 var forward = require('../forward');
-var callApp = require('./callApp');
 
 function ok() {
   return 'ok';
@@ -20,22 +20,18 @@ function returnFalse() {
 
 describe('mach.forward', function () {
   describe('when no test function is given', function () {
-    beforeEach(function () {
-      return callApp(forward(ok, target));
-    });
-
     it('forwards the request', function () {
-      expect(lastResponse.buffer).toEqual('target');
+      return callApp(forward(ok, target)).then(function (conn) {
+        expect(conn.responseText).toEqual('target');
+      });
     });
   });
 
   describe('a request that passes the test function', function () {
-    beforeEach(function () {
-      return callApp(forward(ok, target, returnTrue));
-    });
-
     it('is forwarded', function () {
-      expect(lastResponse.buffer).toEqual('target');
+      return callApp(forward(ok, target, returnTrue)).then(function (conn) {
+        expect(conn.responseText).toEqual('target');
+      });
     });
   });
 
@@ -45,17 +41,17 @@ describe('mach.forward', function () {
     });
 
     it('is forwarded', function () {
-      expect(lastResponse.buffer).toEqual('target');
+      return callApp(forward(ok, target, /\/test-match$/), '/test-match').then(function (conn) {
+        expect(conn.responseText).toEqual('target');
+      });
     });
   });
 
   describe('a request that does not pass the test function', function () {
-    beforeEach(function () {
-      return callApp(forward(ok, target, returnFalse));
-    });
-
     it('is not forwarded', function () {
-      expect(lastResponse.buffer).toEqual('ok');
+      return callApp(forward(ok, target, returnFalse), '/test-match').then(function (conn) {
+        expect(conn.responseText).toEqual('ok');
+      });
     });
   });
 });
