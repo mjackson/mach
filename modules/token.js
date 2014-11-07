@@ -1,4 +1,5 @@
 var makeToken = require('./utils/makeToken');
+require('./server');
 
 /**
  * The set of HTTP request methods that are considered safe because they

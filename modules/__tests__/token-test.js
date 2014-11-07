@@ -1,10 +1,10 @@
 var assert = require('assert');
 var expect = require('expect');
+var callApp = require('../utils/callApp');
 var params = require('../params');
 var session = require('../session');
 var stack = require('../stack');
 var token = require('../token');
-var callApp = require('./callApp');
 
 function extractCookie(setCookie) {
   var match = setCookie.match(/_session=[^;]+/);
@@ -13,54 +13,49 @@ function extractCookie(setCookie) {
 }
 
 describe('mach.token', function () {
+
   var app = stack();
   app.use(session, { secret: 'foo' });
   app.use(params);
   app.use(token);
-  app.run(function (request) {
-    return request.session._token;
+  app.run(function (conn) {
+    return conn.session._token;
   });
 
   describe('when the request parameters are missing the session token', function () {
-    beforeEach(function () {
+    it('returns 403', function () {
       return callApp(app, {
         method: 'POST'
+      }).then(function (conn) {
+        expect(conn.status).toEqual(403);
       });
-    });
-
-    it('returns 403', function () {
-      expect(lastResponse.status).toEqual(403);
     });
   });
 
   describe('when the request parameters contain the session token', function () {
-    beforeEach(function () {
+    it('passes the request downstream', function () {
       // Call it twice. First time is to get the token and cookie.
-      return callApp(app).then(function (response) {
-        var token = response.buffer;
-        var cookie = extractCookie(response.headers['Set-Cookie']);
+      return callApp(app).then(function (conn) {
+        var cookie = extractCookie(conn.response.headers['Set-Cookie']);
+        var token = conn.responseText;
+
         return callApp(app, {
           method: 'POST',
           headers: { Cookie: cookie },
           params: { _token: token }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(200);
         });
       });
-    });
-
-    it('passes the request downstream', function () {
-      expect(lastResponse.status).toEqual(200);
     });
   });
 
   describe('when the request is not a POST', function () {
-    beforeEach(function () {
-      return callApp(app, {
-        method: 'GET'
+    it('passes the request downstream', function () {
+      return callApp(app).then(function (conn) {
+        expect(conn.status).toEqual(200);
       });
     });
-
-    it('passes the request downstream', function () {
-      expect(lastResponse.status).toEqual(200);
-    });
   });
+
 });
