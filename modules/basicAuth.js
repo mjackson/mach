@@ -1,4 +1,5 @@
 var Promise = require('./utils/Promise');
+require('./server');
 
 /**
  * A middleware that performs basic auth on the incoming request before passing

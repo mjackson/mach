@@ -1,12 +1,6 @@
-var assert = require('assert');
 var expect = require('expect');
-var encodeBase64 = require('../utils/encodeBase64');
+var callApp = require('../utils/callApp');
 var basicAuth = require('../basicAuth');
-var callApp = require('./callApp');
-
-function makeBasicAuthorization(username, password) {
-  return 'Basic ' + encodeBase64(username + ':' + password);
-}
 
 function ok() {
   return 200;
@@ -23,43 +17,30 @@ describe('mach.basicAuth', function () {
   });
 
   describe('when no authentication credentials are given', function () {
-    beforeEach(function () {
-      return callApp(app);
-    });
-
     it('returns 401 Unauthorized', function () {
-      assert(lastResponse);
-      expect(lastResponse.status).toEqual(401);
+      return callApp(app).then(function (conn) {
+        expect(conn.status).toEqual(401);
+      });
     });
   });
 
   describe('when invalid authentication credentials are given', function () {
-    beforeEach(function () {
-      return callApp(app, {
-        headers: {
-          'Authorization': makeBasicAuthorization('michael', 'wrongPassword')
-        }
-      });
-    });
-
     it('returns 401 Unauthorized', function () {
-      assert(lastResponse);
-      expect(lastResponse.status).toEqual(401);
+      return callApp(app, '/', function (conn) {
+        conn.auth = 'michael:wrongPassword';
+      }).then(function (conn) {
+        expect(conn.status).toEqual(401);
+      });
     });
   });
 
   describe('when valid credentials are given', function () {
-    beforeEach(function () {
-      return callApp(app, {
-        headers: {
-          'Authorization': makeBasicAuthorization('michael', 'password')
-        }
+    it('returns 200 OK', function () {
+      return callApp(app, '/', function (conn) {
+        conn.auth = 'michael:password';
+      }).then(function (conn) {
+        expect(conn.status).toEqual(200);
       });
-    });
-
-    it('returns passes the app downstream', function () {
-      assert(lastResponse);
-      expect(lastResponse.status).toEqual(200);
     });
   });
 });
