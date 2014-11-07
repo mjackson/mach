@@ -74,7 +74,7 @@ function Connection(options) {
   this.basename = '';
 
   this.responseText = null;
-  this.status = null;
+  this.status = 200;
 }
 
 function locationPropertyGetter(propertyName) {
