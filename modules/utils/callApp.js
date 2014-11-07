@@ -18,8 +18,18 @@ var Connection = require('../Connection');
  *              the encoding is whatever was specified in the Content-Type
  *              header of the response.
  */
-function callApp(app, options) {
+function callApp(app, callback, options) {
+  if (options == null && typeof callback !== 'function') {
+    options = callback;
+    callback = null;
+  }
+
+  options = options || {};
+
   var conn = new Connection(options);
+
+  if (callback)
+    callback(conn);
 
   return conn.call(app).then(function () {
     if (options.binary)

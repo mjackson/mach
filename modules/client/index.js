@@ -13,8 +13,17 @@ var mergeProperties = require('../utils/mergeProperties');
   'PUT',
   'TRACE'
 ].forEach(function (method) {
-  mach[method.toLowerCase()] = function (app, options) {
-    return mach.call(app, mergeProperties(options || {}, { method: method }));
+  mach[method.toLowerCase()] = function (app, callback, options) {
+    if (options == null && typeof callback !== 'function') {
+      options = callback;
+      callback = null;
+    }
+
+    // Don't mutate options.
+    options = options ? mergeProperties({}, options) : {};
+    options.method = method;
+
+    return mach.call(app, callback, options);
   };
 });
 
