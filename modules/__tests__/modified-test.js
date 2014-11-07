@@ -1,8 +1,9 @@
 var expect = require('expect');
+var callApp = require('../utils/callApp');
 var modified = require('../modified');
-var callApp = require('./callApp');
 
 describe('mach.modified', function () {
+
   var etag, lastModified, app;
   beforeEach(function () {
     etag = 'abc';
@@ -21,71 +22,66 @@ describe('mach.modified', function () {
 
   describe('when a request uses the If-None-Match header', function () {
     describe('that does not match the ETag response header', function () {
-      beforeEach(function () {
-        return callApp(app, {
-          headers: { 'If-None-Match': '"def"' }
-        });
-      });
-
       it('returns 200', function () {
-        expect(lastResponse.status).toEqual(200);
+        return callApp(app, {
+          headers: {
+            'If-None-Match': '"def"'
+          }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(200);
+        });
       });
     });
 
     describe('that matches the ETag response header', function () {
-      beforeEach(function () {
-        return callApp(app, {
-          headers: { 'If-None-Match': '"' + etag + '"' }
-        });
-      });
-
       it('returns 304', function () {
-        expect(lastResponse.status).toEqual(304);
+        return callApp(app, {
+          headers: {
+            'If-None-Match': '"' + etag + '"'
+          }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(304);
+        });
       });
     });
   });
 
   describe('when a request uses the If-Modified-Since header', function () {
     describe('with a value less than the Last-Modified response header', function () {
-      beforeEach(function () {
+      it('returns 200', function () {
         return callApp(app, {
           headers: {
             'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:15 GMT'
           }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(200);
         });
-      });
-
-      it('returns 200', function () {
-        expect(lastResponse.status).toEqual(200);
       });
     });
 
     describe('with a value equal to the Last-Modified response header', function () {
-      beforeEach(function () {
+      it('returns 304', function () {
         return callApp(app, {
           headers: {
             'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:16 GMT'
           }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(304);
         });
-      });
-
-      it('returns 304', function () {
-        expect(lastResponse.status).toEqual(304);
       });
     });
 
     describe('with a value greater than the Last-Modified response header', function () {
-      beforeEach(function () {
+      it('returns 304', function () {
         return callApp(app, {
           headers: {
             'If-Modified-Since': 'Tue, 26 Mar 2013 00:58:17 GMT'
           }
+        }).then(function (conn) {
+          expect(conn.status).toEqual(304);
         });
-      });
-
-      it('returns 304', function () {
-        expect(lastResponse.status).toEqual(304);
       });
     });
   });
+
 });

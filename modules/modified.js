@@ -3,7 +3,6 @@ var stripQuotes = require('./utils/stripQuotes');
 function notModifiedResponse(response) {
   response.status = 304;
   response.content = '';
-  return response;
 }
 
 /**
