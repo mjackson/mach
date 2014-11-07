@@ -1,43 +1,36 @@
-var assert = require('assert');
 var expect = require('expect');
-var params = require('../params');
-var callApp = require('./callApp');
+var callApp = require('../utils/callApp');
+var paramsMiddleware = require('../params');
 
-function stringifyParams(request) {
-  return JSON.stringify(request.params);
+function stringifyParams(conn) {
+  return JSON.stringify(conn.params);
 }
 
 describe('mach.params', function () {
   describe('when both query and content parameters are present', function () {
-    beforeEach(function () {
-      return callApp(params(stringifyParams), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        queryString: 'a=b&c=d',
-        content: 'a=c'
-      });
-    });
-
     it('merges query and content parameters, giving precedence to content', function () {
-      assert(lastResponse.buffer);
-      var params = JSON.parse(lastResponse.buffer);
-      assert(params);
-      expect(params.a).toEqual('c');
-      expect(params.c).toEqual('d');
+      return callApp(paramsMiddleware(stringifyParams), {
+        method: 'POST',
+        url: '/?a=b&c=d',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        content: 'a=c'
+      }).then(function (conn) {
+        var params = JSON.parse(conn.responseText);
+        expect(params.a).toEqual('c');
+        expect(params.c).toEqual('d');
+      });
     });
   });
 
   describe('when the request content length exceeds the maximum allowed length', function () {
-    beforeEach(function () {
-      return callApp(params(stringifyParams, { maxLength: 100 }), {
+    it('returns 413', function () {
+      return callApp(paramsMiddleware(stringifyParams, { maxLength: 100 }), {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         content: 'q=' + Array(100).join('a')
+      }).then(function (conn) {
+        expect(conn.status).toEqual(413);
       });
-    });
-
-    it('returns 413', function () {
-      expect(lastResponse.status).toEqual(413);
     });
   });
 });
