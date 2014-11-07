@@ -3,6 +3,7 @@ var Promise = require('./utils/Promise');
 var defaultApp = require('./utils/defaultApp');
 var getFileStats = require('./utils/getFileStats');
 var joinPaths = require('./utils/joinPaths');
+require('./server');
 
 /**
  * A middleware for serving files efficiently from the file system according
