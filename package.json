@@ -23,7 +23,9 @@
     "uglify-js": "~2.4.15"
   },
   "scripts": {
-    "test": "mocha \"modules/**/__tests__/**/*-test.js\""
+    "test": "mocha \"modules/**/__tests__/**/*-test.js\"",
+    "bundle-tests": "browserify modules/__tests__/browser/tests.js --detect-globals false --debug > modules/__tests__/browser/tests-bundle.js",
+    "serve-tests": "http-server modules/__tests__/browser"
   },
   "repository": {
     "type": "git",
