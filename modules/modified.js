@@ -1,10 +1,5 @@
 var stripQuotes = require('./utils/stripQuotes');
 
-function notModifiedResponse(response) {
-  response.status = 304;
-  response.content = '';
-}
-
 /**
  * A middleware that automatically performs content-based HTTP caching in
  * response to requests that use the If-None-Match and/or If-Modified-Since
@@ -20,8 +15,11 @@ function modified(app) {
       if (ifNoneMatch) {
         var etag = response.headers['ETag'];
 
-        if (etag && etag === stripQuotes(ifNoneMatch))
-          return notModifiedResponse(response);
+        if (etag && etag === stripQuotes(ifNoneMatch)) {
+          conn.status = 304;
+          conn.response.content = '';
+          return;
+        }
       }
 
       var ifModifiedSince = request.headers['If-Modified-Since'];
@@ -31,8 +29,10 @@ function modified(app) {
         if (typeof lastModified === 'string')
           lastModified = Date.parse(lastModified);
 
-        if (lastModified <= Date.parse(ifModifiedSince))
-          return notModifiedResponse(response);
+        if (lastModified <= Date.parse(ifModifiedSince)) {
+          conn.status = 304;
+          conn.response.content = '';
+        }
       }
     });
   };
