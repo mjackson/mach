@@ -17,13 +17,11 @@ var Connection = require('../Connection');
  *              option has no effect when "binary" is true. By default
  *              the encoding is whatever was specified in the Content-Type
  *              header of the response.
+ *
+ * If a callback is provided, it will be called with the Connection
+ * object before the request is made.
  */
-function callApp(app, callback, options) {
-  if (options == null && typeof callback !== 'function') {
-    options = callback;
-    callback = null;
-  }
-
+function callApp(app, options, callback) {
   options = options || {};
 
   var conn = new Connection(options);
