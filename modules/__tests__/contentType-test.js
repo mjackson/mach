@@ -1,19 +1,15 @@
 var expect = require('expect');
+var callApp = require('../utils/callApp');
 var contentType = require('../contentType');
-var callApp = require('./callApp');
 
 function ok() {
   return 200;
 }
 
 describe('mach.contentType', function () {
-  var expectedType;
-  beforeEach(function () {
-    expectedType = 'text/plain';
-    return callApp(contentType(ok, expectedType), '/');
-  });
-
   it('adds a Content-Type header', function () {
-    expect(lastResponse.headers['Content-Type']).toEqual(expectedType);
+    return callApp(contentType(ok, 'text/plain'), '/').then(function (conn) {
+      expect(conn.response.headers['Content-Type']).toEqual('text/plain');
+    });
   });
 });
