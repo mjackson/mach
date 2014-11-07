@@ -2,6 +2,7 @@ var expect = require('expect');
 var Location = require('../Location');
 
 describe('A new Location', function () {
+
   var location;
   beforeEach(function () {
     location = new Location('http://user:pass@example.com:5000/the/path?the=query');
@@ -51,17 +52,32 @@ describe('A new Location', function () {
     expect(location.query).toEqual({ the: 'query' });
   });
 
-  describe('with http: protocol on port 80', function () {
-    it('leaves the protocol out of host', function () {
+  describe('with http: protocol on the standard port', function () {
+    it('leaves the port # out of host', function () {
       var location = new Location('http://example.com:80/the/path');
       expect(location.host).toEqual('example.com');
     });
   });
 
-  describe('with https: protocol on port 443', function () {
-    it('leaves the protocol out of host', function () {
+  describe('with http: protocol on a non-standard port', function () {
+    it('includes the port # in host', function () {
+      var location = new Location('http://example.com:8080/the/path');
+      expect(location.host).toEqual('example.com:8080');
+    });
+  });
+
+  describe('with https: protocol on the standard port', function () {
+    it('leaves the port # out of host', function () {
       var location = new Location('https://example.com:443/the/path');
       expect(location.host).toEqual('example.com');
     });
   });
+
+  describe('with https: protocol on a non-standard port', function () {
+    it('includes the port # in host', function () {
+      var location = new Location('https://example.com:5000/the/path');
+      expect(location.host).toEqual('example.com:5000');
+    });
+  });
+
 });

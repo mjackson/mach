@@ -22,11 +22,10 @@ function propertyGetter(propertyName) {
  * Note: This object is currently read-only.
  */
 function Location(options) {
+  options = options || {};
+
   if (typeof options === 'string')
     options = parseURL(options);
-
-  if (options == null || !options.hostname)
-    throw new Error('Location needs a hostname');
 
   var protocol = (options.protocol || 'http:').toLowerCase();
   var port = String(options.port || (protocol === 'https:' ? 443 : 80));
@@ -34,7 +33,7 @@ function Location(options) {
   this.properties = {
     protocol: protocol,
     auth: options.auth || '',
-    hostname: options.hostname,
+    hostname: options.hostname || '',
     port: port,
     pathname: options.pathname || '/',
     search: options.search || ''
