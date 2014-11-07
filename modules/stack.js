@@ -48,9 +48,7 @@ function routerCreator(routes) {
  *
  *   // Use an image server to serve requests that begin
  *   // with /images out of /public/img.
- *   app.map('/images', function (app) {
- *     app.use(mach.file, __dirname + '/public/img');
- *   });
+ *   app.map('/images', mach.file('/public/img'));
  *
  *   // Since this call is *after* the call to map, this middleware
  *   // will not run when requests begin with "/images".
@@ -129,21 +127,15 @@ function stack(app) {
     }),
 
     /**
-     * Uses a mapper to map the given location to a new stack, which is
-     * passed to the given callback for configuration.
+     * Uses a mapper to map a URL path to an app.
      */
-    map: d(function (location, callback) {
-      var s = stack();
-
-      if (typeof callback === 'function')
-        callback(s);
-
-      mappings.push([ location, s ]);
+    map: d(function (location, app) {
+      mappings.push([ location, app ]);
       compiledApp = null;
     }),
 
     /**
-     * Uses a router to route the given pattern to the given app.
+     * Uses a router to route URLs that match a pattern/method to an app.
      */
     route: d(function (pattern, methods, app) {
       routes.push([ pattern, methods, app ]);
