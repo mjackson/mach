@@ -1,18 +1,22 @@
 var expect = require('expect');
 var StatusCodes = require('../utils/StatusCodes');
-var Response = require('../Response');
+var Connection = require('../Connection');
 
-describe('Response', function () {
+describe('Connection', function () {
+
+  var conn;
+  beforeEach(function () {
+    conn = new Connection;
+  });
 
   Object.keys(StatusCodes).forEach(function (status) {
     describe('with status ' + status, function () {
-      var response;
       beforeEach(function () {
-        response = new Response({ status: status });
+        conn.status = status;
       });
 
       it('has the correct statusText', function () {
-        expect(response.statusText).toEqual(StatusCodes[status]);
+        expect(conn.statusText).toEqual(StatusCodes[status]);
       });
     });
   });
