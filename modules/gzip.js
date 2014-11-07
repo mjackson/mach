@@ -1,4 +1,5 @@
 var zlib = require('zlib');
+require('./accept');
 
 var gzipTypes = /text|javascript|json/i;
 

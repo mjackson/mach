@@ -1,12 +1,12 @@
 var expect = require('expect');
 var gzip = require('../gzip');
-var callApp = require('./callApp');
+var callApp = require('../utils/callApp');
 var getFixture = require('./getFixture');
 
 describe('mach.gzip', function () {
   var contents = getFixture('test.txt');
   var gzippedContents = getFixture('test.txt.gz');
-  var app = gzip(function (request) {
+  var app = gzip(function () {
     return {
       headers: { 'Content-Type': 'text/plain' },
       content: contents
@@ -14,52 +14,48 @@ describe('mach.gzip', function () {
   });
 
   describe('when the client accepts gzip encoding', function () {
-    beforeEach(function () {
+    it('gzip-encodes the response', function () {
       return callApp(app, {
         headers: { 'Accept-Encoding': 'gzip' },
-        leaveBuffer: true
+        binary: true
+      }).then(function (conn) {
+        expect(conn.response.headers['Content-Encoding']).toEqual('gzip');
+        expect(conn.response.headers['Vary']).toEqual('Accept-Encoding');
+        return conn.response.bufferContent().then(function (buffer) {
+          expect(buffer).toEqual(gzippedContents);
+        });
       });
-    });
-
-    it('sets the Content-Encoding header to "gzip"', function () {
-      expect(lastResponse.headers['Content-Encoding']).toEqual('gzip');
-    });
-
-    it('sets the Vary header to "Accept-Encoding"', function () {
-      expect(lastResponse.headers['Vary']).toEqual('Accept-Encoding');
-    });
-
-    it('gzip-encodes the response content', function () {
-      expect(lastResponse.buffer).toEqual(gzippedContents);
     });
   });
 
   describe('when the client does not accept gzip encoding', function () {
-    beforeEach(function () {
-      return callApp(app, {
-        leaveBuffer: true
-      });
-    });
-
     it('does not encode the content', function () {
-      expect(lastResponse.buffer).toEqual(contents);
+      return callApp(app, {
+        binary: true
+      }).then(function (conn) {
+        return conn.response.bufferContent().then(function (buffer) {
+          expect(buffer).toEqual(contents);
+        });
+      });
     });
   });
 
   describe('when the response is a text/event-stream', function () {
-    var app = gzip(function (request) {
+    var app = gzip(function () {
       return {
         headers: { 'Content-Type': 'text/event-stream' },
         content: contents
       };
     });
 
-    beforeEach(function () {
-      return callApp(app, { leaveBuffer: true });
-    });
-
     it('does not encode the content', function () {
-      expect(lastResponse.buffer).toEqual(contents);
+      return callApp(app, {
+        binary: true
+      }).then(function (conn) {
+        return conn.response.bufferContent().then(function (buffer) {
+          expect(buffer).toEqual(contents);
+        });
+      });
     });
   });
 });
