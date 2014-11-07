@@ -16,7 +16,7 @@ var DEFAULT_CONTENT = binaryFrom('');
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
  */
-var DEFAULT_MAX_CONTENT_LENGTH = Math.pow(2, 20); // 1m
+var DEFAULT_MAX_CONTENT_LENGTH = Math.pow(2, 20); // 1M
 
 /**
  * The default prefix to use for uploaded temporary files that are stored
