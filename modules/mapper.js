@@ -8,14 +8,15 @@ function byMostSpecific(a, b) {
 
 /**
  * A middleware that provides host and/or location-based routing. Modifies
- * the `basename` connection variable for all downstream apps such that the
- * only the part relevant for dispatch remains in `pathname`.
+ * the `basename` connection variable for all downstream apps such that only
+ * the portion relevant for dispatch remains in `pathname`.
  *
  *   app.use(mach.mapper, {
  *
  *     'http://example.com/images': function (conn) {
  *       // The hostname used in the request was example.com, and
- *       // the URL path started with "/images"
+ *       // the URL path started with "/images". If the request was
+ *       // GET /images/avatar.jpg, then conn.pathname is /avatar.jpg
  *     },
  *
  *     '/images': function (conn) {
@@ -25,17 +26,23 @@ function byMostSpecific(a, b) {
  *   });
  *
  * This function may also be used outside of the context of a middleware
- * stack to create a standalone app.
+ * stack to create a standalone app. You can either provide mappings one
+ * at a time:
+ *
+ *   var app = mach.mapper();
+ *
+ *   app.map('/images', function (conn) {
+ *     // ...
+ *   });
+ *
+ *   mach.serve(app);
+ *
+ * Or all at once:
  *
  *   var app = mach.mapper({
  *
- *     'http://example.com/images': function (conn) {
- *       // The hostname used in the request was example.com, and
- *       // the URL path started with "/images"
- *     },
- *
  *     '/images': function (conn) {
- *       // The URL path started with "/images"
+ *       // ...
  *     }
  *
  *   });
