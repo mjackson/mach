@@ -13,7 +13,7 @@ var DEFAULT_PORT = 5000;
  * Options may be any of the following:
  *
  *   - host     The host name to accept connections on. Defaults to INADDR_ANY
- *   - port     The port to listen on. Defaults to mach.defaultPort
+ *   - port     The port to listen on. Defaults to 5000
  *   - socket   Unix socket file to listen on (trumps host/port)
  *   - quiet    Set true to prevent the server from writing startup/shutdown
  *              messages to the console. Defaults to false
