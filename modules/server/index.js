@@ -4,7 +4,6 @@ require('../accept');
 require('../multipart');
 
 mach.bind             = require('../utils/bindApp');
-mach.map              = require('../utils/createMapper');
 mach.serve            = require('../utils/serveApp');
 
 mach.basicAuth        = require('../basicAuth');

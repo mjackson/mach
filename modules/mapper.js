@@ -7,20 +7,37 @@ function byMostSpecific(a, b) {
 }
 
 /**
- * A middleware that provides host and/or location-based routing. Modifies the
- * `basename` and `pathInfo` request variables for all downstream apps such
- * that the part relevant for dispatch is in `basename` and the rest in
- * `pathInfo`.
+ * A middleware that provides host and/or location-based routing. Modifies
+ * the `basename` connection variable for all downstream apps such that the
+ * only the part relevant for dispatch remains in `pathname`.
  *
- *   var app = mach.mapper();
+ *   app.use(mach.mapper, {
  *
- *   app.map('http://example.com/images', function (request) {
- *     // The hostname used in the request was example.com, and the path
- *     // started with "/images".
+ *     'http://example.com/images': function (conn) {
+ *       // The hostname used in the request was example.com, and
+ *       // the URL path started with "/images"
+ *     },
+ *
+ *     '/images': function (conn) {
+ *       // The URL path started with "/images"
+ *     }
+ *
  *   });
  *
- *   app.map('/images', function (request) {
- *     // The request path started with "/images".
+ * This function may also be used outside of the context of a middleware
+ * stack to create a standalone app.
+ *
+ *   var app = mach.mapper({
+ *
+ *     'http://example.com/images': function (conn) {
+ *       // The hostname used in the request was example.com, and
+ *       // the URL path started with "/images"
+ *     },
+ *
+ *     '/images': function (conn) {
+ *       // The URL path started with "/images"
+ *     }
+ *
  *   });
  *
  *   mach.serve(app);
@@ -28,12 +45,18 @@ function byMostSpecific(a, b) {
  * Note: Dispatch is done in such a way that the longest paths are tried first
  * since they are the most specific.
  */
-function mapper(app) {
+function createMapper(app, map) {
+  // Allow mach.mapper(map)
+  if (typeof app !== 'function') {
+    map = app;
+    app = defaultApp;
+  }
+
   app = app || defaultApp;
   
   var mappings = [];
 
-  function callMapper(conn) {
+  function mapper(conn) {
     var pathname = conn.pathname;
     var host = conn.host;
 
@@ -62,14 +85,7 @@ function mapper(app) {
     return conn.call(app);
   }
 
-  Object.defineProperties(callMapper, {
-
-    /**
-     * Sets the given app as the default for this mapper.
-     */
-    run: d(function (downstreamApp) {
-      app = downstreamApp;
-    }),
+  Object.defineProperties(mapper, {
 
     /**
      * Adds a new mapping that runs the given app when the location used in the
@@ -104,11 +120,24 @@ function mapper(app) {
       });
 
       mappings.sort(byMostSpecific);
+    }),
+
+    /**
+     * Sets the given app as the default for this mapper.
+     */
+    run: d(function (downstreamApp) {
+      app = downstreamApp;
     })
 
   });
 
-  return callMapper;
+  // Allow app.use(mach.mapper, map)
+  if (typeof map === 'object')
+    for (var location in map)
+      if (map.hasOwnProperty(location))
+        mapper.map(location, map[location]);
+
+  return mapper;
 }
 
-module.exports = mapper;
+module.exports = createMapper;
