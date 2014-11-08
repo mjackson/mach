@@ -37,7 +37,6 @@ function bindApp(app, nodeServer) {
 
   function requestHandler(nodeRequest, nodeResponse) {
     var conn = new Connection({
-      protocol: url.protocol,
       version: nodeRequest.httpVersion,
       method: nodeRequest.method,
       url: nodeRequest.url,
