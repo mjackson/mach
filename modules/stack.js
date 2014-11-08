@@ -1,12 +1,12 @@
 var d = require('d');
 var defaultApp = require('./utils/defaultApp');
 var RoutingProperties = require('./utils/RoutingProperties');
-var mapper = require('./mapper');
-var router = require('./router');
+var createMapper = require('./createMapper');
+var createRouter = require('./createRouter');
 
 function mapperCreator(mappings) {
   return function (app) {
-    app = mapper(app);
+    app = createMapper(app);
 
     for (var i = 0, len = mappings.length; i < len; ++i)
       app.map.apply(app, mappings[i]);
@@ -17,7 +17,7 @@ function mapperCreator(mappings) {
 
 function routerCreator(routes) {
   return function (app) {
-    app = router(app);
+    app = createRouter(app);
 
     for (var i = 0, len = routes.length; i < len; ++i)
       app.route.apply(app, routes[i]);
@@ -69,7 +69,7 @@ function routerCreator(routes) {
  * additional arguments that were passed to the call to stack.use. As long as
  * the stack doesn't change between requests, this happens only once.
  */
-function stack(app) {
+function createStack(app) {
   app = app || defaultApp;
 
   var layers = [], mappings = [], routes = [];
@@ -90,19 +90,11 @@ function stack(app) {
     return app;
   }
 
-  function callStack(conn) {
+  function stack(conn) {
     return conn.call(compiledApp || (compiledApp = compile(app)));
   }
 
-  Object.defineProperties(callStack, {
-
-    /**
-     * Sets the given app as the default for this stack.
-     */
-    run: d(function (downstreamApp) {
-      app = downstreamApp;
-      compiledApp = null;
-    }),
+  Object.defineProperties(stack, {
 
     /**
      * Declares that the given `middleware` should be used at the current point
@@ -140,13 +132,21 @@ function stack(app) {
     route: d(function (pattern, methods, app) {
       routes.push([ pattern, methods, app ]);
       compiledApp = null;
+    }),
+
+    /**
+     * Sets the given app as the default for this stack.
+     */
+    run: d(function (downstreamApp) {
+      app = downstreamApp;
+      compiledApp = null;
     })
 
   });
 
-  Object.defineProperties(callStack, RoutingProperties);
+  Object.defineProperties(stack, RoutingProperties);
 
-  return callStack;
+  return stack;
 }
 
-module.exports = stack;
+module.exports = createStack;
