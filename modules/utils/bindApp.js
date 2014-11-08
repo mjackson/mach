@@ -1,4 +1,5 @@
 var Connection = require('../Connection');
+var Location = require('../Location');
 
 /**
  * HTTP status codes that don't have entities.
@@ -9,6 +10,75 @@ var STATUS_WITHOUT_CONTENT = {
   204: true,
   304: true
 };
+
+/**
+ * Standard ports for HTTP protocols.
+ */
+var STANDARD_PORTS = {
+  'http:': 80,
+  'https:': 443
+};
+
+/**
+ * Creates a new Location object that is reverse-proxy aware.
+ */
+function createLocation(nodeRequest, serverName, serverPort) {
+  var headers = nodeRequest.headers;
+
+  var protocol;
+  if (process.env.HTTPS === 'on') {
+    protocol = 'https:';
+  } else if (headers['x-forwarded-ssl'] === 'on') {
+    protocol = 'https:';
+  } else if (headers['x-forwarded-scheme']) {
+    protocol = headers['x-forwarded-scheme'];
+  } else if (headers['x-forwarded-proto']) {
+    protocol = headers['x-forwarded-proto'].split(',')[0];
+  } else {
+    protocol = nodeRequest.protocol;
+  }
+
+  var host;
+  if (headers['x-forwarded-host']) {
+    var hosts = headers['x-forwarded-host'].split(/,\s?/);
+    host = hosts[hosts.length - 1];
+  } else {
+    host = headers['host'] || (serverName + ':' + serverPort);
+  }
+
+  var hostname = host.replace(/:\d+$/, '');
+  var port = host.split(':')[1] || headers['x-forwarded-port'];
+
+  if (port == null) {
+    if (headers['x-forwarded-host']) {
+      port = STANDARD_PORTS[protocol];
+    } else if (headers['x-forwarded-proto']) {
+      port = STANDARD_PORTS[headers['x-forwarded-proto'].split(',')[0]];
+    } else {
+      port = serverPort;
+    }
+  }
+
+  var path = nodeRequest.url;
+  var index = path.indexOf('?');
+
+  var pathname, search;
+  if (index !== -1) {
+    pathname = path.substring(0, index);
+    search = path.substring(index);
+  } else {
+    pathname = path;
+    search = '';
+  }
+
+  return new Location({
+    protocol: protocol,
+    hostname: hostname,
+    port: port,
+    pathname: pathname,
+    search: search
+  });
+}
 
 /**
  * Binds the given app to the "request" event of the given node HTTP server
@@ -39,13 +109,11 @@ function bindApp(app, nodeServer) {
     var conn = new Connection({
       version: nodeRequest.httpVersion,
       method: nodeRequest.method,
-      url: nodeRequest.url,
+      location: createLocation(nodeRequest, serverName, serverPort),
       headers: nodeRequest.headers,
       content: nodeRequest,
       remoteHost: nodeRequest.connection.remoteAddress,
-      remotePort: nodeRequest.connection.remotePort,
-      serverName: serverName,
-      serverPort: serverPort
+      remotePort: nodeRequest.connection.remotePort
     });
 
     nodeRequest.on('close', function () {

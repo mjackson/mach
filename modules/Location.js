@@ -27,7 +27,7 @@ function Location(options) {
   if (typeof options === 'string')
     options = parseURL(options);
 
-  var protocol = (options.protocol || 'http:').toLowerCase();
+  var protocol = options.protocol || 'http:';
   var port = String(options.port || (protocol === 'https:' ? 443 : 80));
 
   this.properties = {

@@ -23,13 +23,13 @@ function defaultCloseHandler() {}
  * An HTTP connection with request and response messages. Options
  * may be any of the following:
  *
- * - content    The request content, defaults to ""
- * - headers    The request headers, defaults to {}
- * - method     The request HTTP method, defaults to "GET"
- * - url        The request URL
- * - params     The request params
- * - onError    A function that is called when there is an error
- * - onClose    A function that is called when the request closes
+ * - content        The request content, defaults to ""
+ * - headers        The request headers, defaults to {}
+ * - method         The request HTTP method, defaults to "GET"
+ * - location/url   The request Location or URL
+ * - params         The request params
+ * - onError        A function that is called when there is an error
+ * - onClose        A function that is called when the request closes
  *
  * The options may also be a URL string to specify the URL.
  */
@@ -39,8 +39,8 @@ function Connection(options) {
   var location;
   if (typeof options === 'string') {
     location = options; // options may be a URL string.
-  } else if (typeof options.url === 'string') {
-    location = options.url;
+  } else if (options.location || options.url) {
+    location = options.location || options.url;
   } else if (typeof window !== 'undefined') {
     location = window.location.href;
   }
@@ -69,8 +69,6 @@ function Connection(options) {
   this.withCredentials = options.withCredentials || false;
   this.remoteHost = options.remoteHost || null;
   this.remoteUser = options.remoteUser || null;
-  this.serverName = options.serverName || null;
-  this.serverPort = options.serverPort || null;
   this.basename = '';
 
   this.responseText = null;
