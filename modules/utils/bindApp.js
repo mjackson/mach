@@ -46,8 +46,9 @@ function createLocation(nodeRequest, serverName, serverPort) {
     host = headers['host'] || (serverName + ':' + serverPort);
   }
 
-  var hostname = host.replace(/:\d+$/, '');
-  var port = host.split(':')[1] || headers['x-forwarded-port'];
+  var hostParts = host.split(':', 2);
+  var hostname = hostParts[0];
+  var port = hostParts[1] || headers['x-forwarded-port'];
 
   if (port == null) {
     if (headers['x-forwarded-host']) {
