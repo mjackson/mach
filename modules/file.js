@@ -29,9 +29,9 @@ function file(app, options) {
   if (typeof options === 'string')
     options = { root: options };
 
-  var rootDirectory = options.root;
-  if (typeof rootDirectory !== 'string' || !fs.existsSync(rootDirectory) || !fs.statSync(rootDirectory).isDirectory())
-    throw new Error('Invalid root directory: ' + rootDirectory);
+  var root = options.root;
+  if (typeof root !== 'string' || !fs.existsSync(root) || !fs.statSync(root).isDirectory())
+    throw new Error('Invalid root directory: ' + root);
 
   var indexFiles = options.index;
   if (indexFiles) {
@@ -63,7 +63,7 @@ function file(app, options) {
     if (pathname.indexOf('..') !== -1)
       return conn.text(403, 'Forbidden');
 
-    var path = joinPaths(rootDirectory, pathname);
+    var path = joinPaths(root, pathname);
 
     return getFileStats(path).then(function (stats) {
       if (stats && stats.isFile())
