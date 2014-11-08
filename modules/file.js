@@ -7,8 +7,19 @@ require('./server');
 
 /**
  * A middleware for serving files efficiently from the file system according
- * to the path specified in the `pathInfo` request variable. Options may be
- * any of the following:
+ * to the path specified in the `pathname` variable.
+ *
+ *   // Use the root directory name directly.
+ *   app.use(mach.file, '/public');
+ *
+ *   // Or use a hash of options.
+ *   app.use(mach.file, {
+ *     root: '/public',
+ *     index: 'index.html',
+ *     useETag: true
+ *   });
+ *
+ * Options may be any of the following:
  *
  * - root               The path to the root directory to serve files from
  * - index              An array of file names to try and serve when the
@@ -21,11 +32,24 @@ require('./server');
  *
  * If a matching file cannot be found, the request is forwarded to the
  * downstream app. Otherwise, the file is streamed through to the response.
+ *
+ * This function may also be used outside of the context of a middleware
+ * stack to create a standalone app.
+ *
+ *   var app = mach.file('/public');
+ *   mach.serve(app);
  */
 function file(app, options) {
+  // Allow mach.file(path)
+  if (typeof app !== 'function') {
+    options = app;
+    app = defaultApp;
+  }
+
   options = options || {};
   app = app || defaultApp;
 
+  // Allow app.use(mach.file, path)
   if (typeof options === 'string')
     options = { root: options };
 
