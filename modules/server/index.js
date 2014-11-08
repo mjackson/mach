@@ -10,7 +10,6 @@ mach.serve            = require('../utils/serveApp');
 mach.basicAuth        = require('../basicAuth');
 mach.catch            = require('../catch');
 mach.contentType      = require('../contentType');
-mach.directory        = require('../directory');
 mach.favicon          = require('../favicon');
 mach.file             = require('../file');
 mach.forward          = require('../forward');
