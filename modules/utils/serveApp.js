@@ -12,18 +12,18 @@ var DEFAULT_PORT = 5000;
  *
  * Options may be any of the following:
  *
- *   - host     The host name to accept connections on. Defaults to INADDR_ANY
- *   - port     The port to listen on. Defaults to 5000
- *   - socket   Unix socket file to listen on (trumps host/port)
- *   - quiet    Set true to prevent the server from writing startup/shutdown
- *              messages to the console. Defaults to false
- *   - timeout  The timeout to use when gracefully shutting down servers when
- *              SIGINT or SIGTERM are received. If a server doesn't close within
- *              this time (probably because it has open persistent connections)
- *              it is forecefully stopped when the process exits. Defaults to 100,
- *              meaning that servers forcefully shutdown after 100ms
- *   - key      Private key to use for SSL (HTTPS only)
- *   - cert     Public X509 certificate to use (HTTPS only)
+ * - host     The host name to accept connections on. Defaults to INADDR_ANY
+ * - port     The port to listen on. Defaults to 5000
+ * - socket   Unix socket file to listen on (trumps host/port)
+ * - quiet    Set true to prevent the server from writing startup/shutdown
+ *            messages to the console. Defaults to false
+ * - timeout  The timeout to use when gracefully shutting down servers when
+ *            SIGINT or SIGTERM are received. If a server doesn't close within
+ *            this time (probably because it has open persistent connections)
+ *            it is forecefully stopped when the process exits. Defaults to 100,
+ *            meaning that servers forcefully shutdown after 100ms
+ * - key      Private key to use for SSL (HTTPS only)
+ * - cert     Public X509 certificate to use (HTTPS only)
  *
  * Note: When setting the timeout, be careful not to exceed any hard timeouts
  * specified by your PaaS. For example, Heroku's dyno manager will not permit

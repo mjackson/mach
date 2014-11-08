@@ -10,14 +10,14 @@ require('./server');
  * to the path specified in the `pathInfo` request variable. Options may be
  * any of the following:
  *
- *   - root               The path to the root directory to serve files from
- *   - index              An array of file names to try and serve when the
- *                        request targets a directory (e.g. ["index.html", "index.htm"]).
- *                        May simply be truthy to use ["index.html"]
- *   - useLastModified    Set this true to include the Last-Modified header
- *                        based on the mtime of the file. Defaults to true
- *   - useETag            Set this true to include the ETag header based on
- *                        the MD5 checksum of the file. Defaults to false
+ * - root               The path to the root directory to serve files from
+ * - index              An array of file names to try and serve when the
+ *                      request targets a directory (e.g. ["index.html", "index.htm"]).
+ *                      May simply be truthy to use ["index.html"]
+ * - useLastModified    Set this true to include the Last-Modified header
+ *                      based on the mtime of the file. Defaults to true
+ * - useETag            Set this true to include the ETag header based on
+ *                      the MD5 checksum of the file. Defaults to false
  *
  * If a matching file cannot be found, the request is forwarded to the
  * downstream app. Otherwise, the file is streamed through to the response.

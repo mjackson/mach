@@ -40,12 +40,12 @@ var SAFE_METHODS = {
  *
  * Options may be any of the following:
  *
- *   - paramName        The name of the request parameter that contains the token
- *                      (i.e. the value of the "name" attribute on your <input>).
- *                      Defaults to "_token"
- *   - sessionKey       The name of the session variable to use to store the token.
- *                      Defaults to "_token"
- *   - byteLength       The length of the token in bytes. Defaults to 32
+ * - paramName        The name of the request parameter that contains the token
+ *                    (i.e. the value of the "name" attribute on your <input>).
+ *                    Defaults to "_token"
+ * - sessionKey       The name of the session variable to use to store the token.
+ *                    Defaults to "_token"
+ * - byteLength       The length of the token in bytes. Defaults to 32
  *
  * Note: Non-POST requests are always forwarded to the downstream app regardless of
  * whether or not they contain the token since it is assumed they are not modifying

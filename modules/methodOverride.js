@@ -26,12 +26,12 @@ var normalizeHeaderName = require('./utils/normalizeHeaderName');
  *
  * Options may be any of the following:
  *
- *   - paramName        The name of the request param that contains the
- *                      request method. Defaults to "_method"
- *   - headerName       The name of the HTTP header that will contain the
- *                      request method. This allows you to put the request
- *                      method in an HTTP header instead of a request param.
- *                      Defaults to "X-Http-Method-Override"
+ * - paramName        The name of the request param that contains the
+ *                    request method. Defaults to "_method"
+ * - headerName       The name of the HTTP header that will contain the
+ *                    request method. This allows you to put the request
+ *                    method in an HTTP header instead of a request param.
+ *                    Defaults to "X-Http-Method-Override"
  */
 function methodOverride(app, options) {
   options = options || {};
