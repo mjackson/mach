@@ -5,9 +5,9 @@ var RoutingMethods = {
   get: [ 'GET', 'HEAD' ],
   head: 'HEAD',
   options: 'OPTIONS',
-  patch: 'PATCH',
   post: 'POST',
-  put: 'PUT'
+  put: 'PUT',
+  trace: 'TRACE'
 };
 
 var RoutingProperties = Object.keys(RoutingMethods).reduce(function (memo, method) {
