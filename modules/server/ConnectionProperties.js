@@ -7,17 +7,17 @@ var getMimeType = require('../utils/getMimeType');
 module.exports = {
 
   /**
-   * True if this request was made using XMLHttpRequest.
+   * True if the request uses SSL, false otherwise.
    */
-  isXHR: d.gs(function () {
-    return this.request.headers['X-Requested-With'] === 'XMLHttpRequest';
+  isSSL: d.gs(function () {
+    return this.protocol === 'https:';
   }),
 
   /**
-   * The IP address of the client.
+   * True if the request uses XMLHttpRequest, false otherwise.
    */
-  remoteHost: d.gs(function () {
-    return this.request.headers['X-Forwarded-For'] || this._remoteHost;
+  isXHR: d.gs(function () {
+    return this.request.headers['X-Requested-With'] === 'XMLHttpRequest';
   }),
 
   /**
