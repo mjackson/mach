@@ -110,7 +110,7 @@ module.exports = {
     }
 
     if (content != null)
-      this.responseContent = content;
+      this.response.content = content;
   }),
 
   /**
@@ -142,7 +142,7 @@ module.exports = {
     }
 
     if (json != null)
-      this.responseContent = typeof json === 'string' ? json : JSON.stringify(json);
+      this.response.content = typeof json === 'string' ? json : JSON.stringify(json);
   }),
 
   /**
