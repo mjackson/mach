@@ -16,7 +16,7 @@ function sleep(millis, answer) {
 
 app.use(mach.logger);
 
-app.run(Q.async(function *(request) {
+app.run(Q.async(function* (request) {
   var body = yield request.parseContent();
 
   console.log('Sleeping');

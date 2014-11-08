@@ -1,5 +1,3 @@
-var mach = require('../modules');
-
-mach.serve(function (request) {
+require('../modules').serve(function () {
   return 'Hello world!';
 });
