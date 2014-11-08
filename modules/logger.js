@@ -1,14 +1,8 @@
 var strftime = require('strftime').strftime;
 
-var defaultMessageHandler;
-if (typeof process !== 'undefined' && process.stderr) {
-  defaultMessageHandler = function (message) {
-    process.stderr.write(message + '\n');
-  };
-} else if (typeof console !== 'undefined' && typeof console.log === 'function') {
-  defaultMessageHandler = function (message) {
+function defaultMessageHandler(message) {
+  if (typeof console !== 'undefined' && console.log)
     console.log(message);
-  };
 }
 
 /**
@@ -19,14 +13,11 @@ if (typeof process !== 'undefined' && process.stderr) {
 function logger(app, messageHandler) {
   messageHandler = messageHandler || defaultMessageHandler;
 
-  if (typeof messageHandler !== 'function')
-    throw new Error('mach.logger needs a message handler');
-
   return function (conn) {
     var start = Date.now();
 
     return conn.call(app).then(function () {
-      var elapsedTime = (Date.now() - start) / 1000;
+      var elapsedTime = Date.now() - start;
       var contentLength = conn.response.headers['Content-Length'];
 
       if (contentLength == null)
@@ -44,7 +35,7 @@ function logger(app, messageHandler) {
         '"' + conn.method + ' ' + conn.path + ' ' + protocol + '/' + conn.version + '"',
         conn.status,
         contentLength,
-        elapsedTime
+        elapsedTime / 1000
       ].join(' '));
     });
   };
