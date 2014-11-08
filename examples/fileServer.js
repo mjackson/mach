@@ -6,6 +6,7 @@ app.use(mach.logger);
 app.use(mach.modified);
 app.use(mach.file, {
   root: __dirname + '/..',
+  index: 'README.md',
   useLastModified: true,
   useETag: true
 });
