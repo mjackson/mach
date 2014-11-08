@@ -1,8 +1,8 @@
 var d = require('d');
 var defaultApp = require('./utils/defaultApp');
 var RoutingProperties = require('./utils/RoutingProperties');
-var createMapper = require('./createMapper');
-var createRouter = require('./createRouter');
+var createMapper = require('./mapper');
+var createRouter = require('./router');
 
 function mapperCreator(mappings) {
   return function (app) {
