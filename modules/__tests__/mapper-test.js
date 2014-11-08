@@ -1,6 +1,6 @@
 var expect = require('expect');
 var callApp = require('../utils/callApp');
-var createMapper = require('../utils/createMapper');
+var createMapper = require('../mapper');
 
 describe('mach.mapper', function () {
 
