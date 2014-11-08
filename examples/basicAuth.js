@@ -3,11 +3,12 @@ var app = mach.stack();
 
 app.use(mach.logger);
 app.use(mach.basicAuth, function (user, pass) {
-  return user == 'user' && pass == 'pass';
+  // Allow anyone to login, as long as they use the password "password".
+  return pass == 'password';
 });
 
-app.run(function (request) {
-  return 'Hello world!';
+app.run(function (conn) {
+  return 'Hello ' + conn.remoteUser + '!';
 });
 
-mach.serve(app, 3333);
+mach.serve(app);
