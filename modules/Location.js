@@ -116,6 +116,10 @@ Object.defineProperties(Location.prototype, {
    */
   query: d.gs(function () {
     return parseQuery(this.queryString);
+  }),
+
+  toJSON: d(function () {
+    return this.href;
   })
 
 });
