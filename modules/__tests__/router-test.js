@@ -19,6 +19,7 @@ describe('mach.router', function () {
   app.route('/feeds/:id.?:format?', stringifyParams);
   app.route('/files/*.*', stringifyParams);
   app.route(/\/users\/(\d+)/i, stringifyParams);
+  app.route('POST /comments', stringifyParams);
 
   describe('when a match cannot be made', function () {
     it('returns 404', function () {
@@ -105,6 +106,18 @@ describe('mach.router', function () {
       return callApp(app, '/users/1').then(function (conn) {
         // Regular expressions don't have named parameters.
         expect(JSON.parse(conn.responseText)).toEqual({});
+      });
+    });
+  });
+
+  describe('POST /comments', function () {
+    it('routes the request correctly', function () {
+      return callApp(app, {
+        method: 'POST',
+        url: '/comments'
+      }).then(function (conn) {
+        expect(conn.method).toEqual('POST');
+        expect(conn.status).toEqual(200);
       });
     });
   });
