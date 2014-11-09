@@ -1,13 +1,13 @@
 var mach = require('../index');
 
 Object.defineProperties(
-  mach.Message.prototype,
-  require('./MessageProperties')
+  mach.Connection.prototype,
+  require('./ConnectionProperties')
 );
 
 Object.defineProperties(
-  mach.Connection.prototype,
-  require('./ConnectionProperties')
+  mach.Message.prototype,
+  require('./MessageProperties')
 );
 
 module.exports = mach;
