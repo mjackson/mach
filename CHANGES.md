@@ -1,30 +1,24 @@
-### HEAD
+### 1.0.0-rc1
 
 Breaking changes:
 
   * All HTTP header names are normalized by default according to RFC 2616
-  * mach.Request expects an error message handler function, not a stream
-  * mach.Request no longer emits "close" events. Use onClose instead
+  * mach.Connection replaces mach.Request and mach.Response
   * mach.logger expects a log message handler function, not a stream
   * Removed high-level status-based response helpers (i.e. mach.ok, mach.badRequest, etc.)
-  * Renamed Request#hostWithPort => Request#host
-  * Renamed Request#host => Request#hostname
-  * Renamed Request#path => Request#pathname
-  * Renamed Request#fullPath => Request#path
-  * Removed Request#baseURL
-  * Request#port, remotePort, and serverPort are strings instead of numbers
+  * Probably many, many more
 
 Improvements:
 
-  * Add mach.Message base class for mach.Request
-  * Add mach.Response that also subclasses mach.Message
+  * Better reverse-proxy detection
+  * Add HTTP client module (mach.call, mach.get, mach.post, etc.)
+  * Add HTTP proxy module
+  * Add mach.Location (analogous to window.location for URLs)
+  * Add mach.Message class for HTTP messages (i.e. request and response)
   * Make multipart.Part subclass mach.Message
   * Always use BufferedStream for message content
-  * Use Browserify's Buffer module for binary content
-  * Add Request#bufferContent and Request#stringifyContent
-  * Add Request#search
-  * Request#call always returns a Response
-  * Pass withCredentials through when making requests as a client
+  * Add Message#bufferContent and Message#stringifyContent
+  * Add Connection#location
 
 ### 0.12.0 / 2014-07-17
 
