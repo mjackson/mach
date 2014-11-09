@@ -3,6 +3,11 @@
  */
 exports.version = '0.12.0';
 
+/**
+ * The User-Agent string for mach.
+ */
+exports.USER_AGENT_STRING = 'mach/' + exports.version;
+
 exports.Connection = require('./Connection');
 exports.Location = require('./Location');
 exports.Message = require('./Message');
