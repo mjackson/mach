@@ -16,14 +16,14 @@ function returnTrue() {
  *   var app = mach.stack();
  *
  *   // Forward all requests to example.com.
- *   app.use(mach.forward, 'http://www.example.com');
+ *   app.use(mach.proxy, 'http://www.example.com');
  *
  *   // Forward all requests that match "/images/*.jpg" to S3.
- *   app.use(mach.forward, 'http://s3.amazon.com/my-bucket', /\/images/*.jpg/);
+ *   app.use(mach.proxy, 'http://s3.amazon.com/my-bucket', /\/images/*.jpg/);
  *   
  *   mach.serve(app);
  */
-function forward(app, targetApp, test) {
+function proxy(app, targetApp, test) {
   test = test || returnTrue;
 
   if (isRegExp(test)) {
@@ -32,7 +32,7 @@ function forward(app, targetApp, test) {
       return pattern.test(conn.href);
     };
   } else if (typeof test !== 'function') {
-    throw new Error('mach.forward needs a test function');
+    throw new Error('mach.proxy needs a test function');
   }
 
   if (typeof targetApp !== 'function')
@@ -43,4 +43,4 @@ function forward(app, targetApp, test) {
   };
 }
 
-module.exports = forward;
+module.exports = proxy;

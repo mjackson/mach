@@ -1,3 +1,7 @@
+### HEAD
+
+  * Renamed mach.forward => mach.proxy
+
 ### 1.0.0-rc1
 
 Breaking changes:

@@ -1,7 +1,7 @@
 var mach = require('../index');
 
 mach.call = require('../utils/callApp');
-mach.proxy = require('../utils/createProxy');
+mach.createProxy = require('../utils/createProxy');
 
 var mergeProperties = require('../utils/mergeProperties');
 
