@@ -1,7 +1,7 @@
 var Location = require('../Location');
 var proxyRequest = require('./proxyRequest');
 
-var USER_AGENT_STRING = require('../index').USER_AGENT_STRING;
+var MACH_VERSION = require('../version');
 
 /**
  * A mach.proxy is a function that is used to proxy a connection to
@@ -19,7 +19,7 @@ function createProxy(location) {
     var headers = conn.request.headers;
 
     if (!headers['User-Agent'])
-      headers['User-Agent'] = USER_AGENT_STRING;
+      headers['User-Agent'] = 'mach/' + VERSION;
 
     return proxyRequest(conn, location);
   };
