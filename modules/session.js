@@ -1,9 +1,9 @@
 var d = require('d');
-var Promise = require('../utils/Promise');
-var decodeBase64 = require('../utils/decodeBase64');
-var encodeBase64 = require('../utils/encodeBase64');
-var makeHash = require('../utils/makeHash');
-var CookieStore = require('./CookieStore');
+var Promise = require('./utils/Promise');
+var decodeBase64 = require('./utils/decodeBase64');
+var encodeBase64 = require('./utils/encodeBase64');
+var makeHash = require('./utils/makeHash');
+var CookieStore = require('./session/CookieStore');
 
 /**
  * The maximum size of an HTTP cookie.
