@@ -38,23 +38,23 @@ app.get('/users/:id', function (conn) {
 
 The call to `app.use` above illustrates how middleware is used to compose applications. Mach ships with the following middleware:
 
-- `mach.basicAuth`: Provides authentication using [HTTP Basic auth](http://en.wikipedia.org/wiki/Basic_access_authentication)
-- `mach.catch`: Error handling at any position in the stack
-- `mach.contentType`: Provides a default [`Content-Type`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17)
-- `mach.favicon`: Handles requests for `/favicon.ico`
-- `mach.file`: Efficiently serves static files
-- `mach.gzip`: [Gzip](http://en.wikipedia.org/wiki/Gzip)-encodes response content for clients that `Accept: gzip`
-- `mach.logger`: Logs HTTP requests to the console
-- `mach.mapper`: Provides virtual host mapping, similar to [Apache's Virtual Hosts](http://httpd.apache.org/docs/2.2/vhosts/) or [nginx server blocks](http://nginx.org/en/docs/http/ngx_http_core_module.html#server)
-- `mach.methodOverride`: Overrides the HTTP method used in the request, for clients (like HTML forms) that don't support methods other than `GET` and `POST`
-- `mach.modified`: HTTP caching using [`Last-Modified`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.29) and [`ETag`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19)
-- `mach.params`: Multipart request parsing and handling
-- `mach.proxy`: Proxy request through to an alternate location
-- `mach.rewrite`: Rewrites request URLs on the fly, similar to [Apache's mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
-- `mach.router`: Request routing (ala [Sinatra](http://www.sinatrarb.com/)) based on the URL pathname
-- `mach.session`: HTTP sessions with pluggable storage including [memory](#) (for development and testing), [cookies](#), and [Redis](#)
-- `mach.stack`: Provides a `use` mechanism for composing applications fronted by middleware
-- `mach.token`: Cross-site request forgery protection
+- [`mach.basicAuth`](https://github.com/mjackson/mach/blob/master/modules/basicAuth.js): Provides authentication using [HTTP Basic auth](http://en.wikipedia.org/wiki/Basic_access_authentication)
+- [`mach.catch`](https://github.com/mjackson/mach/blob/master/modules/catch.js): Error handling at any position in the stack
+- [`mach.contentType`](https://github.com/mjackson/mach/blob/master/modules/contentType.js): Provides a default [`Content-Type`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17)
+- [`mach.favicon`](https://github.com/mjackson/mach/blob/master/modules/favicon.js): Handles requests for `/favicon.ico`
+- [`mach.file`](https://github.com/mjackson/mach/blob/master/modules/file.js): Efficiently serves static files
+- [`mach.gzip`](https://github.com/mjackson/mach/blob/master/modules/gzip.js): [Gzip](http://en.wikipedia.org/wiki/Gzip)-encodes response content for clients that `Accept: gzip`
+- [`mach.logger`](https://github.com/mjackson/mach/blob/master/modules/logger.js): Logs HTTP requests to the console
+- [`mach.mapper`](https://github.com/mjackson/mach/blob/master/modules/mapper.js): Provides virtual host mapping, similar to [Apache's Virtual Hosts](http://httpd.apache.org/docs/2.2/vhosts/) or [nginx server blocks](http://nginx.org/en/docs/http/ngx_http_core_module.html#server)
+- [`mach.methodOverride`](https://github.com/mjackson/mach/blob/master/modules/methodOverride.js): Overrides the HTTP method used in the request, for clients (like HTML forms) that don't support methods other than `GET` and `POST`
+- [`mach.modified`](https://github.com/mjackson/mach/blob/master/modules/modified.js): HTTP caching using [`Last-Modified`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.29) and [`ETag`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19)
+- [`mach.params`](https://github.com/mjackson/mach/blob/master/modules/params.js): Multipart request parsing and handling
+- [`mach.proxy`](https://github.com/mjackson/mach/blob/master/modules/proxy.js): Proxy request through to an alternate location
+- [`mach.rewrite`](https://github.com/mjackson/mach/blob/master/modules/rewrite.js): Rewrites request URLs on the fly, similar to [Apache's mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
+- [`mach.router`](https://github.com/mjackson/mach/blob/master/modules/router.js): Request routing (ala [Sinatra](http://www.sinatrarb.com/)) based on the URL pathname
+- [`mach.session`](https://github.com/mjackson/mach/blob/master/modules/session.js): HTTP sessions with pluggable storage including [memory](#) (for development and testing), [cookies](#), and [Redis](#)
+- [`mach.stack`](https://github.com/mjackson/mach/blob/master/modules/stack.js): Provides a `use` mechanism for composing applications fronted by middleware
+- [`mach.token`](https://github.com/mjackson/mach/blob/master/modules/token.js): Cross-site request forgery protection
 
 Please check out the source of a middleware file for detailed documentation on how to use it.
 
