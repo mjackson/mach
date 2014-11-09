@@ -14,10 +14,12 @@ function propertyGetter(propertyName) {
  *
  * - protocol
  * - auth
- * - hostname (required)
+ * - hostname
  * - port
  * - pathname
  * - search
+ *
+ * Alternatively, options may be a URL string.
  *
  * Note: This object is currently read-only.
  */
