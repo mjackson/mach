@@ -5,6 +5,16 @@ var stripQuotes = require('./utils/stripQuotes');
  * response to requests that use the If-None-Match and/or If-Modified-Since
  * headers. In order to work effectively, downstream apps must use the ETag
  * and/or Last-Modified headers.
+ *
+ * Example:
+ *
+ *   app.use(mach.modified);
+ *
+ *   // Send Last-Modified and ETag headers with static files.
+ *   app.use(mach.file, {
+ *     useLastModified: true, // this is the default
+ *     useETag: true
+ *   });
  */
 function modified(app) {
   return function (conn) {
