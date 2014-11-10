@@ -2,6 +2,7 @@ var fs = require('fs');
 var Promise = require('./utils/Promise');
 var defaultApp = require('./utils/defaultApp');
 var getFileStats = require('./utils/getFileStats');
+var generateIndex = require('./utils/generateIndex');
 var joinPaths = require('./utils/joinPaths');
 require('./server');
 
@@ -25,6 +26,9 @@ require('./server');
  * - index              An array of file names to try and serve when the
  *                      request targets a directory (e.g. ["index.html", "index.htm"]).
  *                      May simply be truthy to use ["index.html"]
+ * - autoIndex          Set this true to automatically generate an index page
+ *                      listing a directory's contents when the request targets
+ *                      a directory with no index file
  * - useLastModified    Set this true to include the Last-Modified header
  *                      based on the mtime of the file. Defaults to true
  * - useETag            Set this true to include the ETag header based on
@@ -57,19 +61,19 @@ function file(app, options) {
   if (typeof root !== 'string' || !fs.existsSync(root) || !fs.statSync(root).isDirectory())
     throw new Error('Invalid root directory: ' + root);
 
-  var indexFiles = options.index;
-  if (indexFiles) {
-    if (typeof indexFiles === 'string') {
-      indexFiles = [ indexFiles ];
-    } else if (!Array.isArray(indexFiles)) {
-      indexFiles = [ 'index.html' ];
+  var index = options.index || [];
+  if (index) {
+    if (typeof index === 'string') {
+      index = [ index ];
+    } else if (!Array.isArray(index)) {
+      index = [ 'index.html' ];
     }
   }
 
   var useLastModified = ('useLastModified' in options) ? !!options.useLastModified : true;
   var useETag = !!options.useETag;
 
-  function makeOptions(path) {
+  function makeFileOptions(path) {
     return {
       path: path,
       useLastModified: useLastModified,
@@ -91,22 +95,27 @@ function file(app, options) {
 
     return getFileStats(path).then(function (stats) {
       if (stats && stats.isFile())
-        return conn.file(makeOptions(path), stats);
+        return conn.file(makeFileOptions(path), stats);
 
-      if (!stats || (!stats.isDirectory() || !indexFiles))
+      if (!stats || !stats.isDirectory())
         return conn.call(app);
 
       // Try to serve one of the index files.
-      var indexPaths = indexFiles.map(function (indexPath) {
+      var indexPaths = index.map(function (indexPath) {
         return joinPaths(path, indexPath);
       });
 
       return Promise.all(indexPaths.map(getFileStats)).then(function (stats) {
         for (var i = 0, len = stats.length; i < len; ++i)
           if (stats[i])
-            return conn.file(makeOptions(indexPaths[i]), stats[i]);
+            return conn.file(makeFileOptions(indexPaths[i]), stats[i]);
 
-        return conn.call(app);
+        if (!options.autoIndex)
+          return conn.call(app);
+
+        return generateIndex(root, pathname, conn.basename).then(function (html) {
+          conn.html(html);
+        });
       });
     });
   };
