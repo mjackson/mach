@@ -18,7 +18,8 @@ describe('mach.mapper', function () {
   beforeEach(function () {
     app = createMapper({
       '/one': showInfo,
-      'http://example.org/two': showInfo
+      'http://example.org/two': showInfo,
+      'http://example.net/three': showInfo
     });
   });
 
@@ -55,6 +56,26 @@ describe('mach.mapper', function () {
           expect(conn.status).toEqual(200);
           expect(conn.response.headers['Basename']).toEqual('/two');
           expect(conn.response.headers['Pathname']).toEqual('/messages');
+        });
+      });
+
+      describe('and the request is on a different port', function () {
+        it('passes the request through to the mapping', function () {
+          return callApp(app, 'http://example.org:5000/two/messages').then(function (conn) {
+            expect(conn.status).toEqual(200);
+            expect(conn.response.headers['Basename']).toEqual('/two');
+            expect(conn.response.headers['Pathname']).toEqual('/messages');
+          });
+        });
+      });
+
+      describe('that was specified with a custom port', function () {
+        it('passes the request through to the mapping', function () {
+          return callApp(app, 'http://example.net/three/messages').then(function (conn) {
+            expect(conn.status).toEqual(200);
+            expect(conn.response.headers['Basename']).toEqual('/three');
+            expect(conn.response.headers['Pathname']).toEqual('/messages');
+          });
         });
       });
     });

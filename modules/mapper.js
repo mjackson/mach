@@ -64,15 +64,15 @@ function createMapper(app, map) {
   var mappings = [];
 
   function mapper(conn) {
+    var hostname = conn.hostname;
     var pathname = conn.pathname;
-    var host = conn.host;
 
     var mapping, match, remainingPath;
     for (var i = 0, len = mappings.length; i < len; ++i) {
       mapping = mappings[i];
 
-      // Try to match the host.
-      if (mapping.host && mapping.host !== host)
+      // Try to match the hostname.
+      if (mapping.hostname && mapping.hostname !== hostname)
         continue;
 
       // Try to match the path.
@@ -101,12 +101,12 @@ function createMapper(app, map) {
     map: d(function (location, app) {
       app = app || defaultApp;
 
-      var host, path;
+      var hostname, path;
 
       // If the location is a fully qualified URL use the host as well.
       var match = location.match(/^https?:\/\/(.*?)(\/.*)/);
       if (match) {
-        host = match[1];
+        hostname = match[1].replace(/:\d+$/, ''); // Strip the port.
         path = match[2];
       } else {
         path = location;
@@ -120,7 +120,7 @@ function createMapper(app, map) {
       var pattern = new RegExp('^' + escapeRegExp(path).replace(/\/+/g, '/+') + '(.*)');
 
       mappings.push({
-        host: host,
+        hostname: hostname,
         path: path,
         pattern: pattern,
         app: app
