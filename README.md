@@ -54,7 +54,7 @@ The call to `app.use` above illustrates how middleware is used to compose applic
 - [`mach.proxy`](https://github.com/mjackson/mach/blob/master/modules/proxy.js): Proxy request through to an alternate location
 - [`mach.rewrite`](https://github.com/mjackson/mach/blob/master/modules/rewrite.js): Rewrites request URLs on the fly, similar to [Apache's mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
 - [`mach.router`](https://github.com/mjackson/mach/blob/master/modules/router.js): Request routing (ala [Sinatra](http://www.sinatrarb.com/)) based on the URL pathname
-- [`mach.session`](https://github.com/mjackson/mach/blob/master/modules/session.js): HTTP sessions with pluggable storage including [memory](#) (for development and testing), [cookies](#), and [Redis](#)
+- [`mach.session`](https://github.com/mjackson/mach/blob/master/modules/session.js): HTTP sessions with pluggable storage including [memory](https://github.com/mjackson/mach/blob/master/modules/MemoryStore.js) (for development and testing), [cookies](https://github.com/mjackson/mach/blob/master/modules/CookieStore.js), and [Redis](https://github.com/mjackson/mach/blob/master/modules/RedisStore.js)
 - [`mach.stack`](https://github.com/mjackson/mach/blob/master/modules/stack.js): Provides a `use` mechanism for composing applications fronted by middleware
 - [`mach.token`](https://github.com/mjackson/mach/blob/master/modules/token.js): Cross-site request forgery protection
 
