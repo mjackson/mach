@@ -27,7 +27,7 @@ function modified(app) {
 
         if (etag && etag === stripQuotes(ifNoneMatch)) {
           conn.status = 304;
-          conn.response.content = '';
+          response.content = '';
           return;
         }
       }
@@ -41,7 +41,7 @@ function modified(app) {
 
         if (lastModified <= Date.parse(ifModifiedSince)) {
           conn.status = 304;
-          conn.response.content = '';
+          response.content = '';
         }
       }
     });
