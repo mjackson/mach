@@ -1,6 +1,6 @@
 var d = require('d');
-var Promise = require('../utils/Promise');
-var makeToken = require('../utils/makeToken');
+var makeToken = require('./utils/makeToken');
+var Promise = require('./utils/Promise');
 
 function makeUniqueKey(sessions, keyLength) {
   var key;

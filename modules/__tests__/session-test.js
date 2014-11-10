@@ -1,8 +1,8 @@
 var assert = require('assert');
 var expect = require('expect');
 var callApp = require('../utils/callApp');
-var CookieStore = require('../session/CookieStore');
-var MemoryStore = require('../session/MemoryStore');
+var CookieStore = require('../CookieStore');
+var MemoryStore = require('../MemoryStore');
 var session = require('../session');
 
 function counter(request) {

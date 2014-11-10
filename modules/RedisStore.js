@@ -1,8 +1,8 @@
 var d = require('d');
 var redis = require('redis');
-var Promise = require('../utils/Promise');
-var makeToken = require('../utils/makeToken');
-var parseURL = require('../utils/parseURL');
+var makeToken = require('./utils/makeToken');
+var Promise = require('./utils/Promise');
+var parseURL = require('./utils/parseURL');
 
 function sendCommand(client, command, args) {
   args = args || [];
