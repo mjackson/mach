@@ -33,13 +33,7 @@ function makeUniqueKey(client, keyLength) {
 /**
  * Server-side storage for sessions using Redis.
  *
- * Note: This store always checks for availability of keys in Redis before
- * using them, so it should be safe to use alongside other programs that are
- * using the same database. However, if you purge the store of all keys it will
- * issue a FLUSHDB command to the database, so be careful. This operation never
- * happens automatically.
- *
- * Accepts the following options:
+ * Options may be any of the following:
  *
  * - url              The URL of the Redis instance
  * - keyLength        The length (in bytes) that will be used for unique
@@ -48,6 +42,20 @@ function makeUniqueKey(client, keyLength) {
  *                    Defaults to 0 (no expiration)
  *
  * Additionally, all options are passed through to `redis.createClient`.
+ *
+ * Example:
+ *
+ *   var RedisStore = require('mach/modules/RedisStore');
+ *
+ *   app.use(mach.session, {
+ *     store: new RedisStore({ url: 'redis://127.0.0.1:6379' })
+ *   });
+ *
+ * Note: This store always checks for availability of keys in Redis before
+ * using them, so it should be safe to use alongside other programs that are
+ * using the same database. However, if you purge the store of all keys it will
+ * issue a FLUSHDB command to the database, so be careful. This operation never
+ * happens automatically.
  */
 function RedisStore(options) {
   options = options || {};
@@ -65,14 +73,14 @@ Object.defineProperties(RedisStore.prototype, {
     if (!this._client) {
       var options = this.options;
 
-      var port, host;
+      var hostname, port;
       if (typeof options.url === 'string') {
         var parsedURL = parseURL(options.url);
+        hostname = parsedURL.hostname;
         port = parsedURL.port;
-        host = parsedURL.hostname;
       }
 
-      this._client = redis.createClient(port, host, options);
+      this._client = redis.createClient(port, hostname, options);
     }
 
     return this._client;

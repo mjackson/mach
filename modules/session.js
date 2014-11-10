@@ -50,7 +50,7 @@ function makeHashWithSecret(data, secret) {
 /**
  * A middleware that provides support for HTTP sessions using cookies.
  *
- * Accepts the following options:
+ * Options may be any of the following:
  *
  * - secret         A cryptographically secure secret key that will be used to verify
  *                  the integrity of session data that is received from the client
@@ -62,9 +62,20 @@ function makeHashWithSecret(data, secret) {
  *                  to 0 (no expiration)
  * - httpOnly       True to restrict access to this cookie to HTTP(S) APIs.
  *                  Defaults to true
- * - store          An instance of a mach.session.Store subclass that is used
- *                  to store session data. Defaults to a new instance of
- *                  mach.session.CookieStore
+ * - store          An instance of MemoryStore, CookieStore, or RedisStore that
+ *                  is used to store session data. Defaults to a new CookieStore
+ *
+ * Example:
+ *
+ *   app.use(mach.session, {
+ *     secret: 'the-secret',
+ *     secure: true
+ *   });
+ *
+ * Hint: A great way to generate a cryptographically secure session secret from
+ * the command line:
+ *
+ *   $ node -p "require('crypto').randomBytes(64).toString('hex')"
  *
  * Note: Since cookies are only able to reliably store about 4k of data, if the
  * session cookie payload exceeds that the session will be dropped.
