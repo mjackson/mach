@@ -86,6 +86,26 @@ mach.get({
 });
 ```
 
+### Proxies
+
+Because all Mach applications share the same signature, it's easy to combine them in interesting ways. Mach's HTTP proxy implementation illustrates this beautifully: a proxy is simply an application that forwards the request somewhere else.
+
+```js
+var proxyApp = mach.createProxy('http://twitter.com');
+
+// In a server environment we can use the mach.proxy middleware
+// to proxy all requests to the proxy's location.
+app.use(mach.proxy, proxyApp);
+
+// In a client application we can call the proxy directly to
+// send a request to the proxy's location.
+mach.post(proxyApp, {
+  params: {
+    username: 'mjackson'
+  }
+});
+```
+
 ### Installation
 
 Using [npm](https://www.npmjs.org/):
