@@ -9,8 +9,9 @@ function propertyGetter(propertyName) {
 }
 
 /**
- * A URL location, analogous to window.location. The options may
- * be a URL string or an object with any of the following properties:
+ * A URL location, analogous to window.location.
+ *
+ * Options may be any of the following:
  *
  * - protocol
  * - auth

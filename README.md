@@ -20,7 +20,9 @@ mach.serve(function (conn) {
 });
 ```
 
-Responses can be deferred using JavaScript promises. Simply return a promise from your app that resolves when the response is ready.
+All mach applications receive a single argument: a [Connection](https://github.com/mjackson/mach/blob/master/modules/Connection.js) object. This object contains information about both the request and the response, as well as metadata including the `method` used in the request, the [location](https://github.com/mjackson/mach/blob/master/modules/Location.js) of the request, the `status` of the response, and some helper methods.
+
+Applications can send responses asynchronously using JavaScript promises. Simply return a promise from your app that resolves when the response is ready.
 
 ```js
 var app = mach.stack();
