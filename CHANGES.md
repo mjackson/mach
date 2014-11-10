@@ -1,6 +1,7 @@
 ### HEAD
 
   * Renamed mach.forward => mach.proxy
+  * Use mime.types from nginx instead of mime module
 
 ### 1.0.0-rc1
 
