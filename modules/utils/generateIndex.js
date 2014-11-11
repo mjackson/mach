@@ -70,7 +70,6 @@ function generateIndex(root, pathname, basename) {
             return; // Ignore broken symlinks!
 
           var file = files[index];
-          var name = joinPaths(path, file);
           var url = basename + pathname + file;
           var mtime = stats.mtime;
 
