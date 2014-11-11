@@ -1,3 +1,5 @@
+/* jshint -W084 */
+
 var d = require('d');
 var compileRoute = require('./utils/compileRoute');
 var defaultApp = require('./utils/defaultApp');

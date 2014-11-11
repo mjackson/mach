@@ -26,8 +26,9 @@ function CookieStore(options) {
 Object.defineProperties(CookieStore.prototype, {
 
   load: d(function (value) {
+    var session;
     try {
-      var session = JSON.parse(value);
+      session = JSON.parse(value);
     } catch (error) {
       // Ignore invalid JSON data.
       return Promise.resolve({});

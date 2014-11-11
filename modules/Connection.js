@@ -1,3 +1,5 @@
+/* jshint -W058 */
+
 var d = require('d');
 var isBinary = require('./utils/isBinary');
 var createProxy = require('./utils/createProxy');
