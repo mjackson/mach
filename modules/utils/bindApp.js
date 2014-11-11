@@ -1,3 +1,5 @@
+/* jshint -W058 */
+
 var Connection = require('../Connection');
 var Location = require('../Location');
 

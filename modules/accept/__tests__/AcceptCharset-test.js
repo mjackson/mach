@@ -1,3 +1,5 @@
+/* jshint -W058 */
+
 var assert = require('assert');
 var expect = require('expect');
 var AcceptCharset = require('../AcceptCharset');

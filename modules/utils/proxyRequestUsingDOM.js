@@ -1,3 +1,5 @@
+/* jshint -W058 */
+
 var XMLHttpRequest = window.XMLHttpRequest;
 var Stream = require('bufferedstream');
 var AbortablePromise = require('./AbortablePromise');
