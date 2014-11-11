@@ -55,8 +55,7 @@ function Parser(boundary, partHandler) {
 }
 
 Parser.prototype.execute = function (chunk) {
-  var self = this,
-      chunkLength = chunk.length,
+  var chunkLength = chunk.length,
       prevIndex = this.index,
       index = this.index,
       state = this.state,
@@ -76,7 +75,7 @@ Parser.prototype.execute = function (chunk) {
     case S.START:
       index = 0;
       state = S.START_BOUNDARY;
-      // fall through
+      /* falls through */
     case S.START_BOUNDARY:
       if (index == boundaryLength - 2) {
         if (c != CR) {
@@ -103,7 +102,7 @@ Parser.prototype.execute = function (chunk) {
       state = S.HEADER_FIELD;
       this._mark('headerName', i);
       index = 0;
-      // fall through
+      /* falls through */
     case S.HEADER_FIELD:
       if (c == CR) {
         this._clear('headerName');
@@ -137,7 +136,7 @@ Parser.prototype.execute = function (chunk) {
       }
       this._mark('headerValue', i);
       state = S.HEADER_VALUE;
-      // fall through
+      /* falls through */
     case S.HEADER_VALUE:
       if (c == CR) {
         this._dataCallback('headerValue', chunk, true, i);
@@ -159,13 +158,13 @@ Parser.prototype.execute = function (chunk) {
       state = S.PART_DATA_START;
       break;
     case S.PART_DATA_START:
-      state = S.PART_DATA
+      state = S.PART_DATA;
       this._mark('partData', i);
-      // fall through
+      /* falls through */
     case S.PART_DATA:
       prevIndex = index;
 
-      if (index == 0) {
+      if (index === 0) {
         // boyer-moore derrived algorithm to safely skip non-boundary data
         i += boundaryEnd;
         while (i < chunkLength && !(chunk[i] in boundaryChars)) {
@@ -177,7 +176,7 @@ Parser.prototype.execute = function (chunk) {
 
       if (index < boundaryLength) {
         if (boundary[index] == c) {
-          if (index == 0) {
+          if (index === 0) {
             this._dataCallback('partData', chunk, true, i);
           }
           index++;
