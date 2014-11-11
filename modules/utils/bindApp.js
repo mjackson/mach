@@ -1,5 +1,6 @@
 var Connection = require('../Connection');
 var Location = require('../Location');
+var injectCharSetIntoHeaders = require("../contentCharSet").asInjector;
 
 /**
  * HTTP status codes that don't have entities.
@@ -132,6 +133,12 @@ function bindApp(app, nodeServer) {
 
       if (!headers['Date'])
         headers['Date'] = (new Date).toUTCString();
+
+      injectCharSetIntoHeaders(
+        {
+          headers: headers,
+        }
+      );
 
       nodeResponse.writeHead(conn.status, headers);
 
