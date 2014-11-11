@@ -1,11 +1,11 @@
 var d = require('d');
 var isBinary = require('./utils/isBinary');
 var createProxy = require('./utils/createProxy');
-var StatusCodes = require('./utils/StatusCodes');
 var decodeBase64 = require('./utils/decodeBase64');
 var encodeBase64 = require('./utils/encodeBase64');
 var stringifyQuery = require('./utils/stringifyQuery');
 var Promise = require('./utils/Promise');
+var StatusCodes = require('./StatusCodes');
 var Location = require('./Location');
 var Message = require('./Message');
 

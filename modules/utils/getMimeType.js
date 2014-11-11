@@ -1,4 +1,4 @@
-var MimeTypes = require('./MimeTypes');
+var MimeTypes = require('../MimeTypes');
 
 var ExtTypes = {};
 

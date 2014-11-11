@@ -1,4 +1,7 @@
-{
+/**
+ * A map of MIME types to file extensions that correspond to that type.
+ */
+module.exports = {
   "text/html"                           : [ "html", "htm", "shtml" ],
   "text/css"                            : [ "css" ],
   "text/xml"                            : [ "xml" ],
@@ -81,4 +84,4 @@
   "video/x-ms-asf"                      : [ "asx", "asf" ],
   "video/x-ms-wmv"                      : [ "wmv" ],
   "video/x-msvideo"                     : [ "avi" ]
-}
+};
