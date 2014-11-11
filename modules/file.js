@@ -10,16 +10,6 @@ require('./server');
  * A middleware for serving files efficiently from the file system according
  * to the path specified in the `pathname` variable.
  *
- *   // Use the root directory name directly.
- *   app.use(mach.file, '/public');
- *
- *   // Or use a hash of options.
- *   app.use(mach.file, {
- *     root: '/public',
- *     index: 'index.html',
- *     useETag: true
- *   });
- *
  * Options may be any of the following:
  *
  * - root               The path to the root directory to serve files from
@@ -34,8 +24,33 @@ require('./server');
  * - useETag            Set this true to include the ETag header based on
  *                      the MD5 checksum of the file. Defaults to false
  *
+ * Alternatively, options may be a file path to the root directory.
+ *
  * If a matching file cannot be found, the request is forwarded to the
  * downstream app. Otherwise, the file is streamed through to the response.
+ *
+ * Examples:
+ *
+ *   // Use the root directory name directly.
+ *   app.use(mach.file, '/public');
+ *
+ *   // Serve static files out of /public, and automatically
+ *   // serve an index.htm from any directory that has one.
+ *   app.use(mach.file, {
+ *     root: '/public',
+ *     index: 'index.htm',
+ *     useETag: true
+ *   });
+ *
+ *   // Serve static files out of /public, and automatically
+ *   // serve an index.html from any directory that has one.
+ *   // Also, automatically generate a directory listing for
+ *   // any directory without an index.html file.
+ *   app.use(mach.file, {
+ *     root: '/public',
+ *     index: true,
+ *     autoIndex: true
+ *   });
  *
  * This function may also be used outside of the context of a middleware
  * stack to create a standalone app.
