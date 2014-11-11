@@ -1,4 +1,3 @@
-var d = require('d');
 var Promise = require('./utils/Promise');
 var decodeBase64 = require('./utils/decodeBase64');
 var encodeBase64 = require('./utils/encodeBase64');

@@ -1,5 +1,5 @@
 /**
- * A map of HTTP status codes to their descriptions.
+ * A map of HTTP status codes to their "status text".
  */
 module.exports = {
   100: 'Continue',

@@ -1,12 +1,11 @@
-var MimeTypes = require('./MimeTypes');
-
+var MimeTypes = require('../MimeTypes');
 var ExtTypes = {};
 
-for (var type in MimeTypes) {
+Object.keys(MimeTypes).forEach(function (type) {
   MimeTypes[type].forEach(function (ext) {
     ExtTypes[ext] = type;
   });
-}
+});
 
 var DEFAULT_TYPE = 'application/octet-stream';
 var EXT_MATCHER = /\.(\w+)$/;

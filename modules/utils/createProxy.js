@@ -19,7 +19,7 @@ function createProxy(location) {
     var headers = conn.request.headers;
 
     if (!headers['User-Agent'])
-      headers['User-Agent'] = 'mach/' + VERSION;
+      headers['User-Agent'] = 'mach/' + MACH_VERSION;
 
     return proxyRequest(conn, location);
   };

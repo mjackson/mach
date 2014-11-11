@@ -1,5 +1,7 @@
 ### HEAD
 
+  * Add autoIndex option to mach.file to automatically generate a directory listing
+    when a directory is targeted in the request
   * Renamed mach.forward => mach.proxy
   * Use mime.types from nginx instead of mime module
 

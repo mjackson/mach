@@ -52,5 +52,5 @@ describe('compileRoute', function () {
       assert(!re.exec('/user$/5'));
       assert(re.exec('/user$/^5'));
     });
-  })
+  });
 });

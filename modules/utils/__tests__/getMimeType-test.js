@@ -1,5 +1,5 @@
 var expect = require('expect');
-var MimeTypes = require('../MimeTypes');
+var MimeTypes = require('../../MimeTypes');
 var getMimeType = require('../getMimeType');
 
 describe('getMimeType', function () {
