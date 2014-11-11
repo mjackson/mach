@@ -33,6 +33,14 @@ var HEADER_SEPARATOR = ': ';
 function Message(content, headers) {
   this.headers = headers;
   this.content = content;
+
+  // The HTTP spec overloads some headers with multiple pieces of information
+  // (like `Content-Type` containing both a MIME type and a char set).
+  //
+  // To allay bugs creeping in due to these things being set out-of-order,
+  // those pieces can be stored here while the middleware is processed, and then
+  // reconciled in bindApp
+  this._partialHeaders = {};
 }
 
 Object.defineProperties(Message.prototype, {

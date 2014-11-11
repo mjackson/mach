@@ -3,38 +3,17 @@
  * one hasn't already been set in a downstream app.
  */
 
-function injectCharSetIntoHeaders(argumentDict) {
-  var charSet = argumentDict['charSet'] || 'utf-8';
-  var headers = argumentDict['headers'];
-
-  if (!headers)
-    throw new Error("injectCharSetIntoHeaders requires `headers`.");
-
-  if (!headers['Content-Type'])
-    throw new Error("contentCharSet must be called after contentType.");
-
-  if (headers['Content-Type'].indexOf("charset") === -1) {
-    headers['Content-Type'] += "; charset=" + charSet;
-
-  } else {
-    console.warn(charSet + " not injected because " + headers['Content-Type'] + " already has a charSet.");
-  }
-}
-
 function contentCharSet(app, charSet) {
   return function (conn) {
     return conn.call(app).then(function () {
-      injectCharSetIntoHeaders(
-        {
-          charSet: charSet,
-          headers: conn.response.headers
-        }
-      );
+      if (charSet) {
+        // The actual header is written at the last possible moment in bindApp
+        // so we don't have to worry about being clobbered by someone setting
+        // Content-Type after this has already run
+        conn.response._partialHeaders['charSet'] = charSet;
+      }
     });
   };
 }
 
-module.exports = {
-  asMiddleware: contentCharSet,
-  asInjector: injectCharSetIntoHeaders
-};
+module.exports = contentCharSet;

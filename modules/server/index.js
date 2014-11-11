@@ -8,7 +8,7 @@ mach.serve            = require('../utils/serveApp');
 
 mach.basicAuth        = require('../basicAuth');
 mach.catch            = require('../catch');
-mach.contentCharSet   = require('../contentCharSet').asMiddleware;
+mach.contentCharSet   = require('../contentCharSet');
 mach.contentType      = require('../contentType');
 mach.favicon          = require('../favicon');
 mach.file             = require('../file');

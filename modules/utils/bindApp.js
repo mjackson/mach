@@ -1,6 +1,5 @@
 var Connection = require('../Connection');
 var Location = require('../Location');
-var injectCharSetIntoHeaders = require("../contentCharSet").asInjector;
 
 /**
  * HTTP status codes that don't have entities.
@@ -125,8 +124,10 @@ function bindApp(app, nodeServer) {
     conn.call(app).then(function (response) {
       var isHead = conn.method === 'HEAD';
       var isEmpty = isHead || STATUS_WITHOUT_CONTENT[conn.status] === true;
+
       var headers = conn.response.headers;
       var content = conn.response.content;
+      var partialHeaders = conn.response._partialHeaders;
 
       if (isEmpty && !isHead)
         headers['Content-Length'] = 0;
@@ -134,11 +135,15 @@ function bindApp(app, nodeServer) {
       if (!headers['Date'])
         headers['Date'] = (new Date).toUTCString();
 
-      injectCharSetIntoHeaders(
-        {
-          headers: headers,
-        }
-      );
+      if (!partialHeaders['charSet'])
+        partialHeaders['charSet'] = "utf-8";
+
+      if (headers['Content-Type']) {
+        headers['Content-Type'] += "; charset=" + partialHeaders['charSet'];
+        delete partialHeaders['charSet'];
+      }
+
+      delete conn.response['_partialHeaders'];
 
       nodeResponse.writeHead(conn.status, headers);
 
