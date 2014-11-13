@@ -1,5 +1,6 @@
 var d = require('d');
 var Stream = require('bufferedstream');
+var ContentType = require('./ContentType');
 var binaryTo = require('./utils/binaryTo');
 var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
@@ -136,7 +137,20 @@ Object.defineProperties(Message.prototype, {
   contentType: d.gs(function () {
     return this.headers['Content-Type'];
   }, function (value) {
-    this.headers['Content-Type'] = value;
+    if (value.constructor === String) {
+      // Try not to accidentally clobber charset
+      if (value.indexOf(";") !== -1) {
+        this.headers['Content-Type'] = new ContentType(value);
+
+      } else {
+        this.mediaType = value;
+      }
+    } else if (value.constructor === ContentType) {
+      this.headers['Content-Type'] = value;
+
+    } else {
+      throw new Error("Message.contentType doesn't know how to parse " + value.constructor.name);
+    }
   }),
 
   /**
@@ -150,7 +164,13 @@ Object.defineProperties(Message.prototype, {
     var contentType = this.contentType;
 
     if (contentType)
-      return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+      return contentType.mediaType;
+
+  }, function (value) {
+    if (!this.headers['Content-Type'])
+      this.headers['Content-Type'] = new ContentType();
+
+    this.headers['Content-Type'].mediaType = value;
   }),
 
   /**
@@ -160,10 +180,16 @@ Object.defineProperties(Message.prototype, {
    * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.4
    */
   charset: d.gs(function () {
-    var contentType = this.contentType, match;
+    var contentType = this.contentType;
 
-    if (contentType && (match = contentType.match(/charset=([\w-]+)/)))
-      return match[1];
+    if (contentType)
+      return contentType.charset;
+
+  }, function (value) {
+    if (!this.headers['Content-Type'])
+      this.headers['Content-Type'] = new ContentType();
+
+    this.headers['Content-Type'].charset = value;
   }),
 
   /**

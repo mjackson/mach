@@ -8,13 +8,13 @@ mach.serve            = require('../utils/serveApp');
 
 mach.basicAuth        = require('../basicAuth');
 mach.catch            = require('../catch');
-mach.contentCharSet   = require('../contentCharSet');
-mach.contentType      = require('../contentType');
+mach.charset          = require('../charset');
 mach.favicon          = require('../favicon');
 mach.file             = require('../file');
 mach.gzip             = require('../gzip');
 mach.logger           = require('../logger');
 mach.mapper           = require('../mapper');
+mach.mediaType        = require('../mediaType');
 mach.methodOverride   = require('../methodOverride');
 mach.modified         = require('../modified');
 mach.params           = require('../params');
