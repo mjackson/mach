@@ -39,7 +39,7 @@ describe('Message', function () {
   describe('addHeader', function () {
     it('normalizes header names', function () {
       message.addHeader('content-type', 'text/html');
-      expect(message.headers['Content-Type']).toEqual('text/html');
+      expect(message.mediaType).toEqual('text/html');
     });
 
     describe('when the header has not been previously set', function () {

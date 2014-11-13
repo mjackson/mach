@@ -90,7 +90,7 @@ function Connection(options) {
     if (this.method === 'GET' || this.method === 'HEAD') {
       this.location.properties.search = '?' + queryString;
     } else {
-      this.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      this.request.mediaType = 'application/x-www-form-urlencoded';
       this.request.content = queryString;
     }
   }
