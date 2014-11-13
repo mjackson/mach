@@ -129,23 +129,12 @@ function bindApp(app, nodeServer) {
 
       var headers = conn.response.headers;
       var content = conn.response.content;
-      var partialHeaders = conn.response._partialHeaders;
 
       if (isEmpty && !isHead)
         headers['Content-Length'] = 0;
 
       if (!headers['Date'])
         headers['Date'] = (new Date).toUTCString();
-
-      if (!partialHeaders['charSet'])
-        partialHeaders['charSet'] = "utf-8";
-
-      if (headers['Content-Type']) {
-        headers['Content-Type'] += "; charset=" + partialHeaders['charSet'];
-        delete partialHeaders['charSet'];
-      }
-
-      delete conn.response['_partialHeaders'];
 
       nodeResponse.writeHead(conn.status, headers);
 
