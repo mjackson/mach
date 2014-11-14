@@ -1,9 +1,11 @@
 ### HEAD
 
+  * Add mach.charset middleware for automatically setting the response charset
   * Add autoIndex option to mach.file to automatically generate a directory listing
     when a directory is targeted in the request
   * Renamed mach.forward => mach.proxy
   * Use mime.types from nginx instead of mime module
+  * Fixed a bug in conn.json response helper
 
 ### 1.0.0-rc1
 

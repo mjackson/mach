@@ -154,7 +154,7 @@ Object.defineProperties(Message.prototype, {
   charset: d.gs(function () {
     var contentType = this.contentType, match;
 
-    if (contentType && (match = contentType.match(/charset=([\w-]+)/)))
+    if (contentType && (match = contentType.match(/\bcharset=([\w-]+)/)))
       return match[1];
   }),
 
