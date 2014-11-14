@@ -67,7 +67,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'image/png');
+      assert.equal(parts.files.mediaType, 'image/png');
     });
 
     it("correctly parses the file's contents", function () {
@@ -92,7 +92,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'text/plain');
+      assert.equal(parts.files.mediaType, 'text/plain');
     });
 
     it("correctly parses the file's contents", function () {
@@ -111,7 +111,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'text/plain');
+      assert.equal(parts.files.mediaType, 'text/plain');
     });
 
     it("correctly parses the file's contents", function () {
@@ -153,7 +153,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'application/octet-stream');
+      assert.equal(parts.files.mediaType, 'application/octet-stream');
     });
 
     it("correctly parses the file's contents", function () {
@@ -172,7 +172,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'application/octet-stream');
+      assert.equal(parts.files.mediaType, 'application/octet-stream');
     });
 
     it("correctly parses the file's contents", function () {
@@ -191,7 +191,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'application/octet-stream');
+      assert.equal(parts.files.mediaType, 'application/octet-stream');
     });
 
     it("correctly parses the file's contents", function () {
@@ -210,7 +210,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'image/jpeg');
+      assert.equal(parts.files.mediaType, 'image/jpeg');
     });
 
     it("correctly parses the file's contents", function () {
@@ -229,7 +229,7 @@ describe('Parser', function () {
 
     it('correctly parses the file content type', function () {
       assert(parts.files);
-      assert.equal(parts.files.contentType, 'image/jpeg');
+      assert.equal(parts.files.mediaType, 'image/jpeg');
     });
 
     it("correctly parses the file's contents", function () {

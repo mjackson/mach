@@ -36,10 +36,17 @@ describe('Message', function () {
     });
   });
 
+  describe('setHeader', function () {
+    it('normalizes header names', function () {
+      message.setHeader('content-type', 'text/html');
+      expect(message.mediaType).toEqual('text/html');
+    });
+  });
+
   describe('addHeader', function () {
     it('normalizes header names', function () {
-      message.addHeader('content-type', 'text/html');
-      expect(message.mediaType).toEqual('text/html');
+      message.addHeader('accept-charset', 'utf-8');
+      expect(message.headers["Accept-Charset"]).toEqual('utf-8');
     });
 
     describe('when the header has not been previously set', function () {

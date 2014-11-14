@@ -34,6 +34,14 @@ var HEADER_SEPARATOR = ': ';
 function Message(content, headers) {
   this.headers = headers;
   this.content = content;
+
+  if (headers && headers.hasOwnProperty('Content-Type')) {
+    // Don't let a string occupy headers['Content-Type']
+    var contentType = headers['Content-Type'];
+    delete this.headers['Content-Type'];
+
+    this.contentType = contentType;
+  }
 }
 
 Object.defineProperties(Message.prototype, {
@@ -41,33 +49,47 @@ Object.defineProperties(Message.prototype, {
   /**
    * The headers of this message as { headerName, value }.
    */
-  headers: d.gs(function () {
-    return this._headers;
-  }, function (value) {
-    this._headers = {};
+  headers: d.gs(
+    function () {
+      return this._headers;
+    },
 
-    if (typeof value === 'string') {
-      value.split(HEADERS_LINE_SEPARATOR).forEach(function (line) {
-        var index = line.indexOf(HEADER_SEPARATOR);
+    function (value) {
+      this._headers = {};
 
-        if (index === -1) {
-          this.addHeader(line, true);
-        } else {
-          this.addHeader(line.substring(0, index), line.substring(index + HEADER_SEPARATOR.length));
-        }
-      }, this);
-    } else if (value != null) {
-      for (var headerName in value)
-        if (value.hasOwnProperty(headerName))
-          this.addHeader(headerName, value[headerName]);
+      if (typeof value === 'string') {
+        value.split(HEADERS_LINE_SEPARATOR).forEach(function (line) {
+          var index = line.indexOf(HEADER_SEPARATOR);
+
+          if (index === -1) {
+            this.addHeader(line, true);
+          } else {
+            this.addHeader(line.substring(0, index), line.substring(index + HEADER_SEPARATOR.length));
+          }
+        }, this);
+      } else if (value != null) {
+        for (var headerName in value)
+          if (value.hasOwnProperty(headerName))
+            this.addHeader(headerName, value[headerName]);
+      }
     }
-  }),
+  ),
 
   /**
    * Sets the value of a header.
    */
   setHeader: d(function (headerName, value) {
-    this.headers[normalizeHeaderName(headerName)] = value;
+    headerName = normalizeHeaderName(headerName);
+
+    switch (headerName) {
+      case "Content-Type":
+        this.contentType = value;
+        break;
+
+      default:
+        this.headers[headerName] = value;
+        break;
+    }
   }),
 
   /**
@@ -126,24 +148,28 @@ Object.defineProperties(Message.prototype, {
   /**
    * Gets/sets the value of the Content-Type header.
    */
-  contentType: d.gs(function () {
-    return this.headers['Content-Type'];
-  }, function (value) {
-    if (value.constructor === String) {
-      // Try not to accidentally clobber charset
-      if (value.indexOf(";") !== -1) {
-        this.headers['Content-Type'] = new ContentType(value);
+  contentType: d.gs(
+    function () {
+      return this.headers['Content-Type'];
+    },
+
+    function (value) {
+      if (value.constructor === String) {
+        // Try not to accidentally clobber charset
+        if (value.indexOf(";") !== -1) {
+          this.headers['Content-Type'] = new ContentType(value);
+
+        } else {
+          this.mediaType = value;
+        }
+      } else if (value.constructor === ContentType) {
+        this.headers['Content-Type'] = value;
 
       } else {
-        this.mediaType = value;
+        throw new Error("Message.contentType doesn't know how to parse " + value.constructor.name);
       }
-    } else if (value.constructor === ContentType) {
-      this.headers['Content-Type'] = value;
-
-    } else {
-      throw new Error("Message.contentType doesn't know how to parse " + value.constructor.name);
     }
-  }),
+  ),
 
   /**
    * The media type (type/subtype) portion of the Content-Type header without any
@@ -152,18 +178,21 @@ Object.defineProperties(Message.prototype, {
    *
    * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
    */
-  mediaType: d.gs(function () {
-    var contentType = this.contentType;
+  mediaType: d.gs(
+    function () {
+      var contentType = this.contentType;
 
-    if (contentType)
-      return contentType.mediaType;
+      if (contentType)
+        return contentType.mediaType;
+    },
 
-  }, function (value) {
-    if (!this.headers['Content-Type'])
-      this.headers['Content-Type'] = new ContentType();
+    function (value) {
+      if (!this.headers['Content-Type'])
+        this.headers['Content-Type'] = new ContentType();
 
-    this.headers['Content-Type'].mediaType = value;
-  }),
+      this.headers['Content-Type'].mediaType = value;
+    }
+  ),
 
   /**
    * Returns the character set used to encode the content of this message. e.g.
@@ -171,37 +200,44 @@ Object.defineProperties(Message.prototype, {
    *
    * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.4
    */
-  charset: d.gs(function () {
-    var contentType = this.contentType;
+  charset: d.gs(
+    function () {
+      var contentType = this.contentType;
 
-    if (contentType)
-      return contentType.charset;
+      if (contentType)
+        return contentType.charset;
+    },
 
-  }, function (value) {
-    if (!this.headers['Content-Type'])
-      this.headers['Content-Type'] = new ContentType();
+    function (value) {
+      if (!this.headers['Content-Type'])
+        this.headers['Content-Type'] = new ContentType();
 
-    this.headers['Content-Type'].charset = value;
-  }),
+      this.headers['Content-Type'].charset = value;
+    }
+  ),
 
   /**
    * The content of this message as a binary stream.
    */
-  content: d.gs(function () {
-    return this._content;
-  }, function (value) {
-    if (value == null)
-      value = DEFAULT_CONTENT;
+  content: d.gs(
+    function () {
+      return this._content;
+    },
 
-    if (value instanceof Stream) {
-      this._content = value;
-      value.pause();
-    } else {
-      this._content = new Stream(value);
+    function (value) {
+      if (value == null)
+        value = DEFAULT_CONTENT;
+
+      if (value instanceof Stream) {
+        this._content = value;
+        value.pause();
+      } else {
+        this._content = new Stream(value);
+      }
+
+      delete this._bufferedContent;
     }
-
-    delete this._bufferedContent;
-  }),
+  ),
 
   /**
    * True if the content of this message is buffered, false otherwise.

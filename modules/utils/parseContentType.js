@@ -16,21 +16,45 @@
  *
  * http://www.w3.org/Protocols/rfc1341/4_Content-Type.html
  */
-var contentTypeRegEx = /^\s*"?([^\s]*\/[^\s]*)"?\s*[;,]\s*charset\s*=\s*"?([^\s]*)"?\s*$/;
+var mediaTypeRegEx = /^\s*"?([^\s]*\/[^\s]*)"?\s*$/;
+var parameterRegEx = /^\s*([^\s]+)\s*=\s*"?([^\s]*)"?\s*$/;
 
 function parseContentType(value) {
   if (!value)
     return null;
 
-  var parts = contentTypeRegEx.exec(value);
+  var result = {};
 
-  if (!parts)
-    throw new Error(value + " does not appear to be a valid Content-Type");
+  var parts = value.split(";");
 
-  return {
-    mediaType: parts[1],
-    charset: parts[2]
-  };
+  result.mediaType = parts.shift();
+
+  console.assert(
+    mediaTypeRegEx.exec(result.mediaType),
+    result.mediaType + " does not appear to be a valid media type."
+  );
+
+  parts.forEach(
+    function (parameter) {
+      var parameterParts = parameterRegEx.exec(parameter);
+
+      console.assert(
+        parameterParts,
+        parameter + " does not appear to be a valid Content-Type parameter."
+      );
+
+      var key = parameterParts[1];
+      var value = parameterParts[2];
+
+      // normalize the parameter keys we recognize
+      if (["charset"].indexOf(key.toLowerCase) !== -1)
+        key = key.toLowerCase();
+
+      result[key] = value;
+    }
+  );
+
+  return result;
 }
 
 module.exports = parseContentType;

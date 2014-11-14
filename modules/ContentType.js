@@ -13,6 +13,9 @@ function ContentType(headerValue) {
 
   this._mediaType = pojo.mediaType || 'text/html';
   this._charset = pojo.charset || 'utf-8';
+
+  // used in multipart messages, but not part of the typical toString
+  this._boundary = pojo.boundary;
 }
 
 Object.defineProperties(ContentType.prototype, {
@@ -40,6 +43,13 @@ Object.defineProperties(ContentType.prototype, {
     return this._charset;
   }, function (value) {
     this._charset = value;
+  }),
+
+  /**
+   * Gets the boundary value from a multipart Content-Type header
+   */
+  boundary: d.gs(function () {
+    return this._boundary;
   }),
 
   toString: d(function () {
