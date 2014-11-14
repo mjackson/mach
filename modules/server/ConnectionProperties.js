@@ -47,7 +47,7 @@ module.exports = {
    *   }
    *
    * Of course, paramTypes may be omitted entirely to get a hash of all parameters.
-   * 
+   *
    * The maxLength and uploadPrefix arguments are passed directly to the
    * request's parseContent method.
    *
@@ -175,7 +175,7 @@ module.exports = {
     }
 
     if (options.type || options.path)
-      response.headers['Content-Type'] = options.type || getMimeType(options.path);
+      response.mediaType = options.type || getMimeType(options.path);
 
     if (options.length || options.size)
       response.headers['Content-Length'] = options.length || options.size;

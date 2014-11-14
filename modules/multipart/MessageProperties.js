@@ -31,11 +31,8 @@ module.exports = {
    * The value that was used as the boundary for multipart content.
    */
   multipartBoundary: d.gs(function () {
-    var contentType = this.contentType;
-
-    if (contentType) {
-      var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
-      return match && (match[1] || match[2]);
+    if (this.mediaType && this.mediaType.indexOf("multipart") !== -1 && this.contentType.boundary) {
+      return this.contentType.boundary;
     }
   }),
 

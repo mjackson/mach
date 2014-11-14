@@ -14,7 +14,7 @@ describe('Message', function () {
 
   describe('when Content-Type is text/plain', function () {
     beforeEach(function () {
-      message.headers['Content-Type'] = 'text/plain';
+      message.contentType = 'text/plain';
     });
 
     it('has the correct mediaType', function () {
@@ -22,9 +22,9 @@ describe('Message', function () {
     });
   });
 
-  describe('when Content-Type is text/html; charset=utf-8', function () {
+  describe('when Content-Type is text/html; charset=utf-16', function () {
     beforeEach(function () {
-      message.headers['Content-Type'] = 'text/html; charset=utf-8';
+      message.contentType = 'text/html; charset=utf-16';
     });
 
     it('has the correct mediaType', function () {
@@ -32,14 +32,21 @@ describe('Message', function () {
     });
 
     it('has the correct charset', function () {
-      expect(message.charset).toEqual('utf-8');
+      expect(message.charset).toEqual('utf-16');
+    });
+  });
+
+  describe('setHeader', function () {
+    it('normalizes header names', function () {
+      message.setHeader('content-type', 'text/html');
+      expect(message.mediaType).toEqual('text/html');
     });
   });
 
   describe('addHeader', function () {
     it('normalizes header names', function () {
-      message.addHeader('content-type', 'text/html');
-      expect(message.headers['Content-Type']).toEqual('text/html');
+      message.addHeader('accept-charset', 'utf-8');
+      expect(message.headers["Accept-Charset"]).toEqual('utf-8');
     });
 
     describe('when the header has not been previously set', function () {

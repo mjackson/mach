@@ -126,6 +126,7 @@ function bindApp(app, nodeServer) {
     conn.call(app).then(function (response) {
       var isHead = conn.method === 'HEAD';
       var isEmpty = isHead || STATUS_WITHOUT_CONTENT[conn.status] === true;
+
       var headers = conn.response.headers;
       var content = conn.response.content;
 

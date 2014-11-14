@@ -16,7 +16,7 @@ describe('mach.file', function () {
         return callApp(app, '/jquery-1.8.3.js').then(function (conn) {
           expect(conn.status).toEqual(200);
           expect(conn.responseText).toEqual(contents);
-          expect(conn.response.headers['Content-Type']).toEqual('application/javascript');
+          expect(conn.response.mediaType).toEqual('application/javascript');
         });
       });
     });
@@ -26,7 +26,7 @@ describe('mach.file', function () {
         return callApp(app, '/').then(function (conn) {
           expect(conn.status).toEqual(200);
           expect(conn.responseText).toEqual(contents);
-          expect(conn.response.headers['Content-Type']).toEqual('application/javascript');
+          expect(conn.response.mediaType).toEqual('application/javascript');
         });
       });
     });
@@ -60,7 +60,7 @@ describe('mach.file', function () {
         return callApp(app, '/').then(function (conn) {
           expect(conn.status).toEqual(200);
           expect(conn.responseText).toEqual(contents);
-          expect(conn.response.headers['Content-Type']).toEqual('application/javascript');
+          expect(conn.response.mediaType).toEqual('application/javascript');
         });
       });
     });
