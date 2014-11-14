@@ -133,7 +133,7 @@ module.exports = {
    * Sends the given JSON in an application/json response.
    */
   json: d(function (status, json) {
-    this.contentType = 'application/json';
+    this.response.contentType = 'application/json';
 
     if (typeof status === 'number') {
       this.status = status;
