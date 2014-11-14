@@ -42,6 +42,7 @@ The call to `app.use` above illustrates how middleware is used to compose applic
 
 - [`mach.basicAuth`](https://github.com/mjackson/mach/blob/master/modules/basicAuth.js): Provides authentication using [HTTP Basic auth](http://en.wikipedia.org/wiki/Basic_access_authentication)
 - [`mach.catch`](https://github.com/mjackson/mach/blob/master/modules/catch.js): Error handling at any position in the stack
+- [`mach.charset`](https://github.com/mjackson/mach/blob/master/modules/charset.js): Provides a default [charset](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) in responses
 - [`mach.contentType`](https://github.com/mjackson/mach/blob/master/modules/contentType.js): Provides a default [`Content-Type`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17)
 - [`mach.favicon`](https://github.com/mjackson/mach/blob/master/modules/favicon.js): Handles requests for `/favicon.ico`
 - [`mach.file`](https://github.com/mjackson/mach/blob/master/modules/file.js): Efficiently serves static files
