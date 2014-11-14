@@ -8,6 +8,7 @@ mach.serve            = require('../utils/serveApp');
 
 mach.basicAuth        = require('../basicAuth');
 mach.catch            = require('../catch');
+mach.charset          = require('../charset');
 mach.contentType      = require('../contentType');
 mach.favicon          = require('../favicon');
 mach.file             = require('../file');
