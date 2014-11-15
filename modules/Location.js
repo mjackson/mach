@@ -1,10 +1,28 @@
 var d = require('d');
+var stringifyQuery = require('./utils/stringifyQuery');
 var parseQuery = require('./utils/parseQuery');
 var parseURL = require('./utils/parseURL');
 
-function propertyGetter(propertyName) {
+/**
+ * Standard ports for HTTP protocols.
+ */
+var STANDARD_PORTS = {
+  'http:': '80',
+  'https:': '443'
+};
+
+function propertyAlias(propertyName, defaultValue) {
   return d.gs(function () {
-    return this.properties[propertyName];
+    return this.properties[propertyName] || defaultValue;
+  }, function (value) {
+    this.properties[propertyName] = value;
+  });
+}
+
+function setProperties(location, properties) {
+  [ 'protocol', 'auth', 'hostname', 'port', 'pathname', 'search' ].forEach(function (name) {
+    if (properties.hasOwnProperty(name))
+      location[name] = properties[name];
   });
 }
 
@@ -21,26 +39,15 @@ function propertyGetter(propertyName) {
  * - search
  *
  * Alternatively, options may be a URL string.
- *
- * Note: This object is currently read-only.
  */
 function Location(options) {
-  options = options || {};
+  this.properties = {};
 
-  if (typeof options === 'string')
-    options = parseURL(options);
-
-  var protocol = options.protocol || 'http:';
-  var port = String(options.port || (protocol === 'https:' ? 443 : 80));
-
-  this.properties = {
-    protocol: protocol,
-    auth: options.auth || '',
-    hostname: options.hostname || '',
-    port: port,
-    pathname: options.pathname || '/',
-    search: options.search || ''
-  };
+  if (typeof options === 'string') {
+    this.href = options;
+  } else if (options) {
+    setProperties(this, options);
+  }
 }
 
 Object.defineProperties(Location.prototype, {
@@ -50,20 +57,20 @@ Object.defineProperties(Location.prototype, {
    */
   href: d.gs(function () {
     return this.protocol + '//' + (this.auth ? this.auth + '@' : '') + this.host + this.path;
+  }, function (value) {
+    setProperties(this, parseURL(value));
   }),
 
   /**
    * The portion of the URL that denotes the protocol, including the
    * trailing colon (e.g. "http:" or "https:").
    */
-  protocol: propertyGetter('protocol'),
+  protocol: propertyAlias('protocol', 'http:'),
 
   /**
    * The username:password used in the URL, if any.
    */
-  auth: d.gs(function () {
-    return this.properties.auth || '';
-  }),
+  auth: propertyAlias('auth', ''),
 
   /**
    * The full name of the host, including the port number when using
@@ -74,44 +81,70 @@ Object.defineProperties(Location.prototype, {
     var host = this.hostname;
     var port = this.port;
 
-    if (!(port === '80' && protocol === 'http:' || port === '443' && protocol === 'https:'))
+    if (port !== STANDARD_PORTS[protocol])
       host += ':' + port;
 
     return host;
+  }, function (value) {
+    var index;
+
+    if (typeof value === 'string' && (index = value.indexOf(':')) !== -1) {
+      this.hostname = value.substring(0, index);
+      this.port = value.substring(index + 1);
+    } else {
+      this.hostname = value;
+      this.port = null;
+    }
   }),
 
   /**
    * The name of the host without the port.
    */
-  hostname: propertyGetter('hostname'),
+  hostname: propertyAlias('hostname', ''),
 
   /**
    * The port number as a string.
    */
-  port: propertyGetter('port'),
+  port: d.gs('port', function () {
+    return this.properties.port;
+  }, function (value) {
+    this.properties.port = String(value || STANDARD_PORTS[this.protocol]);
+  }),
 
   /**
    * The URL path without the query string.
    */
-  pathname: propertyGetter('pathname'),
+  pathname: propertyAlias('pathname', '/'),
 
   /**
    * The URL path with query string.
    */
   path: d.gs(function () {
     return this.pathname + this.search;
+  }, function (value) {
+    var index;
+
+    if (typeof value === 'string' && (index = value.indexOf('?')) !== -1) {
+      this.pathname = value.substring(0, index);
+      this.search = value.substring(index);
+    } else {
+      this.pathname = value;
+      this.search = null;
+    }
   }),
 
   /**
    * The query string, including the preceeding ?.
    */
-  search: propertyGetter('search'),
+  search: propertyAlias('search', ''),
 
   /**
    * The query string of the URL, without the preceeding ?.
    */
   queryString: d.gs(function () {
     return this.search.substring(1);
+  }, function (value) {
+    this.search = value && '?' + value;
   }),
 
   /**
@@ -119,6 +152,8 @@ Object.defineProperties(Location.prototype, {
    */
   query: d.gs(function () {
     return parseQuery(this.queryString);
+  }, function (value) {
+    this.queryString = stringifyQuery(value);
   }),
 
   toJSON: d(function () {
