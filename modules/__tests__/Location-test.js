@@ -80,4 +80,92 @@ describe('A new Location', function () {
     });
   });
 
+  describe('when the href is set', function () {
+    it('has the correct href', function () {
+      location.href = 'https://user:pass@example.net/another/path?another=query';
+      expect(location.href).toEqual('https://user:pass@example.net/another/path?another=query');
+    });
+  });
+
+  describe('when the protocol is set', function () {
+    it('has the correct href', function () {
+      location.protocol = 'https:';
+      expect(location.href).toEqual('https://user:pass@example.com:5000/the/path?the=query');
+    });
+  });
+
+  describe('when the hostname is set', function () {
+    it('has the correct href', function () {
+      location.hostname = 'example.net';
+      expect(location.href).toEqual('http://user:pass@example.net:5000/the/path?the=query');
+    });
+  });
+
+  describe('when the host is set', function () {
+    describe('with a port', function () {
+      it('has the correct href', function () {
+        location.host = 'example.net:8080';
+        expect(location.href).toEqual('http://user:pass@example.net:8080/the/path?the=query');
+      });
+    });
+
+    describe('without a port', function () {
+      it('has the correct href', function () {
+        location.host = 'example.net';
+        expect(location.href).toEqual('http://user:pass@example.net/the/path?the=query');
+      });
+    });
+  });
+
+  describe('when the port is set', function () {
+    it('has the correct href', function () {
+      location.port = 6000;
+      expect(location.href).toEqual('http://user:pass@example.com:6000/the/path?the=query');
+    });
+  });
+
+  describe('when the pathname is set', function () {
+    it('has the correct href', function () {
+      location.pathname = '/another/path';
+      expect(location.href).toEqual('http://user:pass@example.com:5000/another/path?the=query');
+    });
+  });
+
+  describe('when the path is set', function () {
+    describe('with a search', function () {
+      it('has the correct href', function () {
+        location.path = '/another/path?another=query';
+        expect(location.href).toEqual('http://user:pass@example.com:5000/another/path?another=query');
+      });
+    });
+
+    describe('without a search', function () {
+      it('has the correct href', function () {
+        location.path = '/another/path';
+        expect(location.href).toEqual('http://user:pass@example.com:5000/another/path');
+      });
+    });
+  });
+
+  describe('when the search is set', function () {
+    it('has the correct href', function () {
+      location.search = '?another=query';
+      expect(location.href).toEqual('http://user:pass@example.com:5000/the/path?another=query');
+    });
+  });
+
+  describe('when the queryString is set', function () {
+    it('has the correct href', function () {
+      location.queryString = 'another=query';
+      expect(location.href).toEqual('http://user:pass@example.com:5000/the/path?another=query');
+    });
+  });
+
+  describe('when the query is set', function () {
+    it('has the correct href', function () {
+      location.query = { another: 'query' };
+      expect(location.href).toEqual('http://user:pass@example.com:5000/the/path?another=query');
+    });
+  });
+
 });
