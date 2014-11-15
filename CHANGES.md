@@ -4,6 +4,7 @@
   * Add autoIndex option to mach.file to automatically generate a directory listing
     when a directory is targeted in the request
   * Add setters to Location properties
+  * Add setters to Connection location properties
   * Renamed mach.forward => mach.proxy
   * Use mime.types from nginx instead of mime module
   * Fixed a bug in conn.json response helper

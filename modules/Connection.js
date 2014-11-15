@@ -11,6 +11,14 @@ var StatusCodes = require('./StatusCodes');
 var Location = require('./Location');
 var Message = require('./Message');
 
+function locationPropertyAlias(name) {
+  return d.gs(function () {
+    return this.location[name];
+  }, function (value) {
+    this.location[name] = value;
+  });
+}
+
 function defaultErrorHandler(error) {
   if (typeof console !== 'undefined' && console.error) {
     console.error((error && error.stack) || error);
@@ -104,12 +112,6 @@ function Connection(options) {
   this.status = 200;
 }
 
-function locationPropertyGetter(propertyName) {
-  return d.gs(function () {
-    return this.location[propertyName];
-  });
-}
-
 Object.defineProperties(Connection.prototype, {
 
   /**
@@ -130,14 +132,14 @@ Object.defineProperties(Connection.prototype, {
     this._location = (value instanceof Location) ? value : new Location(value);
   }),
 
-  href: locationPropertyGetter('href'),
-  protocol: locationPropertyGetter('protocol'),
-  host: locationPropertyGetter('host'),
-  hostname: locationPropertyGetter('hostname'),
-  port: locationPropertyGetter('port'),
-  search: locationPropertyGetter('search'),
-  queryString: locationPropertyGetter('queryString'),
-  query: locationPropertyGetter('query'),
+  href: locationPropertyAlias('href'),
+  protocol: locationPropertyAlias('protocol'),
+  host: locationPropertyAlias('host'),
+  hostname: locationPropertyAlias('hostname'),
+  port: locationPropertyAlias('port'),
+  search: locationPropertyAlias('search'),
+  queryString: locationPropertyAlias('queryString'),
+  query: locationPropertyAlias('query'),
 
   /**
    * The username:password used in the request, an empty string
@@ -173,6 +175,8 @@ Object.defineProperties(Connection.prototype, {
    */
   pathname: d.gs(function () {
     return this.location.pathname.replace(this.basename, '') || '/';
+  }, function (value) {
+    this.location.pathname = this.basename + value;
   }),
 
   /**
@@ -180,6 +184,8 @@ Object.defineProperties(Connection.prototype, {
    */
   path: d.gs(function () {
     return this.pathname + this.search;
+  }, function (value) {
+    this.location.path = this.basename + value;
   }),
 
   /**
