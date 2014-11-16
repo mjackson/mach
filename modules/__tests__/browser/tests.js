@@ -1,8 +1,10 @@
-require('../Message-spec');
-require('../Request-spec');
-require('../Response-spec');
+require('../Connection-test');
+require('../Location-test');
+require('../Message-test');
 
-require('../../accept/__tests__/Accept-spec');
-require('../../accept/__tests__/AcceptCharset-spec');
-require('../../accept/__tests__/AcceptEncoding-spec');
-require('../../accept/__tests__/AcceptLanguage-spec');
+require('../../accept/__tests__/Accept-test');
+require('../../accept/__tests__/AcceptCharset-test');
+require('../../accept/__tests__/AcceptEncoding-test');
+require('../../accept/__tests__/AcceptLanguage-test');
+
+require('../../client/__tests__/client-test');
