@@ -1,3 +1,4 @@
+.jshintignore
 .jshintrc
 .travis.yml
 examples

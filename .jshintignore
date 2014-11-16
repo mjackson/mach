@@ -1,0 +1,2 @@
+modules/__tests__/browser/mocha.js
+modules/__tests__/fixtures/jquery-1.8.3.js
