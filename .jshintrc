@@ -1,9 +1,8 @@
 {
   "sub": true,
+  "esnext": true,
   "eqnull": true,
   "laxbreak": true,
   "unused": "vars",
-  "globals": {
-    "Promise": true
-  }
+  "predef": [ "-Promise" ]
 }

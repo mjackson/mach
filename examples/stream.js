@@ -1,3 +1,5 @@
+/* jshint -W058 */
+
 // This example demonstrates how mach can be used to create a server
 // that streams content back to the client. The best way to see the
 // streaming data is probably using curl or netcat, e.g.

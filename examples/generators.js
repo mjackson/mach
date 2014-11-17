@@ -12,7 +12,7 @@ function sleep(millis, answer) {
     deferredResult.resolve(answer);
   }, millis);
   return deferredResult.promise;
-};
+}
 
 app.use(mach.logger);
 

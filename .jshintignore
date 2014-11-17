@@ -1,3 +1,4 @@
 modules/__tests__/browser/mocha.js
 modules/__tests__/browser/tests-bundle.js
 modules/__tests__/fixtures/jquery-1.8.3.js
+node_modules
