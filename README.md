@@ -32,7 +32,7 @@ app.use(mach.logger);
 app.get('/users/:id', function (conn) {
   var id = conn.params.id;
 
-  return getUser(userID).then(function (user) {
+  return getUser(id).then(function (user) {
     conn.json(200, user);
   });
 });
@@ -69,7 +69,7 @@ Writing an HTTP client is similarly straightforward.
 var mach = require('mach');
 
 mach.get('http://twitter.com').then(function (conn) {
-  console.log(conn.status, conn.responseText);
+  console.log(conn.status, conn.response.headers, conn.responseText);
 });
 ```
 
