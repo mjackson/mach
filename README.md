@@ -1,4 +1,6 @@
-[![build status](https://secure.travis-ci.org/mjackson/mach.png)](http://travis-ci.org/mjackson/mach)
+[![npm package](https://img.shields.io/npm/v/mach.svg?style=flat-square)](https://www.npmjs.org/package/mach)
+[![build status](https://img.shields.io/travis/mjackson/mach.svg?style=flat-square)](https://travis-ci.org/mjackson/mach)
+[![dependency status](https://img.shields.io/david/mjackson/mach.svg?style=flat-square)](https://david-dm.org/mjackson/mach)
 
 [Mach](https://github.com/mjackson/mach) is an HTTP server and client library that runs in both node.js and the browser. It has the following goals:
 
