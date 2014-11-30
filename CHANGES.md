@@ -1,3 +1,7 @@
+### HEAD
+
+  * Fix using a custom port with a node client
+
 ### 1.0.0-rc2
 
   * Add mach.charset middleware for automatically setting the response charset

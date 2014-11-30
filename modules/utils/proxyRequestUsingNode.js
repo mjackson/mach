@@ -11,6 +11,7 @@ function proxyRequestUsingNode(conn, location) {
       protocol: location.protocol,
       auth: location.auth,
       hostname: location.hostname,
+      port: location.port,
       path: location.path,
       headers: conn.request.headers
     });
