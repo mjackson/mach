@@ -1,4 +1,5 @@
 var d = require('d');
+var mergeQuery = require('./utils/mergeQuery');
 var stringifyQuery = require('./utils/stringifyQuery');
 var parseQuery = require('./utils/parseQuery');
 var parseURL = require('./utils/parseURL');
@@ -51,6 +52,32 @@ function Location(options) {
 }
 
 Object.defineProperties(Location.prototype, {
+
+  /**
+   * Creates and returns a new Location with the path and query of
+   * the given location appended.
+   */
+  concat: d(function (location) {
+    if (!(location instanceof Location))
+      location = new Location(location);
+
+    var pathname = this.pathname;
+    var extraPathname = location.pathname;
+
+    if (extraPathname !== '/')
+      pathname = pathname.replace(/\/*$/, '/') + extraPathname;
+
+    var search = '?' + stringifyQuery(mergeQuery(this.query, parseQuery(location.query)));
+
+    return new Location({
+      protocol: this.protocol,
+      auth: this.auth,
+      hostname: this.hostname,
+      port: this.port,
+      pathname: pathname,
+      search: search
+    });
+  }),
 
   /**
    * The full URL.
