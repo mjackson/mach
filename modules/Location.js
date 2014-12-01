@@ -83,7 +83,11 @@ Object.defineProperties(Location.prototype, {
    * The full URL.
    */
   href: d.gs(function () {
-    return this.protocol + '//' + (this.auth ? this.auth + '@' : '') + this.host + this.path;
+    var auth = this.auth;
+    var host = this.host;
+    var path = this.path;
+
+    return host ? (this.protocol + '//' + (auth ? auth + '@' : '') + host + path) : path;
   }, function (value) {
     setProperties(this, parseURL(value));
   }),
