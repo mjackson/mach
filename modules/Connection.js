@@ -93,13 +93,11 @@ function Connection(options) {
 
   // Params may be given as an object.
   if (options.params) {
-    var queryString = stringifyQuery(options.params);
-
     if (this.method === 'GET' || this.method === 'HEAD') {
-      this.location.properties.search = '?' + queryString;
+      this.query = options.params;
     } else {
       this.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      this.request.content = queryString;
+      this.request.content = stringifyQuery(options.params);
     }
   }
 
