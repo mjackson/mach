@@ -1,6 +1,8 @@
 ### HEAD
 
+  * Proxies now correctly append the path used in the request
   * Fix using a custom port with a node client
+  * Safer URL parsing in DOM environments
 
 ### 1.0.0-rc2
 
