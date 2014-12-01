@@ -112,7 +112,7 @@ Object.defineProperties(Location.prototype, {
     var host = this.hostname;
     var port = this.port;
 
-    if (port !== STANDARD_PORTS[protocol])
+    if (port != null && port !== STANDARD_PORTS[protocol])
       host += ':' + port;
 
     return host;
