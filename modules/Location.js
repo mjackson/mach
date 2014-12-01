@@ -70,10 +70,10 @@ Object.defineProperties(Location.prototype, {
     var search = '?' + stringifyQuery(mergeQuery(this.query, parseQuery(location.query)));
 
     return new Location({
-      protocol: this.protocol,
-      auth: this.auth,
-      hostname: this.hostname,
-      port: this.port,
+      protocol: this.properties.protocol || location.protocol,
+      auth: this.properties.auth || location.auth,
+      hostname: this.properties.hostname || location.auth,
+      port: this.properties.port || location.port,
       pathname: pathname,
       search: search
     });
