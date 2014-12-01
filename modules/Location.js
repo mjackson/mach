@@ -189,6 +189,10 @@ Object.defineProperties(Location.prototype, {
 
   toJSON: d(function () {
     return this.href;
+  }),
+
+  toString: d(function () {
+    return this.href;
   })
 
 });
