@@ -21,7 +21,7 @@ function createProxy(location) {
     if (!headers['User-Agent'])
       headers['User-Agent'] = 'mach/' + MACH_VERSION;
 
-    return proxyRequest(conn, location);
+    return proxyRequest(conn, location.concat(conn.location));
   };
 }
 
