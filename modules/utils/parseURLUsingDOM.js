@@ -2,9 +2,10 @@ var URL = window.URL || window.webkitURL;
 
 function parseURLUsingDOM(url) {
   var object;
-  if (typeof URL === 'function') {
+  try {
     object = new URL(url);
-  } else {
+  } catch (error) {
+    // May be an invalid URL or old browser. Fallback to <a href>.
     object = document.createElement('a');
     object.href = url;
   }
