@@ -168,4 +168,26 @@ describe('A new Location', function () {
     });
   });
 
+  describe('when appending another location', function () {
+    beforeEach(function () {
+      location = location.concat('https://example.org/more/path?more=query');
+    });
+
+    it('keeps the original protocol', function () {
+      expect(location.protocol).toEqual('http:');
+    });
+
+    it('keeps the original host', function () {
+      expect(location.host).toEqual('example.com:5000');
+    });
+
+    it('has the correct pathname', function () {
+      expect(location.pathname).toEqual('/the/path/more/path');
+    });
+
+    it('has the correct query', function () {
+      expect(location.query).toEqual({ the: 'query', more: 'query' });
+    });
+  });
+
 });

@@ -65,7 +65,7 @@ Object.defineProperties(Location.prototype, {
     var extraPathname = location.pathname;
 
     if (extraPathname !== '/')
-      pathname = pathname.replace(/\/*$/, '/') + extraPathname;
+      pathname = pathname.replace(/\/*$/, '/') + extraPathname.replace(/^\/*/, '');
 
     var search = '?' + stringifyQuery(mergeQuery(this.query, parseQuery(location.query)));
 
