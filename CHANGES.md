@@ -1,4 +1,4 @@
-### HEAD
+### 1.0.0-rc3
 
   * Proxies now correctly append the path used in the request
   * Fix using a custom port with a node client
