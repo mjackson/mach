@@ -20,7 +20,7 @@
     "http-server": "^0.6.1",
     "jshint": "^2.5.10",
     "mocha": "^2.0.1",
-    "uglify-js": "~2.4.15"
+    "uglify-js": "^2.4.15"
   },
   "scripts": {
     "test": "jshint . && mocha \"modules/**/__tests__/**/*-test.js\"",
