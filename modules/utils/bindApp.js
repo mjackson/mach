@@ -21,10 +21,22 @@ var STANDARD_PORTS = {
   'https:': 443
 };
 
+function getHost(nodeServer) {
+  if (process.env.SERVER_NAME)
+    return process.env.SERVER_NAME;
+
+  var address = nodeServer.address();
+
+  if (typeof address === 'string')
+    return address;
+
+  return address.address + ':' + address.port;
+}
+
 /**
  * Creates a new Location object that is reverse-proxy aware.
  */
-function createLocation(nodeRequest, serverName, serverPort) {
+function createLocation(nodeRequest, nodeServer) {
   var headers = nodeRequest.headers;
 
   var protocol;
@@ -45,7 +57,7 @@ function createLocation(nodeRequest, serverName, serverPort) {
     var hosts = headers['x-forwarded-host'].split(/,\s?/);
     host = hosts[hosts.length - 1];
   } else {
-    host = headers['host'] || (serverName + ':' + serverPort);
+    host = headers['host'] || getHost(nodeServer);
   }
 
   var hostParts = host.split(':', 2);
@@ -57,8 +69,6 @@ function createLocation(nodeRequest, serverName, serverPort) {
       port = STANDARD_PORTS[protocol];
     } else if (headers['x-forwarded-proto']) {
       port = STANDARD_PORTS[headers['x-forwarded-proto'].split(',')[0]];
-    } else {
-      port = serverPort;
     }
   }
 
@@ -90,29 +100,11 @@ function createLocation(nodeRequest, serverName, serverPort) {
  * Returns the request handler function.
  */
 function bindApp(app, nodeServer) {
-  var address = nodeServer.address();
-
-  if (!address)
-    throw new Error('Cannot bind to node server that is not listening');
-
-  var serverName, serverPort;
-  if (typeof address === 'string') {
-    serverName = address;
-    serverPort = 0;
-  } else {
-    serverName = address.address;
-    serverPort = address.port;
-  }
-
-  // Allow setting serverName via the SERVER_NAME environment variable.
-  if (process.env.SERVER_NAME)
-    serverName = process.env.SERVER_NAME;
-
   function requestHandler(nodeRequest, nodeResponse) {
     var conn = new Connection({
       version: nodeRequest.httpVersion,
       method: nodeRequest.method,
-      location: createLocation(nodeRequest, serverName, serverPort),
+      location: createLocation(nodeRequest, nodeServer),
       headers: nodeRequest.headers,
       content: nodeRequest,
       remoteHost: nodeRequest.connection.remoteAddress,
