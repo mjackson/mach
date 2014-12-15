@@ -34,6 +34,34 @@ describe('Message', function () {
     it('has the correct charset', function () {
       expect(message.charset).toEqual('utf-8');
     });
+
+    describe('and the media type is modified', function () {
+      beforeEach(function () {
+        message.mediaType = 'text/plain';
+      });
+
+      it('has the correct mediaType', function () {
+        expect(message.mediaType).toEqual('text/plain');
+      });
+
+      it('has the correct charset', function () {
+        expect(message.charset).toEqual('utf-8');
+      });
+    });
+
+    describe('and the charset is modified', function () {
+      beforeEach(function () {
+        message.charset = 'iso-5589-1';
+      });
+
+      it('has the correct mediaType', function () {
+        expect(message.mediaType).toEqual('text/html');
+      });
+
+      it('has the correct charset', function () {
+        expect(message.charset).toEqual('iso-5589-1');
+      });
+    });
   });
 
   describe('addHeader', function () {

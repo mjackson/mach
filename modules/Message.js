@@ -143,6 +143,8 @@ Object.defineProperties(Message.prototype, {
 
     if (contentType)
       return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+  }, function (value) {
+    this.contentType = value + (this.charset ? ';charset=' + this.charset : '');
   }),
 
   /**
@@ -156,6 +158,8 @@ Object.defineProperties(Message.prototype, {
 
     if (contentType && (match = contentType.match(/\bcharset=([\w-]+)/)))
       return match[1];
+  }, function (value) {
+    this.contentType = this.mediaType + (value ? ';charset=' + value : '');
   }),
 
   /**

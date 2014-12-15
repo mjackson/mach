@@ -1,3 +1,7 @@
+### HEAD
+
+  * Added setters for Message#mediaType and Message#charset
+
 ### 1.0.0-rc3
 
   * Proxies now correctly append the path used in the request
