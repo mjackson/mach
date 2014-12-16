@@ -1,3 +1,4 @@
+var Location = require('./Location');
 var createProxy = require('./utils/createProxy');
 var isRegExp = require('./utils/isRegExp');
 
@@ -23,7 +24,7 @@ function returnTrue() {
  *   
  *   mach.serve(app);
  */
-function proxy(app, targetApp, test) {
+function proxy(app, target, test) {
   test = test || returnTrue;
 
   if (isRegExp(test)) {
@@ -35,8 +36,14 @@ function proxy(app, targetApp, test) {
     throw new Error('mach.proxy needs a test function');
   }
 
-  if (typeof targetApp !== 'function')
-    targetApp = createProxy(targetApp);
+  var targetApp;
+  if (typeof target === 'function') {
+    targetApp = target;
+  } else if (typeof target === 'string' || target instanceof Location) {
+    targetApp = createProxy(target);
+  } else {
+    throw new Error('mach.proxy needs a target app');
+  }
 
   return function (conn) {
     return conn.call(test(conn) ? targetApp : app);
