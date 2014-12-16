@@ -1,7 +1,7 @@
 var expect = require('expect');
 var Location = require('../Location');
 
-describe('A new Location', function () {
+describe('A fully-specified Location', function () {
 
   var location;
   beforeEach(function () {
@@ -188,6 +188,60 @@ describe('A new Location', function () {
     it('has the correct query', function () {
       expect(location.query).toEqual({ the: 'query', more: 'query' });
     });
+  });
+
+});
+
+describe('A Location with only a path', function () {
+
+  var location;
+  beforeEach(function () {
+    location = new Location('/the/path?the=query');
+  });
+
+  it('has no protocol', function () {
+    expect(location.protocol).toBe(null);
+  });
+
+  it('has no hostname', function () {
+    expect(location.hostname).toBe(null);
+  });
+
+  it('has no port', function () {
+    expect(location.port).toBe(null);
+  });
+
+  it('has no host', function () {
+    expect(location.host).toBe(null);
+  });
+
+  it('has the correct pathname', function () {
+    expect(location.pathname).toEqual('/the/path');
+  });
+
+  it('has the correct query', function () {
+    expect(location.query).toEqual({ the: 'query' });
+  });
+
+});
+
+describe('A Location with no search', function () {
+
+  var location;
+  beforeEach(function () {
+    location = new Location('/the/path');
+  });
+
+  it('has an empty search', function () {
+    expect(location.search).toEqual('');
+  });
+
+  it('has an empty queryString', function () {
+    expect(location.queryString).toEqual('');
+  });
+
+  it('has an empty query', function () {
+    expect(location.query).toEqual({});
   });
 
 });

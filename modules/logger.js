@@ -24,7 +24,7 @@ function logger(app, messageHandler) {
       if (contentLength == null)
         contentLength = '-';
 
-      var protocol = conn.protocol;
+      var protocol = conn.protocol || 'http:';
       protocol = protocol.substr(0, protocol.length - 1).toUpperCase();
 
       // 127.0.0.1 - frank [10/Oct/2000 13:55:36] "GET /apache_pb.gif HTTP/1.0" 200 2326 0.003

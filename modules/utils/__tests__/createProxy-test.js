@@ -10,7 +10,7 @@ describe('A proxy', function () {
 
   it('has the correct proxyLocation', function () {
     // This test takes a while because it makes a real network connection.
-    this.timeout(200);
+    this.timeout(500);
 
     return callApp(proxy, 'https://example.org:5000/more/path?more=query').then(function (conn) {
       var location = conn.proxyLocation;

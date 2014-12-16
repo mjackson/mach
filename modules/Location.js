@@ -14,7 +14,7 @@ var STANDARD_PORTS = {
 
 function propertyAlias(propertyName, defaultValue) {
   return d.gs(function () {
-    return this.properties[propertyName] || defaultValue;
+    return this.properties[propertyName] || (defaultValue == null ? null : defaultValue);
   }, function (value) {
     this.properties[propertyName] = value;
   });
@@ -110,7 +110,7 @@ Object.defineProperties(Location.prototype, {
    * The portion of the URL that denotes the protocol, including the
    * trailing colon (e.g. "http:" or "https:").
    */
-  protocol: propertyAlias('protocol', 'http:'),
+  protocol: propertyAlias('protocol'),
 
   /**
    * The username:password used in the URL, if any.
@@ -145,15 +145,15 @@ Object.defineProperties(Location.prototype, {
   /**
    * The name of the host without the port.
    */
-  hostname: propertyAlias('hostname', ''),
+  hostname: propertyAlias('hostname'),
 
   /**
    * The port number as a string.
    */
   port: d.gs('port', function () {
-    return this.properties.port;
+    return this.properties.port || (this.protocol ? STANDARD_PORTS[this.protocol] : null);
   }, function (value) {
-    this.properties.port = String(value || STANDARD_PORTS[this.protocol]);
+    this.properties.port = value ? String(value) : null;
   }),
 
   /**
