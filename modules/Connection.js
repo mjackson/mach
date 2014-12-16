@@ -148,16 +148,16 @@ Object.defineProperties(Connection.prototype, {
    * if no auth was provided.
    */
   auth: d.gs(function () {
-    var authHeader = this.request.headers['Authorization'];
+    var header = this.request.headers['Authorization'];
 
-    if (authHeader) {
-      var parts = authHeader.split(' ', 2);
+    if (header) {
+      var parts = header.split(' ', 2);
       var scheme = parts[0];
 
       if (scheme.toLowerCase() === 'basic')
         return decodeBase64(parts[1]);
 
-      return authHeader;
+      return header;
     }
 
     return this.location.auth;
