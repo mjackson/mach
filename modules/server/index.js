@@ -4,6 +4,7 @@ require('../accept');
 require('../multipart');
 
 mach.bind             = require('../utils/bindApp');
+mach.createConnection = require('../utils/createConnection');
 mach.serve            = require('../utils/serveApp');
 
 mach.basicAuth        = require('../basicAuth');

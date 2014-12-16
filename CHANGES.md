@@ -3,6 +3,7 @@
   * Added setters for Message#mediaType and Message#charset
   * Location#concat uses the protocol, auth, and host of its argument, if present
   * Location#protocol and Location#hostname default to null
+  * Added mach.createConnection
 
 ### 1.0.0-rc3
 
