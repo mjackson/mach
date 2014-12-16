@@ -21,7 +21,11 @@ function createProxy(location) {
     if (!headers['User-Agent'])
       headers['User-Agent'] = 'mach/' + MACH_VERSION;
 
-    return proxyRequest(conn, location.concat(conn.location));
+    // Only concat the path from the connection so the protocol,
+    // auth, and host from the original location are preserved.
+    conn.proxyLocation = location.concat(conn.path);
+
+    return proxyRequest(conn, conn.proxyLocation);
   };
 }
 

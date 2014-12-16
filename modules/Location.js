@@ -20,11 +20,17 @@ function propertyAlias(propertyName, defaultValue) {
   });
 }
 
+// Order is important here. Later properties take priority.
+var PROPERTY_NAMES = [ 'protocol', 'auth', 'hostname', 'port', 'host', 'pathname', 'search', 'queryString', 'query', 'path' ];
+
 function setProperties(location, properties) {
-  [ 'protocol', 'auth', 'hostname', 'port', 'pathname', 'search' ].forEach(function (name) {
-    if (properties.hasOwnProperty(name))
-      location[name] = properties[name];
-  });
+  var propertyName;
+  for (var i = 0, len = PROPERTY_NAMES.length; i < len; ++i) {
+    propertyName = PROPERTY_NAMES[i];
+
+    if (properties.hasOwnProperty(propertyName))
+      location[propertyName] = properties[propertyName];
+  }
 }
 
 /**
@@ -36,8 +42,12 @@ function setProperties(location, properties) {
  * - auth
  * - hostname
  * - port
+ * - host (overrides hostname and port)
  * - pathname
  * - search
+ * - queryString (overrides search)
+ * - query (overrides queryString/search)
+ * - path (overrides pathname and query/queryString/search)
  *
  * Alternatively, options may be a URL string.
  */
@@ -67,15 +77,14 @@ Object.defineProperties(Location.prototype, {
     if (extraPathname !== '/')
       pathname = pathname.replace(/\/*$/, '/') + extraPathname.replace(/^\/*/, '');
 
-    var search = '?' + stringifyQuery(mergeQuery(this.query, parseQuery(location.query)));
+    var query = mergeQuery(this.query, location.query);
 
     return new Location({
-      protocol: this.protocol,
-      auth: this.auth,
-      hostname: this.hostname,
-      port: this.port,
+      protocol: location.protocol || this.protocol,
+      auth: location.auth || this.auth,
+      host: location.host || this.host,
       pathname: pathname,
-      search: search
+      query: query
     });
   }),
 
@@ -89,7 +98,12 @@ Object.defineProperties(Location.prototype, {
 
     return host ? (this.protocol + '//' + (auth ? auth + '@' : '') + host + path) : path;
   }, function (value) {
-    setProperties(this, parseURL(value));
+    var properties = parseURL(value);
+
+    // "query" will be a string, discard it and use "search" instead.
+    delete properties.query;
+
+    setProperties(this, properties);
   }),
 
   /**

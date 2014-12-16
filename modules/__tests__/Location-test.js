@@ -173,12 +173,12 @@ describe('A new Location', function () {
       location = location.concat('https://example.org/more/path?more=query');
     });
 
-    it('keeps the original protocol', function () {
-      expect(location.protocol).toEqual('http:');
+    it('uses the new protocol', function () {
+      expect(location.protocol).toEqual('https:');
     });
 
-    it('keeps the original host', function () {
-      expect(location.host).toEqual('example.com:5000');
+    it('uses the new host', function () {
+      expect(location.host).toEqual('example.org');
     });
 
     it('has the correct pathname', function () {
