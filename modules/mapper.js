@@ -1,5 +1,4 @@
 var d = require('d');
-var defaultApp = require('./utils/defaultApp');
 var escapeRegExp = require('./utils/escapeRegExp');
 
 function byMostSpecific(a, b) {
@@ -56,10 +55,8 @@ function createMapper(app, map) {
   // Allow mach.mapper(map)
   if (typeof app !== 'function') {
     map = app;
-    app = defaultApp;
+    app = null;
   }
-
-  app = app || defaultApp;
   
   var mappings = [];
 
@@ -99,8 +96,6 @@ function createMapper(app, map) {
      * request matches the given location.
      */
     map: d(function (location, app) {
-      app = app || defaultApp;
-
       var hostname, path;
 
       // If the location is a fully qualified URL use the host as well.

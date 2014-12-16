@@ -1,5 +1,4 @@
 /* jshint -W058 */
-
 var expect = require('expect');
 var StatusCodes = require('../StatusCodes');
 var Connection = require('../Connection');

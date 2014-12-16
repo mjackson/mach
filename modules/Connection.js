@@ -1,8 +1,6 @@
 /* jshint -W058 */
-
 var d = require('d');
 var isBinary = require('./utils/isBinary');
-var createProxy = require('./utils/createProxy');
 var decodeBase64 = require('./utils/decodeBase64');
 var encodeBase64 = require('./utils/encodeBase64');
 var stringifyQuery = require('./utils/stringifyQuery');
@@ -25,6 +23,12 @@ function defaultErrorHandler(error) {
   } else {
     throw error; // Don't silently swallow errors!
   }
+}
+
+function defaultApp(conn) {
+  conn.status = 404;
+  conn.response.contentType = 'text/plain';
+  conn.response.content = 'Not found: ' + conn.method + ' ' + conn.path;
 }
 
 function defaultCloseHandler() {}
@@ -198,8 +202,7 @@ Object.defineProperties(Connection.prototype, {
    * as the first argument and returns a promise for a Response.
    */
   call: d(function (app) {
-    if (typeof app !== 'function')
-      app = createProxy(app);
+    app = app || defaultApp;
 
     var conn = this;
 

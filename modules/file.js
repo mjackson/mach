@@ -1,6 +1,5 @@
 var fs = require('fs');
 var Promise = require('./utils/Promise');
-var defaultApp = require('./utils/defaultApp');
 var getFileStats = require('./utils/getFileStats');
 var generateIndex = require('./utils/generateIndex');
 var joinPaths = require('./utils/joinPaths');
@@ -62,11 +61,10 @@ function file(app, options) {
   // Allow mach.file(path)
   if (typeof app !== 'function') {
     options = app;
-    app = defaultApp;
+    app = null;
   }
 
   options = options || {};
-  app = app || defaultApp;
 
   // Allow app.use(mach.file, path)
   if (typeof options === 'string')

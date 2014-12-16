@@ -1,5 +1,4 @@
 var d = require('d');
-var defaultApp = require('./utils/defaultApp');
 var RoutingProperties = require('./utils/RoutingProperties');
 var createMapper = require('./mapper');
 var createRouter = require('./router');
@@ -70,8 +69,6 @@ function routerCreator(routes) {
  * the stack doesn't change between requests, this happens only once.
  */
 function createStack(app) {
-  app = app || defaultApp;
-
   var layers = [], mappings = [], routes = [];
   var compiledApp;
 

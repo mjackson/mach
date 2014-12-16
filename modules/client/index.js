@@ -1,8 +1,9 @@
 var mach = require('../index');
 
 mach.call = require('../utils/callApp');
-mach.createProxy = require('../utils/createProxy');
+var createProxy = mach.createProxy = require('../utils/createProxy');
 
+var Location = require('../Location');
 var mergeProperties = require('../utils/mergeProperties');
 
 [ 'DELETE',
@@ -13,7 +14,15 @@ var mergeProperties = require('../utils/mergeProperties');
   'PUT',
   'TRACE'
 ].forEach(function (method) {
-  mach[method.toLowerCase()] = function (app, options, callback) {
+  var methodName = method.toLowerCase();
+
+  mach[methodName] = function (app, options, callback) {
+    if (typeof app === 'string' || app instanceof Location) {
+      app = createProxy(app);
+    } else if (typeof app !== 'function') {
+      throw new Error('mach.' + methodName + ' needs an app');
+    }
+
     // Don't mutate options argument.
     options = options ? mergeProperties({}, options) : {};
     options.method = method;

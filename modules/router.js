@@ -1,8 +1,6 @@
 /* jshint -W084 */
-
 var d = require('d');
 var compileRoute = require('./utils/compileRoute');
-var defaultApp = require('./utils/defaultApp');
 var isRegExp = require('./utils/isRegExp');
 var makeParams = require('./utils/makeParams');
 var mergeProperties = require('./utils/mergeProperties');
@@ -72,10 +70,8 @@ function createRouter(app, map) {
   // Allow mach.router(map)
   if (typeof app !== 'function') {
     map = app;
-    app = defaultApp;
+    app = null;
   }
-
-  app = app || defaultApp;
 
   var routes = {};
 

@@ -1,5 +1,4 @@
 /* jshint -W058 */
-
 var strftime = require('strftime').strftime;
 
 function defaultMessageHandler(message) {
