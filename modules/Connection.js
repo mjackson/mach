@@ -25,13 +25,13 @@ function defaultErrorHandler(error) {
   }
 }
 
+function defaultCloseHandler() {}
+
 function defaultApp(conn) {
   conn.status = 404;
   conn.response.contentType = 'text/plain';
   conn.response.content = 'Not found: ' + conn.method + ' ' + conn.path;
 }
-
-function defaultCloseHandler() {}
 
 /**
  * An HTTP connection that acts as the asynchronous primitive for

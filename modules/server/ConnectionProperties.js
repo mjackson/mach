@@ -93,6 +93,14 @@ module.exports = {
   }),
 
   /**
+   * Redirects the client back to the URL they just came from, or
+   * to the given location if it isn't known.
+   */
+  back: d(function (location) {
+    this.redirect(this.request.headers['Referer'] || location || '/');
+  }),
+
+  /**
    * A quick way to write the status and/or content to the response.
    *
    * Examples:

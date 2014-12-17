@@ -4,6 +4,7 @@
   * Location#concat uses the protocol, auth, and host of its argument, if present
   * Location#protocol and Location#hostname default to null
   * Added mach.createConnection
+  * Added Connection#back
 
 ### 1.0.0-rc3
 
