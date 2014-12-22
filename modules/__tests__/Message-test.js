@@ -1,8 +1,8 @@
 /* jshint -W058 */
 var assert = require('assert');
 var expect = require('expect');
-var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
 var binaryTo = require('../utils/binaryTo');
+var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
 var Message = require('../Message');
 
 describe('Message', function () {

@@ -1,11 +1,14 @@
-exports.version = require('./version');
-exports.Connection = require('./Connection');
-exports.Location = require('./Location');
-exports.Message = require('./Message');
+/*!
+ * mach - HTTP for JavaScript
+ * https://github.com/mjackson/mach
+ */
+var d = require('d');
 
-// Make client methods available always.
-require('./client');
+Object.defineProperties(exports, {
+  Connection: d(require('./Connection')),
+  Location: d(require('./Location')),
+  Message: d(require('./Message')),
+  version: d(require('./version'))
+});
 
-// Make server methods available on the server.
-if (typeof window === 'undefined')
-  require('./server' + ''); // Stop Browserify.
+require('./features/node');

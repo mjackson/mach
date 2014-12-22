@@ -1,5 +1,4 @@
 /* jshint -W058 */
-
 var bodec = require('bodec');
 var Stream = require('bufferedstream');
 var Part = require('./Part');

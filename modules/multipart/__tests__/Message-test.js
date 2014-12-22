@@ -1,6 +1,6 @@
 var assert = require('assert');
 var expect = require('expect');
-var Message = require('../index').Message;
+var Message = require('../../Message');
 var getFixture = require('./getFixture');
 
 describe('Message', function () {

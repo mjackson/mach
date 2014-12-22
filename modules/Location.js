@@ -28,7 +28,7 @@ function setProperties(location, properties) {
   for (var i = 0, len = PROPERTY_NAMES.length; i < len; ++i) {
     propertyName = PROPERTY_NAMES[i];
 
-    if (properties.hasOwnProperty(propertyName))
+    if (properties.hasOwnProperty(propertyName) && propertyName in location)
       location[propertyName] = properties[propertyName];
   }
 }
@@ -82,7 +82,8 @@ Object.defineProperties(Location.prototype, {
     return new Location({
       protocol: location.protocol || this.protocol,
       auth: location.auth || this.auth,
-      host: location.host || this.host,
+      hostname: location.hostname || this.hostname,
+      port: location.port || this.port,
       pathname: pathname,
       query: query
     });
@@ -98,12 +99,16 @@ Object.defineProperties(Location.prototype, {
 
     return host ? (this.protocol + '//' + (auth ? auth + '@' : '') + host + path) : path;
   }, function (value) {
-    var properties = parseURL(value);
+    var parsed = parseURL(value);
 
-    // "query" will be a string, discard it and use "search" instead.
-    delete properties.query;
-
-    setProperties(this, properties);
+    setProperties(this, {
+      protocol: parsed.protocol,
+      auth: parsed.auth,
+      hostname: parsed.hostname,
+      port: parsed.port,
+      pathname: parsed.pathname,
+      search: parsed.search
+    });
   }),
 
   /**
@@ -150,7 +155,7 @@ Object.defineProperties(Location.prototype, {
   /**
    * The port number as a string.
    */
-  port: d.gs('port', function () {
+  port: d.gs(function () {
     return this.properties.port || (this.protocol ? STANDARD_PORTS[this.protocol] : null);
   }, function (value) {
     this.properties.port = value ? String(value) : null;
