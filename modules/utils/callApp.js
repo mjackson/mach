@@ -1,4 +1,5 @@
 var Connection = require('../Connection');
+var Promise = require('./Promise');
 
 /**
  * Creates a new Connection using the given options and sends
@@ -18,24 +19,26 @@ var Connection = require('../Connection');
  *              the encoding is whatever was specified in the Content-Type
  *              header of the response.
  *
- * If a callback is provided, it will be called with the Connection
- * object before the request is made.
+ * If a modifier function is provided, it will have a chance to modify
+ * the Connection object immediately before the request is made.
  */
-function callApp(app, options, callback) {
+function callApp(app, options, modifier) {
   options = options || {};
 
-  var conn = new Connection(options);
+  var c = new Connection(options);
 
-  if (callback)
-    callback(conn);
+  return Promise.resolve(modifier ? modifier(c) : c).then(function (conn) {
+    if (conn == null || !(conn instanceof Connection))
+      conn = c;
 
-  return conn.call(app).then(function () {
-    if (options.binary)
-      return conn;
+    return conn.call(app).then(function () {
+      if (options.binary)
+        return conn;
 
-    return conn.response.stringifyContent(options.maxLength, options.encoding).then(function (content) {
-      conn.responseText = content;
-      return conn;
+      return conn.response.stringifyContent(options.maxLength, options.encoding).then(function (content) {
+        conn.responseText = content;
+        return conn;
+      });
     });
   });
 }

@@ -33,6 +33,19 @@ function echoRequestHeaders(_) {
 });
 
 describe('mach.client', function() {
+
+  it('may be used with an options object as the first argument', function () {
+    // This test may take a while because it makes a real network connection.
+    this.timeout(3000);
+
+    return mach.get({
+      url: 'http://example.org'
+    }).then(function (conn) {
+      console.log(conn.status, conn.response.headers);
+      expect(conn.hostname).toEqual('example.org');
+    });
+  });
+
   describe('with a custom stack', function() {
     var stack;
 
@@ -54,13 +67,13 @@ describe('mach.client', function() {
       });
     });
 
-    it('allows access on the outgoing request via a callback', function() {
+    it('allows access on the outgoing request via a modifier', function() {
       stack.use(echoRequestHeaders);
 
       return mach.get(stack, 'http://example.com/foo', function(conn) {
-        conn.request.headers['X.Test'] = 'from callback';
+        conn.request.headers['X.Test'] = 'from modifier';
       }).then(function(conn) {
-        expect(JSON.parse(conn.responseText)['X.Test']).toEqual('from callback');
+        expect(JSON.parse(conn.responseText)['X.Test']).toEqual('from modifier');
 
         // it doesn't keep the function as part of the stack
         return mach.get(stack, 'http://example.com/foo')
