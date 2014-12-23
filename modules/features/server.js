@@ -3,6 +3,10 @@ var mach = require('../index');
 var filterProperties = require('../utils/filterProperties');
 var mergeProperties = require('../utils/mergeProperties');
 
+mach.bind = require('../utils/bindApp');
+mach.createConnection = require('../utils/createConnection');
+mach.serve = require('../utils/serveApp');
+
 Object.defineProperties(mach.Connection.prototype, {
 
   /**
