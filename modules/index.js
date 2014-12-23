@@ -2,13 +2,11 @@
  * mach - HTTP for JavaScript
  * https://github.com/mjackson/mach
  */
-var d = require('d');
-
-Object.defineProperties(exports, {
-  Connection: d(require('./Connection')),
-  Location: d(require('./Location')),
-  Message: d(require('./Message')),
-  version: d(require('./version'))
-});
+module.exports = {
+  Connection: require('./Connection'),
+  Location: require('./Location'),
+  Message: require('./Message'),
+  version: require('./version')
+};
 
 require('./features/node');
