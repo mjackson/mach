@@ -1,4 +1,4 @@
 /**
  * The current version of mach.
  */
-module.exports = '1.0.0-rc3';
+module.exports = '1.0.0-rc4';

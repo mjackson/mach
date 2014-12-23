@@ -1,4 +1,4 @@
-### HEAD
+### 1.0.0-rc4 / 2014-12-23
 
   * Fixed client argument coercion, see #62
   * Added setters for Message#mediaType and Message#charset
