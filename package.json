@@ -56,6 +56,6 @@
   "browser": {
     "./modules/features/node.js": "./modules/features/browser.js",
     "./modules/utils/parseURL.js": "./modules/utils/parseURL-browser.js",
-    "./modules/utils/proxyRequest.js": "./modules/utils/proxyRequest-browser.js"
+    "./modules/utils/sendRequest.js": "./modules/utils/sendRequest-browser.js"
   }
 }

@@ -2,7 +2,7 @@ var http = require('http');
 var https = require('https');
 var AbortablePromise = require('./AbortablePromise');
 
-function proxyRequestUsingNode(conn, location) {
+function sendRequest(conn, location) {
   var transport = location.protocol === 'https:' ? https : http;
 
   return new AbortablePromise(function (resolve, reject, onAbort) {
@@ -34,4 +34,4 @@ function proxyRequestUsingNode(conn, location) {
   });
 }
 
-module.exports = proxyRequestUsingNode;
+module.exports = sendRequest;

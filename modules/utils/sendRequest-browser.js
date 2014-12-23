@@ -43,7 +43,7 @@ function pipeContent(xhr, stream, offset) {
 var READ_HEADERS_RECEIVED_STATE = true;
 var READ_LOADING_STATE = true;
 
-function proxyRequest(conn, location) {
+function sendRequest(conn, location) {
   return new AbortablePromise(function (resolve, reject, onAbort) {
     var xhr = new XMLHttpRequest;
     xhr.open(conn.method, location.href, true);
@@ -117,4 +117,4 @@ function proxyRequest(conn, location) {
   });
 }
 
-module.exports = proxyRequest;
+module.exports = sendRequest;
