@@ -5,8 +5,8 @@ var Location = require('../Location');
  * Standard ports for HTTP protocols.
  */
 var STANDARD_PORTS = {
-  'http:': 80,
-  'https:': 443
+  'http:': '80',
+  'https:': '443'
 };
 
 /**
