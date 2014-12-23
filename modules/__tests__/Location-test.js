@@ -1,5 +1,19 @@
+/* jshint -W058 */
 var expect = require('expect');
 var Location = require('../Location');
+
+describe('An empty Location', function () {
+  
+  var location;
+  beforeEach(function () {
+    location = new Location;
+  });
+
+  it('has the correct href', function () {
+    expect(location.href).toEqual('/');
+  });
+
+});
 
 describe('A fully-specified Location', function () {
 
