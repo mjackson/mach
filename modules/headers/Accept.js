@@ -4,6 +4,27 @@ var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
 var stringifyMediaValues = require('../utils/stringifyMediaValues');
 var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaValueWithoutQualityFactor');
+var Header = require('../Header');
+
+function paramsMatchIgnoringQualityFactor(params, givenParams) {
+  for (var paramName in params)
+    if (params.hasOwnProperty(paramName) && paramName !== 'q' && givenParams[paramName] !== params[paramName])
+      return false;
+
+  return true;
+}
+
+function byHighestPrecedence(a, b) {
+  //   Accept: text/*, text/html, text/html;level=1, */*
+  // 
+  // have the following precedence:
+  // 
+  //   1) text/html;level=1
+  //   2) text/html
+  //   3) text/*
+  //   4) */*
+  return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
+}
 
 /**
  * Represents an HTTP Accept header and provides several methods for
@@ -12,16 +33,20 @@ var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaVa
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  */
 function Accept(value) {
-  this._mediaValues = value ? parseMediaValues(value) : [];
+  Header.call(this, 'Accept', value);
 }
 
-Object.defineProperties(Accept.prototype, {
+Accept.prototype = Object.create(Header.prototype, {
+
+  constructor: d(Accept),
 
   /**
    * Returns the value of this header as a string.
    */
   value: d.gs(function () {
     return stringifyMediaValues(this._mediaValues) || '*/*';
+  }, function (value) {
+    this._mediaValues = value ? parseMediaValues(value) : [];
   }),
 
   /**
@@ -51,32 +76,8 @@ Object.defineProperties(Accept.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  }),
-
-  toString: d(function () {
-    return 'Accept: ' + this.value;
   })
 
 });
-
-function paramsMatchIgnoringQualityFactor(params, givenParams) {
-  for (var paramName in params)
-    if (params.hasOwnProperty(paramName) && paramName !== 'q' && givenParams[paramName] !== params[paramName])
-      return false;
-
-  return true;
-}
-
-function byHighestPrecedence(a, b) {
-  //   Accept: text/*, text/html, text/html;level=1, */*
-  // 
-  // have the following precedence:
-  // 
-  //   1) text/html;level=1
-  //   2) text/html
-  //   3) text/*
-  //   4) */*
-  return stringifyMediaValueWithoutQualityFactor(b).length - stringifyMediaValueWithoutQualityFactor(a).length;
-}
 
 module.exports = Accept;

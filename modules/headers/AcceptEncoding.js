@@ -3,6 +3,12 @@ var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
 var stringifyMediaValues = require('../utils/stringifyMediaValues');
+var Header = require('../Header');
+
+function byHighestPrecedence(a, b) {
+  // "*" gets least precedence, all others are equal
+  return a === '*' ? -1 : (b === '*' ? 1 : 0);
+}
 
 /**
  * Represents an HTTP Accept-Encoding header and provides several methods
@@ -11,16 +17,20 @@ var stringifyMediaValues = require('../utils/stringifyMediaValues');
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
  */
 function AcceptEncoding(value) {
-  this._mediaValues = value ? parseMediaValues(value) : [];
+  Header.call(this, 'Accept-Encoding', value);
 }
 
-Object.defineProperties(AcceptEncoding.prototype, {
+AcceptEncoding.prototype = Object.create(Header.prototype, {
+
+  constructor: d(AcceptEncoding),
 
   /**
    * Returns the value of this header as a string.
    */
   value: d.gs(function () {
     return stringifyMediaValues(this._mediaValues) || '';
+  }, function (value) {
+    this._mediaValues = value ? parseMediaValues(value) : [];
   }),
 
   /**
@@ -62,17 +72,8 @@ Object.defineProperties(AcceptEncoding.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  }),
-
-  toString: d(function () {
-    return 'Accept-Encoding: ' + this.value;
   })
 
 });
-
-function byHighestPrecedence(a, b) {
-  // "*" gets least precedence, all others are equal
-  return a === '*' ? -1 : (b === '*' ? 1 : 0);
-}
 
 module.exports = AcceptEncoding;
