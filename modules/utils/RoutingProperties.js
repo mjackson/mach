@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 
 var RoutingMethods = {
   delete: 'DELETE',

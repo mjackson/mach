@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var mergeQuery = require('./utils/mergeQuery');
 var stringifyQuery = require('./utils/stringifyQuery');
 var parseQuery = require('./utils/parseQuery');

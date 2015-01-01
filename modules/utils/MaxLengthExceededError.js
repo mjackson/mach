@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 
 /**
  * An error indicating that some maximum length has been exceeded.

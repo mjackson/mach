@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');

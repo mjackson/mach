@@ -1,5 +1,5 @@
 /* jshint -W084 */
-var d = require('d');
+var d = require('describe-property');
 var objectAssign = require('object-assign');
 var compileRoute = require('../utils/compileRoute');
 var isRegExp = require('../utils/isRegExp');

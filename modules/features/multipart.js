@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var mach = require('../index');
 
 var _parseContent = mach.Message.prototype._parseContent;

@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var RoutingProperties = require('../utils/RoutingProperties');
 var createMapper = require('./mapper');
 var createRouter = require('./router');

@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var makeToken = require('../../utils/makeToken');
 var Promise = require('../../utils/Promise');
 

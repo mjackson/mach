@@ -1,5 +1,5 @@
 /* jshint -W058 */
-var d = require('d');
+var d = require('describe-property');
 var isBinary = require('./utils/isBinary');
 var decodeBase64 = require('./utils/decodeBase64');
 var encodeBase64 = require('./utils/encodeBase64');

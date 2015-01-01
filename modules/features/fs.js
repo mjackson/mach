@@ -1,5 +1,5 @@
 var fs = require('fs');
-var d = require('d');
+var d = require('describe-property');
 var mach = require('../index');
 var getMimeType = require('../utils/getMimeType');
 var streamPartToDisk = require('../utils/streamPartToDisk');

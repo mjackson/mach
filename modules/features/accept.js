@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var mach = require('../index');
 var Accept = require('../headers/Accept');
 var AcceptCharset = require('../headers/AcceptCharset');

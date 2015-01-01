@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var escapeRegExp = require('../utils/escapeRegExp');
 
 function byMostSpecific(a, b) {

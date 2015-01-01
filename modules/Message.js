@@ -1,4 +1,4 @@
-var d = require('d');
+var d = require('describe-property');
 var Stream = require('bufferedstream');
 var binaryTo = require('./utils/binaryTo');
 var binaryFrom = require('./utils/binaryFrom');
