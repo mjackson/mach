@@ -4,6 +4,7 @@
  */
 module.exports = {
   Connection: require('./Connection'),
+  Header: require('./Header'),
   Location: require('./Location'),
   Message: require('./Message'),
   version: require('./version')
