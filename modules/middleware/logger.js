@@ -15,10 +15,10 @@ function logger(app, messageHandler) {
   messageHandler = messageHandler || defaultMessageHandler;
 
   return function (conn) {
-    var start = Date.now();
+    var startTime = Date.now();
 
     return conn.call(app).then(function () {
-      var elapsedTime = Date.now() - start;
+      var elapsedTime = Date.now() - startTime;
       var contentLength = conn.response.headers['Content-Length'];
 
       if (contentLength == null)
