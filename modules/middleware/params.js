@@ -1,7 +1,7 @@
 require('../features/server');
 
+var objectAssign = require('object-assign');
 var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
-var mergeProperties = require('../utils/mergeProperties');
 
 /**
  * Automatically parses all request parameters and stores them in conn.params.
@@ -31,7 +31,7 @@ function parseParams(app, options) {
     return conn.getParams(maxLength, uploadPrefix).then(function (params) {
       if (conn.params) {
         // Route params take precedence over content params.
-        conn.params = mergeProperties(params, conn.params);
+        conn.params = objectAssign(params, conn.params);
       } else {
         conn.params = params;
       }

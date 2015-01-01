@@ -7,6 +7,7 @@
     "bodec": "git://github.com/mjackson/bodec#browser",
     "bufferedstream": "^3.0.5",
     "d": "^0.1.1",
+    "object-assign": "^2.0.0",
     "qs": "^2.3.3",
     "strftime": "^0.8.2",
     "when": "^3.6.4"

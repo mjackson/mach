@@ -1,6 +1,6 @@
+var objectAssign = require('object-assign');
 var mach = require('../index');
 var Location = require('../Location');
-var mergeProperties = require('../utils/mergeProperties');
 var sendRequest = require('../utils/sendRequest');
 
 function defaultApp(conn) {
@@ -28,7 +28,7 @@ mach.call = require('../utils/callApp');
       } else if (app instanceof Location) { // get(location, modifier)
         options = { location: app };
       } else { // get(options, modifier)
-        options = mergeProperties({}, app || {});
+        options = objectAssign({}, app || {});
       }
 
       app = defaultApp;
@@ -40,7 +40,7 @@ mach.call = require('../utils/callApp');
       modifier = options;
       options = {};
     } else { // get(app, options, modifier)
-      options = mergeProperties({}, options || {});
+      options = objectAssign({}, options || {});
     }
 
     options.method = method;

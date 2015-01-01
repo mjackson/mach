@@ -1,7 +1,7 @@
 var d = require('d');
+var objectAssign = require('object-assign');
 var mach = require('../index');
 var filterProperties = require('../utils/filterProperties');
-var mergeProperties = require('../utils/mergeProperties');
 
 mach.bind = require('../utils/bindApp');
 mach.createConnection = require('../utils/createConnection');
@@ -72,11 +72,11 @@ Object.defineProperties(mach.Connection.prototype, {
     }
 
     var request = this.request;
-    var queryParams = mergeProperties({}, this.query);
+    var queryParams = objectAssign({}, this.query);
 
     return request.parseContent(maxLength, uploadPrefix).then(function (contentParams) {
       // Content params take precedence over query params.
-      var params = mergeProperties(queryParams, contentParams);
+      var params = objectAssign(queryParams, contentParams);
       return paramTypes ? filterProperties(params, paramTypes) : params;
     });
   }),

@@ -1,9 +1,9 @@
 /* jshint -W084 */
 var d = require('d');
+var objectAssign = require('object-assign');
 var compileRoute = require('../utils/compileRoute');
 var isRegExp = require('../utils/isRegExp');
 var makeParams = require('../utils/makeParams');
-var mergeProperties = require('../utils/mergeProperties');
 var RoutingProperties = require('../utils/RoutingProperties');
 
 var LEADING_HTTP_METHOD_MATCHER = /^(DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE)\s+(.+)$/;
@@ -89,7 +89,7 @@ function createRouter(app, map) {
 
         if (conn.params) {
           // Route params take precedence above all others.
-          mergeProperties(conn.params, params);
+          objectAssign(conn.params, params);
         } else {
           conn.params = params;
         }
