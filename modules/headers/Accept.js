@@ -11,8 +11,8 @@ var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaVa
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  */
-function Accept(headerValue) {
-  this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
+function Accept(value) {
+  this._mediaValues = value ? parseMediaValues(value) : [];
 }
 
 Object.defineProperties(Accept.prototype, {
@@ -60,10 +60,9 @@ Object.defineProperties(Accept.prototype, {
 });
 
 function paramsMatchIgnoringQualityFactor(params, givenParams) {
-  for (var paramName in params) {
+  for (var paramName in params)
     if (params.hasOwnProperty(paramName) && paramName !== 'q' && givenParams[paramName] !== params[paramName])
       return false;
-  }
 
   return true;
 }

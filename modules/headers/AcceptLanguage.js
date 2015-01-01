@@ -11,8 +11,8 @@ var stringifyMediaValueWithoutQualityFactor = require('../utils/stringifyMediaVa
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
  */
-function AcceptLanguage(headerValue) {
-  this._mediaValues = headerValue ? parseMediaValues(headerValue, '-') : [];
+function AcceptLanguage(value) {
+  this._mediaValues = value ? parseMediaValues(value, '-') : [];
 }
 
 Object.defineProperties(AcceptLanguage.prototype, {

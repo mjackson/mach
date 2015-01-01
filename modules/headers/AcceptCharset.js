@@ -10,8 +10,8 @@ var stringifyMediaValues = require('../utils/stringifyMediaValues');
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
  */
-function AcceptCharset(headerValue) {
-  this._mediaValues = headerValue ? parseMediaValues(headerValue) : [];
+function AcceptCharset(value) {
+  this._mediaValues = value ? parseMediaValues(value) : [];
 }
 
 Object.defineProperties(AcceptCharset.prototype, {
