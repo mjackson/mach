@@ -34,8 +34,6 @@ function byMostSpecific(a, b) {
  *     // ...
  *   });
  *
- *   mach.serve(app);
- *
  * Or all at once:
  *
  *   var app = mach.mapper({
@@ -45,8 +43,6 @@ function byMostSpecific(a, b) {
  *     }
  *
  *   });
- *
- *   mach.serve(app);
  *
  * Note: Dispatch is done in such a way that the longest paths are tried first
  * since they are the most specific.

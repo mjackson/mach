@@ -46,8 +46,6 @@ var LEADING_HTTP_METHOD_MATCHER = /^(DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE)\s+(
  *     // ...
  *   });
  *
- *   mach.serve(app);
- * 
  * Or all at once:
  *
  *   var app = mach.router({
@@ -61,8 +59,6 @@ var LEADING_HTTP_METHOD_MATCHER = /^(DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE)\s+(
  *     }
  *
  *   });
- *
- *   mach.serve(app);
  *
  * Note: Routes are always tried in the order they were defined.
  */
