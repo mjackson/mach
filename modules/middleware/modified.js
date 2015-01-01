@@ -20,16 +20,14 @@ function modified(app) {
   return function (conn) {
     return conn.call(app).then(function () {
       var request = conn.request, response = conn.response;
+
       var ifNoneMatch = request.headers['If-None-Match'];
+      var etag = response.headers['ETag'];
 
-      if (ifNoneMatch) {
-        var etag = response.headers['ETag'];
-
-        if (etag && etag === stripQuotes(ifNoneMatch)) {
-          conn.status = 304;
-          response.content = '';
-          return;
-        }
+      if (ifNoneMatch && etag && etag === stripQuotes(ifNoneMatch)) {
+        conn.status = 304;
+        response.content = '';
+        return;
       }
 
       var ifModifiedSince = request.headers['If-Modified-Since'];

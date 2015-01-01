@@ -59,7 +59,7 @@ var joinPaths = require('../utils/joinPaths');
  *   mach.serve(app);
  */
 function file(app, options) {
-  // Allow mach.file(path)
+  // Allow mach.file(options)
   if (typeof app !== 'function') {
     options = app;
     app = null;
@@ -67,7 +67,7 @@ function file(app, options) {
 
   options = options || {};
 
-  // Allow app.use(mach.file, path)
+  // Allow mach.file(path) and app.use(mach.file, path)
   if (typeof options === 'string')
     options = { root: options };
 
