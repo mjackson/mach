@@ -89,7 +89,7 @@ function generateIndex(root, pathname, basename) {
           className = (className === 'even') ? 'odd' : 'even';
         });
 
-        var title = 'Index of ' + pathname;
+        var title = 'Index of ' + basename + pathname;
         var content = formatString(PAGE_TEMPLATE, title, title, rows, 'mach', MACH_VERSION);
 
         resolve(content);
