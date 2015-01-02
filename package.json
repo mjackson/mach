@@ -5,7 +5,7 @@
   "main": "modules/index.js",
   "dependencies": {
     "bodec": "git://github.com/mjackson/bodec#browser",
-    "bufferedstream": "^3.0.5",
+    "bufferedstream": "^3.0.7",
     "describe-property": "^1.0.0",
     "object-assign": "^2.0.0",
     "qs": "^2.3.3",
