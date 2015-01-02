@@ -1,6 +1,9 @@
-require('../features/server');
-
+var mach = require('../index');
 var makeToken = require('../utils/makeToken');
+
+mach.extend(
+  require('../extensions/server')
+);
 
 /**
  * The set of HTTP request methods that are considered safe because they

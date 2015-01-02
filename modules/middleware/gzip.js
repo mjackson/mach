@@ -1,6 +1,10 @@
-require('../features/accept');
-
 var zlib = require('zlib');
+var mach = require('../index');
+
+mach.extend(
+  require('../extensions/accept')
+);
+
 var GZIP_MATCHER = /text|javascript|json/i;
 
 function shouldGzipContentType(contentType) {

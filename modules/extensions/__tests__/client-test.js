@@ -1,6 +1,10 @@
 var expect = require('expect');
-var mach = require('../client');
+var mach = require('../../index');
 var createStack = require('../../middleware/stack');
+
+mach.extend(
+  require('../client')
+);
 
 function echoMethod(conn) {
   return conn.method;

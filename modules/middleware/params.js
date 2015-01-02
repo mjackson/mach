@@ -1,7 +1,10 @@
-require('../features/server');
-
 var objectAssign = require('object-assign');
+var mach = require('../index');
 var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
+
+mach.extend(
+  require('../extensions/server')
+);
 
 /**
  * Automatically parses all request parameters and stores them in conn.params.

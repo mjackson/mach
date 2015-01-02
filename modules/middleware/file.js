@@ -1,10 +1,13 @@
-require('../features/server');
-
 var fs = require('fs');
+var mach = require('../index');
 var Promise = require('../utils/Promise');
 var getFileStats = require('../utils/getFileStats');
 var generateIndex = require('../utils/generateIndex');
 var joinPaths = require('../utils/joinPaths');
+
+mach.extend(
+  require('../extensions/server')
+);
 
 /**
  * A middleware for serving files efficiently from the file system according

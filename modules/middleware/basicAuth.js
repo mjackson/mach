@@ -1,6 +1,9 @@
-require('../features/server');
-
+var mach = require('../index');
 var Promise = require('../utils/Promise');
+
+mach.extend(
+  require('../extensions/server')
+);
 
 /**
  * A middleware that performs basic auth on the incoming request before passing
