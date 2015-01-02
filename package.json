@@ -25,10 +25,11 @@
     "karma-sourcemap-loader": "^0.3.2",
     "karma-webpack": "^1.3.1",
     "mocha": "^2.0.1",
-    "webpack": "^1.4.14",
+    "webpack": "^1.4.15",
     "webpack-dev-server": "^1.6.6"
   },
   "scripts": {
+    "dist": "NODE_ENV=production webpack -p dist/mach.min.js",
     "test": "jshint . && mocha --reporter spec 'modules/**/__tests__/*-test.js'",
     "test-browser": "karma start"
   },
