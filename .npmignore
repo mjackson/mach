@@ -1,5 +1,6 @@
 .jshintignore
 .jshintrc
 .travis.yml
+dist
 examples
 modules/**/__tests__
