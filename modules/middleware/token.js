@@ -38,8 +38,8 @@ var SAFE_METHODS = {
  *   app.use(mach.session);
  *   app.use(mach.params);
  *   app.use(mach.token);
- *   app.run(function (request) {
- *     // The request was authenticated successfully.
+ *   app.run(function (conn) {
+ *     // The connection authenticated successfully
  *   });
  *
  * Options may be any of the following:
