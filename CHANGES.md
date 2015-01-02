@@ -1,3 +1,7 @@
+### HEAD
+
+  * Upgrade BufferedStream to 3.0.7
+
 ### 1.0.0 / 2015-01-02
 
   * Added mach.extend for loading "extensions" to the mach object. By default all
