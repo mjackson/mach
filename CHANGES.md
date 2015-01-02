@@ -1,3 +1,9 @@
+### 1.0.0 / 2015-01-02
+
+  * Added mach.extend for loading "extensions" to the mach object. By default all
+    extensions are loaded in node.js. Only the client extension is loaded in browsers.
+  * Added a global build for use in browsers.
+
 ### 1.0.0-rc4 / 2014-12-23
 
   * Fixed client argument coercion, see #62
