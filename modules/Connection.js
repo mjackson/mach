@@ -82,7 +82,7 @@ function Connection(options) {
     location = options; // options may be a URL string.
   } else if (options.location || options.url) {
     location = options.location || options.url;
-  } else if (typeof window !== 'undefined') {
+  } else if (typeof window === 'object') {
     location = window.location.href;
   }
 
