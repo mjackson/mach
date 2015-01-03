@@ -17,6 +17,7 @@ describe('mach.file', function () {
           expect(conn.status).toEqual(200);
           expect(conn.responseText).toEqual(contents);
           expect(conn.response.headers['Content-Type']).toEqual('application/javascript');
+          expect(conn.response.headers['Last-Modified']).toBeA('string');
         });
       });
     });
@@ -61,6 +62,29 @@ describe('mach.file', function () {
           expect(conn.status).toEqual(200);
           expect(conn.responseText).toEqual(contents);
           expect(conn.response.headers['Content-Type']).toEqual('application/javascript');
+        });
+      });
+    });
+  });
+
+  describe('with useLastModified=false and useETag=true', function () {
+    var app = file({
+      root: __dirname + '/fixtures',
+      index: 'jquery-1.8.3.js',
+      useLastModified: false,
+      useETag: true
+    });
+
+    describe('when a file is requested', function () {
+      it('does not set the Last-Modified header', function () {
+        return callApp(app, '/jquery-1.8.3.js').then(function (conn) {
+          expect(conn.response.headers['Last-Modified']).toBe(undefined);
+        });
+      });
+
+      it('sets the ETag header', function () {
+        return callApp(app, '/jquery-1.8.3.js').then(function (conn) {
+          expect(conn.response.headers['ETag']).toMatch(/"[a-f0-9]+"/);
         });
       });
     });

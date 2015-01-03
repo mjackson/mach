@@ -2,6 +2,7 @@ var fs = require('fs');
 var mach = require('../index');
 var Promise = require('../utils/Promise');
 var getFileStats = require('../utils/getFileStats');
+var generateETag = require('../utils/generateETag');
 var generateIndex = require('../utils/generateIndex');
 var joinPaths = require('../utils/joinPaths');
 
@@ -90,12 +91,20 @@ function file(app, options) {
   var useLastModified = ('useLastModified' in options) ? !!options.useLastModified : true;
   var useETag = !!options.useETag;
 
-  function makeFileOptions(path) {
-    return {
+  function sendFile(conn, path, stats) {
+    conn.file({
       path: path,
-      useLastModified: useLastModified,
-      useETag: useETag
-    };
+      size: stats.size
+    });
+
+    if (useLastModified)
+      conn.response.headers['Last-Modified'] = stats.mtime.toUTCString();
+
+    if (useETag) {
+      return generateETag(path).then(function (etag) {
+        conn.response.headers.ETag = etag;
+      });
+    }
   }
 
   return function (conn) {
@@ -112,7 +121,7 @@ function file(app, options) {
 
     return getFileStats(path).then(function (stats) {
       if (stats && stats.isFile())
-        return conn.file(makeFileOptions(path), stats);
+        return sendFile(conn, path, stats);
 
       if (!stats || !stats.isDirectory())
         return conn.call(app);
@@ -125,7 +134,7 @@ function file(app, options) {
       return Promise.all(indexPaths.map(getFileStats)).then(function (stats) {
         for (var i = 0, len = stats.length; i < len; ++i)
           if (stats[i])
-            return conn.file(makeFileOptions(indexPaths[i]), stats[i]);
+            return sendFile(conn, indexPaths[i], stats[i]);
 
         if (!options.autoIndex)
           return conn.call(app);

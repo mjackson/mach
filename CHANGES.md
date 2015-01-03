@@ -1,8 +1,9 @@
 ### HEAD
 
-  * Added support for binary response bodies in IE9.
-  * Moved Message#setCookie into the server extension.
-  * Upgrade BufferedStream to 3.0.7
+  * Fixed a bug with using Last-Modified and ETag headers with mach.file
+  * Added support for binary response bodies in IE9
+  * Moved Message#setCookie into the server extension
+  * Upgraded BufferedStream dependency to 3.0.7
 
 ### 1.0.0 / 2015-01-02
 

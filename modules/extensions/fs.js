@@ -7,7 +7,15 @@ module.exports = function (mach) {
   Object.defineProperties(mach.Connection.prototype, {
 
     /**
-     * Sends a file to the client with the given options.
+     * Sends a file to the client with the given options. The following
+     * options are available:
+     *
+     * - content/path   The raw file content as a string, Buffer, stream, or
+     *                  path to a file on disk
+     * - type           The Content-Type of the file. Defaults to a guess based
+     *                  on the file extension when a file path is given
+     * - length/size    The Content-Length of the file, if it's known. Defaults
+     *                  to the size of the file when a file path is given
      *
      * Examples:
      *
@@ -29,7 +37,6 @@ module.exports = function (mach) {
       if (options.content) {
         response.content = options.content;
       } else if (typeof options.path === 'string') {
-        response.headers['Content-Length'] = fs.statSync(options.path).size;
         response.content = fs.createReadStream(options.path);
       } else {
         throw new Error('Missing file content/path');
@@ -38,8 +45,11 @@ module.exports = function (mach) {
       if (options.type || options.path)
         response.headers['Content-Type'] = options.type || getMimeType(options.path);
 
-      if (options.length || options.size)
+      if (options.length || options.size) {
         response.headers['Content-Length'] = options.length || options.size;
+      } else if (typeof options.path === 'string') {
+        response.headers['Content-Length'] = fs.statSync(options.path).size;
+      }
     })
 
   });
