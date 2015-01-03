@@ -3,10 +3,9 @@ var stringifyMediaValue = require('./stringifyMediaValue');
 function cloneParamsWithoutQualityFactor(params) {
   var clone = {};
 
-  for (var paramName in params) {
+  for (var paramName in params)
     if (params.hasOwnProperty(paramName) && paramName !== 'q')
       clone[paramName] = params[paramName]; 
-  }
 
   return clone;
 }
