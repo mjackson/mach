@@ -6,7 +6,6 @@ var AbortablePromise = require('./AbortablePromise');
 function copyStatusAndHeaders(xhr, conn) {
   conn.response.headers = xhr.getAllResponseHeaders();
   conn.status = xhr.status;
-
   return conn.status;
 }
 
@@ -18,6 +17,9 @@ function getContent(xhr) {
 
   if (type === 'arraybuffer')
     return xhr.response;
+
+  if (typeof VBArray === 'function')
+    return new VBArray(client.responseBody).toArray(); // IE9
 
   return xhr.responseText;
 }
@@ -40,6 +42,21 @@ function pipeContent(xhr, stream, offset) {
   return offset;
 }
 
+function enableBinaryContent(xhr) {
+  if ('responseType' in xhr) {
+    xhr.responseType = 'arraybuffer'; // XHR2
+  } else if ('overrideMimeType' in xhr) {
+    xhr.overrideMimeType('text/plain; charset=x-user-defined'); // XHR
+  } else {
+    xhr.setRequestHeader('Accept-Charset', 'x-user-defined'); // IE9
+  }
+}
+
+function enableCredentials(xhr) {
+  if ('withCredentials' in xhr)
+    xhr.withCredentials = true;
+}
+
 var READ_HEADERS_RECEIVED_STATE = true;
 var READ_LOADING_STATE = true;
 
@@ -48,11 +65,10 @@ function sendRequest(conn, location) {
     var xhr = new XMLHttpRequest;
     xhr.open(conn.method, location.href, true);
 
-    if ('withCredentials' in xhr && conn.withCredentials)
-      xhr.withCredentials = true;
+    enableBinaryContent(xhr);
 
-    if ('responseType' in xhr)
-      xhr.responseType = 'arraybuffer';
+    if (conn.withCredentials)
+      enableCredentials(xhr);
 
     var request = conn.request;
     var headers = request.headers;

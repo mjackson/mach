@@ -1,5 +1,6 @@
 ### HEAD
 
+  * Added support for binary response bodies in IE9.
   * Moved Message#setCookie into the server extension.
   * Upgrade BufferedStream to 3.0.7
 
