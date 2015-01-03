@@ -1,6 +1,7 @@
 var d = require('describe-property');
 var objectAssign = require('object-assign');
 var filterProperties = require('../utils/filterProperties');
+var stringifyCookie = require('../utils/stringifyCookie');
 
 module.exports = function (mach) {
   mach.bind = require('../utils/bindApp');
@@ -161,6 +162,17 @@ module.exports = function (mach) {
 
       if (json != null)
         this.response.content = typeof json === 'string' ? json : JSON.stringify(json);
+    })
+
+  });
+
+  Object.defineProperties(mach.Message.prototype, {
+
+    /**
+     * Sets a cookie with the given name and options.
+     */
+    setCookie: d(function (name, options) {
+      this.addHeader('Set-Cookie', stringifyCookie(name, options));
     })
 
   });

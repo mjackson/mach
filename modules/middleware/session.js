@@ -1,8 +1,13 @@
+var mach = require('../index');
 var Promise = require('../utils/Promise');
 var decodeBase64 = require('../utils/decodeBase64');
 var encodeBase64 = require('../utils/encodeBase64');
 var makeHash = require('../utils/makeHash');
 var CookieStore = require('./session/CookieStore');
+
+mach.extend(
+  require('../extensions/server')
+);
 
 /**
  * The maximum size of an HTTP cookie.

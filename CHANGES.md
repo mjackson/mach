@@ -1,5 +1,6 @@
 ### HEAD
 
+  * Moved Message#setCookie into the server extension.
   * Upgrade BufferedStream to 3.0.7
 
 ### 1.0.0 / 2015-01-02

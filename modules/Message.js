@@ -4,7 +4,6 @@ var binaryTo = require('./utils/binaryTo');
 var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
-var stringifyCookie = require('./utils/stringifyCookie');
 var parseCookie = require('./utils/parseCookie');
 var parseQuery = require('./utils/parseQuery');
 
@@ -113,13 +112,6 @@ Object.defineProperties(Message.prototype, {
     }
 
     return this._cookies;
-  }),
-
-  /**
-   * Sets a cookie with the given name and options.
-   */
-  setCookie: d(function (name, options) {
-    this.addHeader('Set-Cookie', stringifyCookie(name, options));
   }),
 
   /**
