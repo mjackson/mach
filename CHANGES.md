@@ -1,3 +1,7 @@
+### HEAD
+
+  * Fixed bundler build (webpack)
+
 ### 1.0.1 / 2015-01-02
 
   * Fixed a bug with using Last-Modified and ETag headers with mach.file

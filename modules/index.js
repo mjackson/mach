@@ -21,12 +21,4 @@ var mach = module.exports = {
 
 };
 
-mach.extend(require('./extensions/client'));
-
-if (typeof window === 'undefined') {
-  mach.extend(require('./extensions/accept'));
-  mach.extend(require('./extensions/fs'));
-  mach.extend(require('./extensions/multipart'));
-  mach.extend(require('./extensions/proxy'));
-  mach.extend(require('./extensions/server'));
-}
+mach.extend(require('./extensions/all'));
