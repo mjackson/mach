@@ -1,4 +1,4 @@
-### HEAD
+### 1.0.2 / 2015-01-03
 
   * Fixed bundler build (webpack)
 
