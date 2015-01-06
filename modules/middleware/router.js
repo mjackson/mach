@@ -64,7 +64,7 @@ var LEADING_HTTP_METHOD_MATCHER = /^(DELETE|GET|HEAD|OPTIONS|POST|PUT|TRACE)\s+(
  */
 function createRouter(app, map) {
   // Allow mach.router(map)
-  if (typeof app !== 'function') {
+  if (typeof app === 'object') {
     map = app;
     app = null;
   }

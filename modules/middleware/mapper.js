@@ -49,7 +49,7 @@ function byMostSpecific(a, b) {
  */
 function createMapper(app, map) {
   // Allow mach.mapper(map)
-  if (typeof app !== 'function') {
+  if (typeof app === 'object') {
     map = app;
     app = null;
   }

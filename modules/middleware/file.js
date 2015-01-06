@@ -63,8 +63,8 @@ mach.extend(
  *   mach.serve(app);
  */
 function file(app, options) {
-  // Allow mach.file(options)
-  if (typeof app !== 'function') {
+  // Allow mach.file(path|options)
+  if (typeof app === 'string' || typeof app === 'object') {
     options = app;
     app = null;
   }
