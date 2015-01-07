@@ -2,7 +2,7 @@ var zlib = require('zlib');
 var mach = require('../index');
 
 mach.extend(
-  require('../extensions/accept')
+  require('../extensions/acceptEncoding')
 );
 
 var GZIP_MATCHER = /text|javascript|json/i;
