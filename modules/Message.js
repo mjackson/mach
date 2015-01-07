@@ -62,7 +62,14 @@ Object.defineProperties(Message.prototype, {
   }),
 
   /**
-   * Sets the value of a header.
+   * Returns the value of the header with the given name.
+   */
+  getHeader: d(function (headerName) {
+    return this.headers[normalizeHeaderName(headerName)];
+  }),
+
+  /**
+   * Sets the value of the header with the given name.
    */
   setHeader: d(function (headerName, value) {
     this.headers[normalizeHeaderName(headerName)] = value;
