@@ -5,7 +5,6 @@ var decodeBase64 = require('./utils/decodeBase64');
 var encodeBase64 = require('./utils/encodeBase64');
 var stringifyQuery = require('./utils/stringifyQuery');
 var Promise = require('./utils/Promise');
-var StatusCodes = require('./StatusCodes');
 var Location = require('./Location');
 var Message = require('./Message');
 
@@ -188,13 +187,6 @@ Object.defineProperties(Connection.prototype, {
     return this.pathname + this.search;
   }, function (value) {
     this.location.path = this.basename + value;
-  }),
-
-  /**
-   * The message that corresponds with the response status code.
-   */
-  statusText: d.gs(function () {
-    return StatusCodes[this.status];
   }),
 
   /**
