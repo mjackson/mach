@@ -26,6 +26,10 @@ var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
 var HEADERS_LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';
 
+function defaultParser(message, maxLength) {
+  return message.stringifyContent(maxLength).then(parseQuery);
+}
+
 /**
  * An HTTP message.
  */
@@ -33,6 +37,23 @@ function Message(content, headers) {
   this.headers = headers;
   this.content = content;
 }
+
+Object.defineProperties(Message, {
+
+  PARSERS: d({
+    enumerable: true,
+    value: {
+
+      'application/json': function (message, maxLength) {
+        return message.stringifyContent(maxLength).then(JSON.parse);
+      },
+
+      'application/x-www-url-formencoded': defaultParser
+
+    }
+  })
+
+});
 
 Object.defineProperties(Message.prototype, {
 
@@ -138,10 +159,8 @@ Object.defineProperties(Message.prototype, {
    * See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
    */
   mediaType: d.gs(function () {
-    var contentType = this.contentType;
-
-    if (contentType)
-      return contentType.split(/\s*[;,]\s*/)[0].toLowerCase();
+    var contentType = this.contentType, match;
+    return (contentType && (match = contentType.match(/^([^;,]+)/))) ? match[1].toLowerCase() : null;
   }, function (value) {
     this.contentType = value + (this.charset ? ';charset=' + this.charset : '');
   }),
@@ -154,9 +173,7 @@ Object.defineProperties(Message.prototype, {
    */
   charset: d.gs(function () {
     var contentType = this.contentType, match;
-
-    if (contentType && (match = contentType.match(/\bcharset=([\w-]+)/)))
-      return match[1];
+    return (contentType && (match = contentType.match(/\bcharset=([\w-]+)/))) ? match[1] : null;
   }, function (value) {
     this.contentType = this.mediaType + (value ? ';charset=' + value : '');
   }),
@@ -241,15 +258,10 @@ Object.defineProperties(Message.prototype, {
     if (typeof uploadPrefix !== 'string')
       uploadPrefix = DEFAULT_UPLOAD_PREFIX;
 
-    this._parsedContent = this._parseContent(maxLength, uploadPrefix);
+    var parser = Message.PARSERS[this.mediaType] || defaultParser;
+    this._parsedContent = parser(this, maxLength, uploadPrefix);
 
     return this._parsedContent;
-  }),
-
-  _parseContent: d(function (maxLength, uploadPrefix) {
-    return this.stringifyContent(maxLength).then(
-      this.mediaType === 'application/json' ? JSON.parse : parseQuery
-    );
   })
 
 });

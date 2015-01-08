@@ -1,5 +1,8 @@
 var d = require('describe-property');
+var objectAssign = require('object-assign');
 var parseMessage = require('../multipart/parseMessage');
+
+var BOUNDARY_MATCHER = /^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im;
 
 function parseMultipartMessage(message, maxLength, uploadPrefix) {
   function partHandler(part) {
@@ -17,37 +20,18 @@ function parseMultipartMessage(message, maxLength, uploadPrefix) {
 }
 
 module.exports = function (mach) {
-  var _parseContent = mach.Message.prototype._parseContent;
+  objectAssign(mach.Message.PARSERS, {
+    'multipart/form-data': parseMultipartMessage
+  });
 
   Object.defineProperties(mach.Message.prototype, {
-
-    /**
-     * Override Message#_parseContent to enable parsing multipart messages.
-     */
-    _parseContent: d(function (maxLength, uploadPrefix) {
-      if (this.isMultipart)
-        return parseMultipartMessage(this, maxLength, uploadPrefix);
-
-      return _parseContent.apply(this, arguments);
-    }),
-
-    /**
-     * True if this message is multipart, false otherwise.
-     */
-    isMultipart: d.gs(function () {
-      return this.multipartBoundary != null;
-    }),
 
     /**
      * The value that was used as the boundary for multipart content.
      */
     multipartBoundary: d.gs(function () {
-      var contentType = this.contentType;
-
-      if (contentType) {
-        var match = contentType.match(/^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im);
-        return match && (match[1] || match[2]);
-      }
+      var contentType = this.contentType, match;
+      return (contentType && (match = contentType.match(BOUNDARY_MATCHER))) ? (match[1] || match[2]) : null;
     }),
 
     /**

@@ -6,6 +6,7 @@ var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
 var Message = require('../Message');
 
 describe('Message', function () {
+
   var message;
   beforeEach(function () {
     message = new Message;
