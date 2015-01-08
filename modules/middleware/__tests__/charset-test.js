@@ -17,17 +17,17 @@ function json(conn) {
 
 describe('mach.charset', function () {
   describe('when the response does not have a Content-Type', function () {
-    it('does not modify the Content-Type', function () {
-      return callApp(charset(jsonISO88591, 'utf-8')).then(function (conn) {
-        expect(conn.response.charset).toEqual('iso-8859-1');
+    it('does not set a charset', function () {
+      return callApp(charset(ok, 'utf-8')).then(function (conn) {
+        expect(conn.response.charset).toBe(null);
       });
     });
   });
 
   describe('when the response has a Content-Type with a charset', function () {
-    it('does not modify the Content-Type', function () {
-      return callApp(charset(ok, 'utf-8')).then(function (conn) {
-        expect(conn.response.charset).toBe(undefined);
+    it('does not modify the existing charset', function () {
+      return callApp(charset(jsonISO88591, 'utf-8')).then(function (conn) {
+        expect(conn.response.charset).toBe('iso-8859-1');
       });
     });
   });
