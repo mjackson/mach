@@ -1,6 +1,6 @@
 var objectAssign = require('object-assign');
-var Location = require('../Location');
 var sendRequest = require('../utils/sendRequest');
+var Location = require('../Location');
 
 function defaultApp(conn) {
   return sendRequest(conn, conn.location);
