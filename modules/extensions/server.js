@@ -8,13 +8,6 @@ module.exports = function (mach) {
   mach.createConnection = require('../utils/createConnection');
   mach.serve = require('../utils/serveApp');
 
-  // Expose all middleware as mach.charset, mach.file, etc.
-  var middleware = require('../middleware');
-
-  for (var property in middleware)
-    if (middleware.hasOwnProperty(property))
-      mach[property] = middleware[property];
-
   Object.defineProperties(mach.Connection.prototype, {
 
     /**

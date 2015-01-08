@@ -6,6 +6,7 @@ module.exports = function (mach) {
     require('./acceptLanguage'),
     require('./client'),
     require('./fs'),
+    require('./middleware'),
     require('./multipart'),
     require('./proxy'),
     require('./server'),
