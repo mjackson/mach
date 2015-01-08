@@ -56,7 +56,7 @@
     "url": "https://github.com/mjackson/mach/issues"
   },
   "browser": {
-    "./modules/extensions/all.js": "./modules/extensions/all-browser.js",
+    "./modules/extensions/default.js": "./modules/extensions/default-browser.js",
     "./modules/utils/parseURL.js": "./modules/utils/parseURL-browser.js",
     "./modules/utils/sendRequest.js": "./modules/utils/sendRequest-browser.js"
   }

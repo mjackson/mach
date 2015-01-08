@@ -26,4 +26,4 @@ var mach = module.exports = {
 
 };
 
-mach.extend(require('./extensions/all'));
+mach.extend(require('./extensions/default'));

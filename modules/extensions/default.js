@@ -1,3 +1,6 @@
+/**
+ * The default extension for node.js environments.
+ */
 module.exports = function (mach) {
   mach.extend(
     require('./accept'),
@@ -5,7 +8,6 @@ module.exports = function (mach) {
     require('./acceptEncoding'),
     require('./acceptLanguage'),
     require('./client'),
-    require('./fs'),
     require('./middleware'),
     require('./multipart'),
     require('./proxy'),

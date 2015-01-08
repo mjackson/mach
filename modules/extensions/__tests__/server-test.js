@@ -2,35 +2,41 @@
 var expect = require('expect');
 var mach = require('../../index');
 
-mach.extend(
-  require('../server')
-);
+describe('extensions/server', function () {
 
-describe('Message#setCookie', function () {
-  var message;
   beforeEach(function () {
-    message = new mach.Message;
+    mach.extend(require('../server'));
   });
 
-  describe('when no cookies have been previously set', function () {
-    it('sets the "Set-Cookie" header to the appropriate string', function () {
-      message.setCookie('cookieName', { value: 'cookieValue' });
-      expect(message.headers['Set-Cookie']).toEqual('cookieName=cookieValue');
-    });
-  });
+  describe('Message#setCookie', function () {
 
-  describe('when cookies have been previously set', function () {
+    var message;
     beforeEach(function () {
-      message.setCookie('previousOne', { value: 'previousOneValue' });
+      message = new mach.Message;
     });
 
-    it('sets the "Set-Cookie" header to an array of headers', function () {
-      message.setCookie('cookieName', { value: 'cookieValue' });
-
-      expect(message.headers['Set-Cookie']).toEqual([
-        'previousOne=previousOneValue',
-        'cookieName=cookieValue',
-      ]);
+    describe('when no cookies have been previously set', function () {
+      it('sets the "Set-Cookie" header to the appropriate string', function () {
+        message.setCookie('cookieName', { value: 'cookieValue' });
+        expect(message.headers['Set-Cookie']).toEqual('cookieName=cookieValue');
+      });
     });
+
+    describe('when cookies have been previously set', function () {
+      beforeEach(function () {
+        message.setCookie('previousOne', { value: 'previousOneValue' });
+      });
+
+      it('sets the "Set-Cookie" header to an array of headers', function () {
+        message.setCookie('cookieName', { value: 'cookieValue' });
+
+        expect(message.headers['Set-Cookie']).toEqual([
+          'previousOne=previousOneValue',
+          'cookieName=cookieValue',
+        ]);
+      });
+    });
+
   });
+
 });
