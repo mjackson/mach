@@ -143,6 +143,13 @@ Object.defineProperties(Connection.prototype, {
   query: locationPropertyAlias('query'),
 
   /**
+   * True if the request uses SSL, false otherwise.
+   */
+  isSSL: d.gs(function () {
+    return this.protocol === 'https:';
+  }),
+
+  /**
    * The username:password used in the request, an empty string
    * if no auth was provided.
    */

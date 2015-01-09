@@ -14,13 +14,6 @@ module.exports = function (mach) {
   Object.defineProperties(mach.Connection.prototype, {
 
     /**
-     * True if the request uses SSL, false otherwise.
-     */
-    isSSL: d.gs(function () {
-      return this.protocol === 'https:';
-    }),
-
-    /**
      * True if the request uses XMLHttpRequest, false otherwise.
      */
     isXHR: d.gs(function () {
