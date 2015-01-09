@@ -1,3 +1,18 @@
+### HEAD
+
+  * Fixed a bug in middleware that double as standalone apps that caused them
+    to throw an error when used in a stack that had no default app. This includes
+    mach.file, mach.mapper, and mach.router
+  * Moved Connection#statusText into statusText extension
+  * Added acceptCharset, acceptEncoding, acceptLanguage, and middleware extensions.
+    The accept extension now only adds support for the Accept header
+  * Added Message#getHeader
+  * Added Message.PARSERS for adding custom message parsers keyed by media type
+  * Rolled multipart.Part functionality into the multipart extension. Now, instead
+    of using a separate class the multipart extension just augments mach.Message
+  * Rolled the fs extension into the server extension, since they are always used
+    in the same environment (node.js)
+
 ### 1.0.2 / 2015-01-03
 
   * Fixed bundler build (webpack)
