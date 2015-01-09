@@ -6,7 +6,7 @@ function ok() {
   return 200;
 }
 
-describe('mach.favicon', function () {
+describe('middleware/favicon', function () {
   describe('when /favicon.ico is requested', function () {
     it('returns 404', function () {
       return callApp(favicon(ok), '/favicon.ico').then(function (conn) {

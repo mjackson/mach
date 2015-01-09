@@ -2,7 +2,7 @@ var expect = require('expect');
 var callApp = require('../callApp');
 var createProxy = require('../createProxy');
 
-describe('A proxy', function () {
+describe('a proxy', function () {
   var proxy;
   beforeEach(function () {
     proxy = createProxy('http://www.example.com/the/path?the=query');

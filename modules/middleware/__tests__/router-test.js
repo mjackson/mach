@@ -10,7 +10,7 @@ function stringifyParams(conn) {
   });
 }
 
-describe('mach.router', function () {
+describe('middleware/router', function () {
 
   var app = router();
 

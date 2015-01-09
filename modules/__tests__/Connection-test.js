@@ -1,7 +1,7 @@
 var expect = require('expect');
 var Connection = require('../Connection');
 
-describe('a connection that uses https', function () {
+describe('a Connection that uses https', function () {
 
   var conn;
   beforeEach(function () {

@@ -2,7 +2,7 @@ var expect = require('expect');
 var callApp = require('../../utils/callApp');
 var createMapper = require('../mapper');
 
-describe('mach.mapper', function () {
+describe('middleware/mapper', function () {
 
   function showInfo(conn) {
     return {

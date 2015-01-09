@@ -18,7 +18,7 @@ function returnFalse() {
   return false;
 }
 
-describe('mach.proxy', function () {
+describe('middleware/proxy', function () {
   describe('when no test function is given', function () {
     it('forwards the request', function () {
       return callApp(proxy(ok, target)).then(function (conn) {

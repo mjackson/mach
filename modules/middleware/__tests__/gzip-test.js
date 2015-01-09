@@ -3,7 +3,7 @@ var gzip = require('../gzip');
 var callApp = require('../../utils/callApp');
 var getFixture = require('./getFixture');
 
-describe('mach.gzip', function () {
+describe('middleware/gzip', function () {
   var contents = getFixture('test.txt');
   var gzippedContents = getFixture('test.txt.gz');
   var app = gzip(function () {

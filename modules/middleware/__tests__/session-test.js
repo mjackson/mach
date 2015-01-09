@@ -20,7 +20,7 @@ function getSessionCookie(setCookieHeader) {
   return match[0];
 }
 
-describe('mach.session', function () {
+describe('middleware/session', function () {
 
   describe('when using a server-side store', function () {
     var store = new MemoryStore({ expireAfter: 10 });

@@ -12,7 +12,7 @@ function extractCookie(setCookie) {
   return match[0];
 }
 
-describe('mach.token', function () {
+describe('middleware/token', function () {
 
   var app = stack();
   app.use(session, { secret: 'foo' });

@@ -15,7 +15,7 @@ function json(conn) {
   conn.json(200, 'hi there');  
 }
 
-describe('mach.charset', function () {
+describe('middleware/charset', function () {
   describe('when the response does not have a Content-Type', function () {
     it('does not set a charset', function () {
       return callApp(charset(ok, 'utf-8')).then(function (conn) {

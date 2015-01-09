@@ -10,7 +10,7 @@ function validateCredentials(username, password) {
   return username === 'michael' && password === 'password';
 }
 
-describe('mach.basicAuth', function () {
+describe('middleware/basicAuth', function () {
   var app;
   beforeEach(function () {
     app = basicAuth(ok, validateCredentials);

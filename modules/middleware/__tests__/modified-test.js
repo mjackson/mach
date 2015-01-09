@@ -2,7 +2,7 @@ var expect = require('expect');
 var callApp = require('../../utils/callApp');
 var modified = require('../modified');
 
-describe('mach.modified', function () {
+describe('middleware/modified', function () {
 
   var etag, lastModified, app;
   beforeEach(function () {

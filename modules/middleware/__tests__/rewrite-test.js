@@ -6,7 +6,7 @@ function echoPathname(conn) {
   return conn.pathname;
 }
 
-describe('mach.rewrite', function () {
+describe('middleware/rewrite', function () {
   var app = rewrite(echoPathname, '/abc', '/xyz');
   app = rewrite(app, /\/def/g, '/xyz');
   app = rewrite(app, '/abc.jpeg', '/def.jpeg');

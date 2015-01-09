@@ -3,7 +3,7 @@ var expect = require('expect');
 var callApp = require('../../utils/callApp');
 var catchMiddleware = require('../catch');
 
-describe('mach.catch', function () {
+describe('middleware/catch', function () {
   describe('when an Error is thrown from downstream', function () {
     it('throws it', function () {
       return callApp(

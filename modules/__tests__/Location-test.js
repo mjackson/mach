@@ -2,8 +2,7 @@
 var expect = require('expect');
 var Location = require('../Location');
 
-describe('An empty Location', function () {
-  
+describe('an empty Location', function () {
   var location;
   beforeEach(function () {
     location = new Location;
@@ -12,10 +11,9 @@ describe('An empty Location', function () {
   it('has the correct href', function () {
     expect(location.href).toEqual('/');
   });
-
 });
 
-describe('A fully-specified Location', function () {
+describe('a fully-specified Location', function () {
 
   var location;
   beforeEach(function () {
@@ -206,7 +204,7 @@ describe('A fully-specified Location', function () {
 
 });
 
-describe('A Location with only a path', function () {
+describe('a Location with only a path', function () {
 
   var location;
   beforeEach(function () {
@@ -239,7 +237,7 @@ describe('A Location with only a path', function () {
 
 });
 
-describe('A Location with no search', function () {
+describe('a Location with no search', function () {
 
   var location;
   beforeEach(function () {

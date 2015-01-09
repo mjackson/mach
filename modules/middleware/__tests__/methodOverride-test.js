@@ -3,7 +3,7 @@ var callApp = require('../../utils/callApp');
 var methodOverride = require('../methodOverride');
 var params = require('../params');
 
-describe('methodOverride', function () {
+describe('middleware/methodOverride', function () {
   var app = methodOverride(function (conn) {
     return conn.method;
   });

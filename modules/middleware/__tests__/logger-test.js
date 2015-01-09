@@ -9,7 +9,7 @@ function zeroLength() {
   };
 }
 
-describe('mach.logger', function () {
+describe('middleware/logger', function () {
   describe('when a response has Content-Length of 100', function () {
     var messages, messageHandler;
     beforeEach(function () {

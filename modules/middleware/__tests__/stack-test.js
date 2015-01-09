@@ -11,7 +11,7 @@ function addHeader(app, headerName) {
   };
 }
 
-describe('mach.stack', function () {
+describe('middleware/stack', function () {
 
   var app = stack();
 

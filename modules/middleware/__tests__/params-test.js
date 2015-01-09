@@ -6,7 +6,7 @@ function stringifyParams(conn) {
   return JSON.stringify(conn.params);
 }
 
-describe('mach.params', function () {
+describe('middleware/params', function () {
   describe('when both query and content parameters are present', function () {
     it('merges query and content parameters, giving precedence to content', function () {
       return callApp(paramsMiddleware(stringifyParams), {

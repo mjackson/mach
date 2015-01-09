@@ -3,7 +3,7 @@ var file = require('../file');
 var callApp = require('../../utils/callApp');
 var getFixture = require('./getFixture');
 
-describe('mach.file', function () {
+describe('middleware/file', function () {
   describe('with a single index file', function () {
     var contents = getFixture('jquery-1.8.3.js', 'utf8');
     var app = file({
