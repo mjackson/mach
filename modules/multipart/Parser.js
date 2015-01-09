@@ -1,7 +1,7 @@
 /* jshint -W058 */
 var bodec = require('bodec');
 var Stream = require('bufferedstream');
-var Part = require('./Part');
+var Message = require('../Message');
 
 // This parser is modified from the one in the node-formidable
 // project, written by Felix Geisendörfer. MIT licensed.
@@ -291,7 +291,7 @@ Parser.prototype._dataCallback = function (name, chunk, clear, i) {
 
 Parser.prototype.onPartBegin = function () {
   this._stream = new Stream;
-  this._part = new Part(this._stream);
+  this._part = new Message(this._stream);
   this._headerName = '';
   this._headerValue = '';
 };

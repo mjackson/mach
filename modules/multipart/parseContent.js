@@ -4,7 +4,7 @@ var Promise = require('../utils/Promise');
 var Parser = require('./Parser');
 
 function defaultPartHandler(part) {
-  return part.bufferContent();
+  return part.parseContent();
 }
 
 function resolveProperties(object) {
@@ -29,7 +29,7 @@ function resolveProperties(object) {
  * argument is a function that should be used to resolve the value of
  * a part. It defaults to collecting all the content in a buffer.
  */
-function parseMessage(content, boundary, maxLength, partHandler) {
+function parseContent(content, boundary, maxLength, partHandler) {
   if (typeof maxLength === 'function') {
     partHandler = maxLength;
     maxLength = null;
@@ -78,4 +78,4 @@ function parseMessage(content, boundary, maxLength, partHandler) {
   });
 }
 
-module.exports = parseMessage;
+module.exports = parseContent;

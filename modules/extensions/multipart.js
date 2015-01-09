@@ -1,33 +1,30 @@
 var d = require('describe-property');
-var objectAssign = require('object-assign');
-var parseMessage = require('../multipart/parseMessage');
+var parseContent = require('../multipart/parseContent');
 
 var BOUNDARY_MATCHER = /^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im;
-
-function parseMultipartMessage(message, maxLength, uploadPrefix) {
-  function partHandler(part) {
-    return message.handlePart(part, uploadPrefix);
-  }
-
-  // If the content has been buffered, use the buffer.
-  if (message.isBuffered) {
-    return message.bufferContent().then(function (content) {
-      return parseMessage(content, message.multipartBoundary, maxLength, partHandler);
-    });
-  }
-
-  return parseMessage(message.content, message.multipartBoundary, maxLength, partHandler);
-}
+var NAME_MATCHER = /\bname="([^"]+)"/i;
 
 module.exports = function (mach) {
-  objectAssign(mach.Message.PARSERS, {
-    'multipart/form-data': parseMultipartMessage
-  });
+  mach.Message.PARSERS['multipart/form-data'] = function (message, maxLength, uploadPrefix) {
+    function partHandler(part) {
+      return message.handlePart(part, uploadPrefix);
+    }
+
+    // If the content has been buffered, use the buffer.
+    if (message.isBuffered) {
+      return message.bufferContent().then(function (content) {
+        return parseContent(content, message.multipartBoundary, maxLength, partHandler);
+      });
+    }
+
+    return parseContent(message.content, message.multipartBoundary, maxLength, partHandler);
+  };
 
   Object.defineProperties(mach.Message.prototype, {
 
     /**
-     * The value that was used as the boundary for multipart content.
+     * The value that was used as the boundary for multipart content. This
+     * is present only in multipart messages.
      */
     multipartBoundary: d.gs(function () {
       var contentType = this.contentType, match;
@@ -35,13 +32,56 @@ module.exports = function (mach) {
     }),
 
     /**
-     * A low-level hook responsible for handling multipart.Part objects when
-     * parsing multipart message content. It should return the value to use for
-     * that part in the parameters hash, or a promise for the value. By default
-     * it converts all parameters to strings.
+     * The unique "name" or ID of this message, as given in its Content-Disposition
+     * header. This is usually present only on messages that are part of a larger,
+     * multipart message.
+     */
+    name: d.gs(function () {
+      var contentDisposition = this.headers['Content-Disposition'], match;
+      return (contentDisposition && (match = contentDisposition.match(NAME_MATCHER))) ? match[1] : this.headers['Content-ID'];
+    }),
+
+    /**
+     * The filename of this message, as given in its Content-Disposition header.
+     * This is usually present only on messages that are part of a larger, multipart
+     * message and that originate from a file upload.
+     */
+    filename: d.gs(function () {
+      var contentDisposition = this.headers['Content-Disposition'];
+
+      if (contentDisposition) {
+        // Match quoted filenames.
+        var match = contentDisposition.match(/filename="([^;]*)"/i);
+
+        var filename;
+        if (match) {
+          filename = decodeURIComponent(match[1].replace(/\\"/g, '"'));
+        } else {
+          // Match unquoted filenames.
+          match = contentDisposition.match(/filename=([^;]+)/i);
+
+          if (match)
+            filename = decodeURIComponent(match[1]);
+        }
+
+        if (filename) {
+          // Take the last part of the filename. This handles full Windows
+          // paths given by IE (and possibly other dumb clients).
+          return filename.substr(filename.lastIndexOf('\\') + 1);
+        }
+      }
+
+      return null;
+    }),
+
+    /**
+     * A low-level hook responsible for handling Message objects embedded as multipart
+     * objects inside this message. It should return the value to use for the given
+     * message in the parameters hash. By default all messages are simply strings.
      *
      * This should be overridden if you want to specify some kind of custom handling
      * for multipart data, such as streaming it directly to a network file storage.
+     * See the server extension for an example of how this should be done.
      */
     handlePart: d(function (part, uploadPrefix) {
       return part.stringifyContent();

@@ -112,12 +112,12 @@ describe('Message', function () {
   describe('parseContent', function () {
     describe('when using an unknown Content-Type', function () {
       beforeEach(function () {
-        message.headers['content-type'] = 'text/plain';
+        message.headers['Content-Type'] = 'text/plain';
       });
 
-      it('returns an empty object', function () {
+      it('returns the content as a string', function () {
         return message.parseContent().then(function (params) {
-          expect(params).toEqual({});
+          expect(params).toEqual('');
         });
       });
     }); // text/plain

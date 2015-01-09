@@ -27,7 +27,7 @@ var HEADERS_LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';
 
 function defaultParser(message, maxLength) {
-  return message.stringifyContent(maxLength).then(parseQuery);
+  return message.stringifyContent(maxLength);
 }
 
 /**
@@ -48,7 +48,9 @@ Object.defineProperties(Message, {
         return message.stringifyContent(maxLength).then(JSON.parse);
       },
 
-      'application/x-www-url-formencoded': defaultParser
+      'application/x-www-form-urlencoded': function (message, maxLength) {
+        return message.stringifyContent(maxLength).then(parseQuery);
+      }
 
     }
   })

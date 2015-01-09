@@ -1,5 +1,5 @@
 var assert = require('assert');
-var parseMessage = require('../parseMessage');
+var parseContent = require('../parseContent');
 var Parser = require('../Parser');
 var getFixture = require('./getFixture');
 
@@ -20,7 +20,7 @@ describe('Parser', function () {
     boundary = boundary || 'AaB03x';
     beforeEach(function () {
       var message = getFixture(fixtureName);
-      return parseMessage(message, boundary, partHandler).then(function (object) {
+      return parseContent(message, boundary, partHandler).then(function (object) {
         parts = object;
       });
     });
