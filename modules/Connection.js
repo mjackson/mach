@@ -99,7 +99,7 @@ function Connection(options) {
     if (this.method === 'GET' || this.method === 'HEAD') {
       this.query = options.params;
     } else {
-      this.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      this.request.contentType = 'application/x-www-form-urlencoded';
       this.request.content = stringifyQuery(options.params);
     }
   }
