@@ -2,9 +2,9 @@ var fs = require('fs');
 var Promise = require('./Promise');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
-function streamToDisk(part, filePrefix) {
+function saveToDisk(message, filePrefix) {
   return new Promise(function (resolve, reject) {
-    var content = part.content;
+    var content = message.content;
     var path = makeTemporaryPath(filePrefix);
     var stream = fs.createWriteStream(path);
     var size = 0;
@@ -20,8 +20,8 @@ function streamToDisk(part, filePrefix) {
       stream.end(function () {
         resolve({
           path: path,
-          name: part.filename,
-          type: part.contentType,
+          name: message.filename,
+          type: message.contentType,
           size: size
         });
       });
@@ -32,4 +32,4 @@ function streamToDisk(part, filePrefix) {
   });
 }
 
-module.exports = streamToDisk;
+module.exports = saveToDisk;

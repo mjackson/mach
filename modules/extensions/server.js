@@ -2,9 +2,9 @@ var fs = require('fs');
 var d = require('describe-property');
 var objectAssign = require('object-assign');
 var getMimeType = require('../utils/getMimeType');
-var streamPartToDisk = require('../utils/streamPartToDisk');
 var filterProperties = require('../utils/filterProperties');
 var stringifyCookie = require('../utils/stringifyCookie');
+var saveToDisk = require('../utils/saveToDisk');
 
 module.exports = function (mach) {
   mach.bind = require('../utils/bindApp');
@@ -226,7 +226,7 @@ module.exports = function (mach) {
      * streaming file uploads to disk when parsing multipart messages.
      */
     handlePart: d(function (part, uploadPrefix) {
-      return part.isFile ? streamPartToDisk(part, uploadPrefix) : _handlePart.apply(this, arguments);
+      return part.filename ? saveToDisk(part, uploadPrefix) : _handlePart.apply(this, arguments);
     })
 
   });
