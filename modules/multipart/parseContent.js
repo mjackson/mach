@@ -1,26 +1,11 @@
 var Stream = require('bufferedstream');
 var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
+var resolveProperties = require('../utils/resolveProperties');
 var Promise = require('../utils/Promise');
 var Parser = require('./Parser');
 
 function defaultPartHandler(part) {
   return part.parseContent();
-}
-
-function resolveProperties(object) {
-  var keys = Object.keys(object);
-
-  return Promise.all(
-    keys.map(function (key) {
-      return object[key];
-    })
-  ).then(function (values) {
-    keys.forEach(function (key, index) {
-      object[key] = values[index];
-    });
-
-    return object;
-  });
 }
 
 /**
