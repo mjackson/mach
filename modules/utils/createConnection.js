@@ -12,7 +12,7 @@ var STANDARD_PORTS = {
 /**
  * Creates a new Location object that is reverse-proxy aware.
  */
-function createLocation(nodeRequest, nodeServer) {
+function createLocation(nodeRequest) {
   var headers = nodeRequest.headers;
 
   var protocol;
@@ -34,13 +34,6 @@ function createLocation(nodeRequest, nodeServer) {
     host = headers['host'];
   } else if (process.env.SERVER_NAME) {
     host = process.env.SERVER_NAME;
-  } else if (nodeServer) {
-    var address = nodeServer.address();
-
-    if (typeof address === 'string')
-      return address;
-
-    return address.address + ':' + address.port;
   }
 
   var hostParts = host.split(':', 2);
@@ -70,11 +63,11 @@ function createLocation(nodeRequest, nodeServer) {
  * server (optional) objects. This is a low-level method that is not
  * generally needed by application-level code.
  */
-function createConnection(nodeRequest, nodeServer) {
+function createConnection(nodeRequest) {
   var conn = new Connection({
     version: nodeRequest.httpVersion,
     method: nodeRequest.method,
-    location: createLocation(nodeRequest, nodeServer),
+    location: createLocation(nodeRequest),
     headers: nodeRequest.headers,
     content: nodeRequest,
     remoteHost: nodeRequest.connection.remoteAddress,
