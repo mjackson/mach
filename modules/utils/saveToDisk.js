@@ -1,4 +1,5 @@
 var fs = require('fs');
+var File = require('./File');
 var Promise = require('./Promise');
 var makeTemporaryPath = require('./makeTemporaryPath');
 
@@ -18,12 +19,12 @@ function saveToDisk(message, filePrefix) {
 
     content.on('end', function () {
       stream.end(function () {
-        resolve({
+        resolve(new File({
           path: path,
           name: message.filename,
-          type: message.contentType,
+          type: message.mediaType,
           size: size
-        });
+        }));
       });
     });
 
