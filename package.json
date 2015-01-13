@@ -57,7 +57,9 @@
   },
   "browser": {
     "./modules/extensions/default.js": "./modules/extensions/default-browser.js",
+    "./modules/utils/File.js": "./modules/utils/File-browser.js",
     "./modules/utils/parseURL.js": "./modules/utils/parseURL-browser.js",
+    "./modules/utils/readFile.js": "./modules/utils/readFile-browser.js",
     "./modules/utils/sendRequest.js": "./modules/utils/sendRequest-browser.js"
   }
 }

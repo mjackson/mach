@@ -8,6 +8,7 @@
     The accept extension now only adds support for the Accept header
   * Added Message#getHeader
   * Added Message.PARSERS for adding custom message parsers keyed by media type
+  * Added capability for generating multipart content streams
   * Rolled multipart.Part functionality into the multipart extension. Now, instead
     of using a separate class the multipart extension just augments mach.Message
   * Rolled the fs extension into the server extension, since they are always used

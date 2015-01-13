@@ -19,12 +19,14 @@ function saveToDisk(message, filePrefix) {
 
     content.on('end', function () {
       stream.end(function () {
-        resolve(new File({
-          path: path,
-          name: message.filename,
-          type: message.mediaType,
-          size: size
-        }));
+        resolve(
+          new File({
+            path: path,
+            name: message.filename,
+            type: message.mediaType,
+            size: size
+          })
+        );
       });
     });
 
