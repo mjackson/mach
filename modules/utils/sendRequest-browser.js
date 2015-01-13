@@ -127,8 +127,8 @@ function sendRequest(conn, location) {
       resolve();
     });
 
-    request.stringifyContent().then(function (content) {
-      xhr.send(content);
+    request.bufferContent().then(function (chunk) {
+      xhr.send(chunk);
     }).then(undefined, reject);
   });
 }
