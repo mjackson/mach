@@ -1,5 +1,6 @@
 ### HEAD
 
+  * Added mach.submit for submitting HTML forms
   * Fixed a bug in middleware that double as standalone apps that caused them
     to throw an error when used in a stack that had no default app. This includes
     mach.file, mach.mapper, and mach.router
