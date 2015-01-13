@@ -77,14 +77,16 @@ module.exports = function (mach) {
     /**
      * A low-level hook responsible for handling Message objects embedded as multipart
      * objects inside this message. It should return the value to use for the given
-     * message in the parameters hash. By default all messages are simply strings.
+     * message in the parameters hash. By default parts that originate from file uploads
+     * are buffered and all others are converted to strings.
      *
      * This should be overridden if you want to specify some kind of custom handling
      * for multipart data, such as streaming it directly to a network file storage.
-     * See the server extension for an example of how this should be done.
+     * For example, the server extension overrides this method to save uploaded files
+     * to a temporary location on disk.
      */
     handlePart: d(function (part, uploadPrefix) {
-      return part.stringifyContent();
+      return part.filename ? part.bufferContent() : part.stringifyContent();
     })
 
   });
