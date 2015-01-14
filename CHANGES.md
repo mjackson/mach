@@ -1,4 +1,4 @@
-### HEAD
+### 1.1.0 / 2015-01-14
 
   * Added mach.submit for submitting HTML forms
   * Fixed a bug in middleware that double as standalone apps that caused them
