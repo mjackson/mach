@@ -1,7 +1,6 @@
+var bodec = require('bodec');
 var d = require('describe-property');
 var Stream = require('bufferedstream');
-var binaryTo = require('./utils/binaryTo');
-var binaryFrom = require('./utils/binaryFrom');
 var bufferStream = require('./utils/bufferStream');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 var parseCookie = require('./utils/parseCookie');
@@ -10,7 +9,7 @@ var parseQuery = require('./utils/parseQuery');
 /**
  * The default content to use for new messages.
  */
-var DEFAULT_CONTENT = binaryFrom('');
+var DEFAULT_CONTENT = bodec.fromString('');
 
 /**
  * The default maximum length (in bytes) to use in Message#parseContent.
@@ -230,7 +229,7 @@ Object.defineProperties(Message.prototype, {
     encoding = encoding || this.charset;
 
     return this.bufferContent(maxLength).then(function (chunk) {
-      return binaryTo(chunk, encoding);
+      return bodec.toString(chunk, encoding);
     });
   }),
 

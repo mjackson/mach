@@ -4,6 +4,7 @@
   * Fixed a bug in middleware that double as standalone apps that caused them
     to throw an error when used in a stack that had no default app. This includes
     mach.file, mach.mapper, and mach.router
+  * Fixed multi-byte encoding issues (see #53)
   * Moved Connection#statusText into statusText extension
   * Added acceptCharset, acceptEncoding, acceptLanguage, and middleware extensions.
     The accept extension now only adds support for the Accept header

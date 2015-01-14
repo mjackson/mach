@@ -1,5 +1,5 @@
+var bodec = require('bodec');
 var Promise = require('./Promise');
-var binaryJoin = require('./binaryJoin');
 var MaxLengthExceededError = require('./MaxLengthExceededError');
 
 /**
@@ -29,7 +29,7 @@ function bufferStream(stream, maxLength) {
     });
 
     stream.on('end', function () {
-      resolve(binaryJoin(chunks));
+      resolve(bodec.join(chunks));
     });
 
     if (typeof stream.resume === 'function')

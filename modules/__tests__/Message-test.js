@@ -1,7 +1,7 @@
 /* jshint -W058 */
 var assert = require('assert');
 var expect = require('expect');
-var binaryTo = require('../utils/binaryTo');
+var bodec = require('bodec');
 var MaxLengthExceededError = require('../utils/MaxLengthExceededError');
 var Message = require('../Message');
 
@@ -103,13 +103,13 @@ describe('Message#bufferContent', function () {
     return message
       .bufferContent()
       .then(function (content) {
-        expect(binaryTo(content)).toEqual('foo');
+        expect(bodec.toString(content)).toEqual('foo');
 
         message.content = 'bar';
         return message.bufferContent();
       })
       .then(function (content) {
-        expect(binaryTo(content)).toEqual('bar');
+        expect(bodec.toString(content)).toEqual('bar');
       });
   });
 });
