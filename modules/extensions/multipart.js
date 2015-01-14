@@ -5,9 +5,9 @@ var BOUNDARY_MATCHER = /^multipart\/.*boundary=(?:"([^"]+)"|([^;]+))/im;
 var NAME_MATCHER = /\bname="([^"]+)"/i;
 
 module.exports = function (mach) {
-  mach.Message.PARSERS['multipart/form-data'] = function (message, maxLength, uploadPrefix) {
+  mach.Message.PARSERS['multipart/form-data'] = function (message, maxLength) {
     function partHandler(part) {
-      return message.handlePart(part, uploadPrefix);
+      return message.handlePart(part);
     }
 
     // If the content has been buffered, use the buffer.
@@ -85,7 +85,7 @@ module.exports = function (mach) {
      * For example, the server extension overrides this method to save uploaded files
      * to a temporary location on disk.
      */
-    handlePart: d(function (part, uploadPrefix) {
+    handlePart: d(function (part) {
       return part.filename ? part.bufferContent() : part.stringifyContent();
     })
 

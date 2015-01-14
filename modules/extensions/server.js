@@ -48,8 +48,7 @@ module.exports = function (mach) {
      *
      * Of course, paramTypes may be omitted entirely to get a hash of all parameters.
      * 
-     * The maxLength and uploadPrefix arguments are passed directly to the
-     * request's parseContent method.
+     * The maxLength argument is passed directly to the request's parseContent method.
      *
      *   var maxUploadLimit = Math.pow(2, 20); // 1 mb
      *
@@ -61,9 +60,8 @@ module.exports = function (mach) {
      *
      * Note: Content parameters take precedence over query parameters with the same name.
      */
-    getParams: d(function (paramTypes, maxLength, uploadPrefix) {
+    getParams: d(function (paramTypes, maxLength) {
       if (typeof paramTypes !== 'object') {
-        uploadPrefix = maxLength;
         maxLength = paramTypes;
         paramTypes = null;
       }
@@ -71,7 +69,7 @@ module.exports = function (mach) {
       var request = this.request;
       var queryParams = objectAssign({}, this.query);
 
-      return request.parseContent(maxLength, uploadPrefix).then(function (contentParams) {
+      return request.parseContent(maxLength).then(function (contentParams) {
         // Content params take precedence over query params.
         var params = objectAssign(queryParams, contentParams);
         return paramTypes ? filterProperties(params, paramTypes) : params;
@@ -218,8 +216,8 @@ module.exports = function (mach) {
      * Override the multipart extension's Message#handlePart to enable
      * streaming file uploads to disk when parsing multipart messages.
      */
-    handlePart: d(function (part, uploadPrefix) {
-      return part.filename ? saveToDisk(part, uploadPrefix) : _handlePart.apply(this, arguments);
+    handlePart: d(function (part) {
+      return part.filename ? saveToDisk(part, 'MachUpload-') : _handlePart.apply(this, arguments);
     })
 
   });

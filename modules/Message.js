@@ -16,12 +16,6 @@ var DEFAULT_CONTENT = bodec.fromString('');
  */
 var DEFAULT_MAX_CONTENT_LENGTH = Math.pow(2, 20); // 1M
 
-/**
- * The default prefix to use for uploaded temporary files that are stored
- * on disk using Message#parseContent.
- */
-var DEFAULT_UPLOAD_PREFIX = 'MachUpload-';
-
 var HEADERS_LINE_SEPARATOR = /\r?\n/;
 var HEADER_SEPARATOR = ': ';
 
@@ -242,25 +236,17 @@ Object.defineProperties(Message.prototype, {
    * to send to the client in this case is 413 Request Entity Too Large, but
    * many HTTP clients including most web browsers may not understand it.
    *
-   * The uploadPrefix argument specifies a string to use to prefix file names
-   * when using the default multipart handler to store uploaded files on disk.
-   *
    * Note: 0 is a valid value for maxLength. It means "no limit".
    */
-  parseContent: d(function (maxLength, uploadPrefix) {
+  parseContent: d(function (maxLength) {
     if (this._parsedContent)
       return this._parsedContent;
 
-    if (typeof maxLength !== 'number') {
-      uploadPrefix = maxLength;
+    if (typeof maxLength !== 'number')
       maxLength = DEFAULT_MAX_CONTENT_LENGTH;
-    }
-
-    if (typeof uploadPrefix !== 'string')
-      uploadPrefix = DEFAULT_UPLOAD_PREFIX;
 
     var parser = Message.PARSERS[this.mediaType] || defaultParser;
-    this._parsedContent = parser(this, maxLength, uploadPrefix);
+    this._parsedContent = parser(this, maxLength);
 
     return this._parsedContent;
   })

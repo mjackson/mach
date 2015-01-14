@@ -14,8 +14,6 @@ mach.extend(
  * Valid options are:
  *
  * - maxLength          The maximum length (in bytes) of the request content
- * - uploadPrefix       A special prefix to use for temporary files on disk
- *                      that are created from file uploads
  *
  * If the maximum allowed length is exceeded, this middleware returns a
  * 413 Request Entity Too Large response.
@@ -27,11 +25,13 @@ mach.extend(
 function parseParams(app, options) {
   options = options || {};
 
+  if (typeof options === 'number')
+    options = { maxLength: options };
+
   var maxLength = options.maxLength;
-  var uploadPrefix = options.uploadPrefix;
 
   return function (conn) {
-    return conn.getParams(maxLength, uploadPrefix).then(function (params) {
+    return conn.getParams(maxLength).then(function (params) {
       if (conn.params) {
         // Route params take precedence over content params.
         conn.params = objectAssign(params, conn.params);

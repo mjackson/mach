@@ -1,3 +1,7 @@
+### HEAD
+
+  * Removed uploadPrefix argument to Message#parseContent
+
 ### 1.1.0 / 2015-01-14
 
   * Added mach.submit for submitting HTML forms
