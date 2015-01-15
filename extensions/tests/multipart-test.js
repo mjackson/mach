@@ -1,7 +1,7 @@
 var expect = require('expect');
 var mach = require('../../index');
 
-var getFixture = require('../../multipart/__tests__/getFixture');
+var getFixture = require('../../multipart/tests/getFixture');
 
 describe('extensions/multipart', function () {
 

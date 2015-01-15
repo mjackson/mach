@@ -1,5 +1,7 @@
 ### HEAD
 
+  * Removed "modules" directory. This makes it easier to require pieces of mach
+    e.g. require('mach/extensions/accept')
   * Removed uploadPrefix argument to Message#parseContent
 
 ### 1.1.0 / 2015-01-14

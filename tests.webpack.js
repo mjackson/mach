@@ -1,10 +1,10 @@
-require('./modules/__tests__/Connection-test');
-require('./modules/__tests__/Location-test');
-require('./modules/__tests__/Message-test');
+require('./tests/Connection-test');
+require('./tests/Location-test');
+require('./tests/Message-test');
 
-require('./modules/features/__tests__/client-test');
+require('./extensions/tests/client-test');
 
-require('./modules/headers/__tests__/Accept-test');
-require('./modules/headers/__tests__/AcceptCharset-test');
-require('./modules/headers/__tests__/AcceptEncoding-test');
-require('./modules/headers/__tests__/AcceptLanguage-test');
+require('./headers/tests/Accept-test');
+require('./headers/tests/AcceptCharset-test');
+require('./headers/tests/AcceptEncoding-test');
+require('./headers/tests/AcceptLanguage-test');

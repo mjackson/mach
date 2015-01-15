@@ -2,8 +2,6 @@ var webpack = require('webpack');
 
 module.exports = {
 
-  entry: './modules/index',
-
   output: {
     library: 'mach',
     libraryTarget: 'var'

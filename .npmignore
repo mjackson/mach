@@ -3,4 +3,4 @@
 .travis.yml
 dist
 examples
-modules/**/__tests__
+**/tests

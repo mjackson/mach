@@ -45,7 +45,7 @@ function makeUniqueKey(client, keyLength) {
  *
  * Example:
  *
- *   var RedisStore = require('mach/modules/RedisStore');
+ *   var RedisStore = require('mach/middleware/session/RedisStore');
  *
  *   app.use(mach.session, {
  *     store: new RedisStore({ url: 'redis://127.0.0.1:6379' })
