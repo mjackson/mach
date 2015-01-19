@@ -1,4 +1,4 @@
-### HEAD
+### 1.2.0 / 2015-01-18
 
   * Removed "modules" directory. This makes it easier to require pieces of mach
     e.g. require('mach/extensions/accept')
