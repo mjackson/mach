@@ -2,9 +2,9 @@
   "name": "mach",
   "version": "1.2.0",
   "description": "HTTP for JavaScript",
-  "main": "index.js",
+  "main": "modules/index.js",
   "dependencies": {
-    "bodec": "git://github.com/mjackson/bodec#to-from-string",
+    "bodec": "^1.1.0",
     "bufferedstream": "^3.0.9",
     "describe-property": "^1.0.0",
     "object-assign": "^2.0.0",
@@ -30,7 +30,7 @@
   },
   "scripts": {
     "dist": "NODE_ENV=production webpack -p index.js dist/mach.min.js",
-    "test": "jshint . && mocha --reporter spec '**/tests/*-test.js'",
+    "test": "jshint . && mocha --reporter spec 'modules/**/__tests__/*-test.js'",
     "test-browser": "karma start"
   },
   "repository": {
@@ -56,10 +56,10 @@
     "url": "https://github.com/mjackson/mach/issues"
   },
   "browser": {
-    "./extensions/default.js": "./extensions/default-browser.js",
-    "./utils/File.js": "./utils/File-browser.js",
-    "./utils/parseURL.js": "./utils/parseURL-browser.js",
-    "./utils/readFile.js": "./utils/readFile-browser.js",
-    "./utils/sendRequest.js": "./utils/sendRequest-browser.js"
+    "./modules/extensions/default.js": "./modules/extensions/default-browser.js",
+    "./modules/utils/File.js": "./modules/utils/File-browser.js",
+    "./modules/utils/parseURL.js": "./modules/utils/parseURL-browser.js",
+    "./modules/utils/readFile.js": "./modules/utils/readFile-browser.js",
+    "./modules/utils/sendRequest.js": "./modules/utils/sendRequest-browser.js"
   }
 }
