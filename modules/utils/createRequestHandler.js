@@ -1,5 +1,6 @@
 /* jshint -W058 */
 var createConnection = require('./createConnection');
+var domain = require('domain');
 
 /**
  * HTTP status codes that don't have entities.
@@ -19,6 +20,10 @@ var STATUS_WITHOUT_CONTENT = {
  */
 function createRequestHandler(app) {
   return function (nodeRequest, nodeResponse) {
+    var requestDomain = domain.create();
+    requestDomain.add(nodeRequest);
+    requestDomain.add(nodeResponse);
+
     var conn = createConnection(nodeRequest);
 
     conn.call(app).then(function () {
@@ -44,6 +49,8 @@ function createRequestHandler(app) {
         content.pipe(nodeResponse);
       }
     }, function (error) {
+      requestDomain.dispose();
+
       conn.onError(error);
       nodeResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       nodeResponse.end('Internal Server Error');
