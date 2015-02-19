@@ -23,7 +23,7 @@ mach.serve(function (conn) {
 });
 ```
 
-All mach applications receive a single argument: a [Connection](https://github.com/mjackson/mach/blob/master/Connection.js) object. This object contains information about both the request and the response, as well as metadata including the `method` used in the request, the [location](https://github.com/mjackson/mach/blob/master/Location.js) of the request, the `status` of the response, and some helper methods.
+All mach applications receive a single argument: a [Connection](https://github.com/mjackson/mach/blob/master/modules/Connection.js) object. This object contains information about both the request and the response, as well as metadata including the `method` used in the request, the [location](https://github.com/mjackson/mach/blob/master/modules/Location.js) of the request, the `status` of the response, and some helper methods.
 
 Applications can send responses asynchronously using JavaScript promises. Simply return a promise from your app that resolves when the response is ready.
 
@@ -43,24 +43,24 @@ app.get('/users/:id', function (conn) {
 
 The call to `app.use` above illustrates how middleware is used to compose applications. Mach ships with the following middleware:
 
-- [`mach.basicAuth`](https://github.com/mjackson/mach/blob/master/middleware/basicAuth.js): Provides authentication using [HTTP Basic auth](http://en.wikipedia.org/wiki/Basic_access_authentication)
-- [`mach.catch`](https://github.com/mjackson/mach/blob/master/middleware/catch.js): Error handling at any position in the stack
-- [`mach.charset`](https://github.com/mjackson/mach/blob/master/middleware/charset.js): Provides a default [charset](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) in responses
-- [`mach.contentType`](https://github.com/mjackson/mach/blob/master/middleware/contentType.js): Provides a default [`Content-Type`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17)
-- [`mach.favicon`](https://github.com/mjackson/mach/blob/master/middleware/favicon.js): Handles requests for `/favicon.ico`
-- [`mach.file`](https://github.com/mjackson/mach/blob/master/middleware/file.js): Efficiently serves static files
-- [`mach.gzip`](https://github.com/mjackson/mach/blob/master/middleware/gzip.js): [Gzip](http://en.wikipedia.org/wiki/Gzip)-encodes response content for clients that `Accept: gzip`
-- [`mach.logger`](https://github.com/mjackson/mach/blob/master/middleware/logger.js): Logs HTTP requests to the console
-- [`mach.mapper`](https://github.com/mjackson/mach/blob/master/middleware/mapper.js): Provides virtual host mapping, similar to [Apache's Virtual Hosts](http://httpd.apache.org/docs/2.2/vhosts/) or [nginx server blocks](http://nginx.org/en/docs/http/ngx_http_core_module.html#server)
-- [`mach.methodOverride`](https://github.com/mjackson/mach/blob/master/middleware/methodOverride.js): Overrides the HTTP method used in the request, for clients (like HTML forms) that don't support methods other than `GET` and `POST`
-- [`mach.modified`](https://github.com/mjackson/mach/blob/master/middleware/modified.js): HTTP caching using [`Last-Modified`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.29) and [`ETag`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19)
-- [`mach.params`](https://github.com/mjackson/mach/blob/master/middleware/params.js): Multipart request parsing and handling
-- [`mach.proxy`](https://github.com/mjackson/mach/blob/master/middleware/proxy.js): Proxy request through to an alternate location
-- [`mach.rewrite`](https://github.com/mjackson/mach/blob/master/middleware/rewrite.js): Rewrites request URLs on the fly, similar to [Apache's mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
-- [`mach.router`](https://github.com/mjackson/mach/blob/master/middleware/router.js): Request routing (ala [Sinatra](http://www.sinatrarb.com/)) based on the URL pathname
-- [`mach.session`](https://github.com/mjackson/mach/blob/master/middleware/session.js): HTTP sessions with pluggable storage including [memory](https://github.com/mjackson/mach/blob/master/middleware/session/MemoryStore.js) (for development and testing), [cookies](https://github.com/mjackson/mach/blob/master/middleware/session/CookieStore.js), and [Redis](https://github.com/mjackson/mach/blob/master/middleware/session/RedisStore.js)
-- [`mach.stack`](https://github.com/mjackson/mach/blob/master/middleware/stack.js): Provides a `use` mechanism for composing applications fronted by middleware
-- [`mach.token`](https://github.com/mjackson/mach/blob/master/middleware/token.js): Cross-site request forgery protection
+- [`mach.basicAuth`](https://github.com/mjackson/mach/blob/master/modules/middleware/basicAuth.js): Provides authentication using [HTTP Basic auth](http://en.wikipedia.org/wiki/Basic_access_authentication)
+- [`mach.catch`](https://github.com/mjackson/mach/blob/master/modules/middleware/catch.js): Error handling at any position in the stack
+- [`mach.charset`](https://github.com/mjackson/mach/blob/master/modules/middleware/charset.js): Provides a default [charset](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) in responses
+- [`mach.contentType`](https://github.com/mjackson/mach/blob/master/modules/middleware/contentType.js): Provides a default [`Content-Type`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17)
+- [`mach.favicon`](https://github.com/mjackson/mach/blob/master/modules/middleware/favicon.js): Handles requests for `/favicon.ico`
+- [`mach.file`](https://github.com/mjackson/mach/blob/master/modules/middleware/file.js): Efficiently serves static files
+- [`mach.gzip`](https://github.com/mjackson/mach/blob/master/modules/middleware/gzip.js): [Gzip](http://en.wikipedia.org/wiki/Gzip)-encodes response content for clients that `Accept: gzip`
+- [`mach.logger`](https://github.com/mjackson/mach/blob/master/modules/middleware/logger.js): Logs HTTP requests to the console
+- [`mach.mapper`](https://github.com/mjackson/mach/blob/master/modules/middleware/mapper.js): Provides virtual host mapping, similar to [Apache's Virtual Hosts](http://httpd.apache.org/docs/2.2/vhosts/) or [nginx server blocks](http://nginx.org/en/docs/http/ngx_http_core_module.html#server)
+- [`mach.methodOverride`](https://github.com/mjackson/mach/blob/master/modules/middleware/methodOverride.js): Overrides the HTTP method used in the request, for clients (like HTML forms) that don't support methods other than `GET` and `POST`
+- [`mach.modified`](https://github.com/mjackson/mach/blob/master/modules/middleware/modified.js): HTTP caching using [`Last-Modified`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.29) and [`ETag`](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.19)
+- [`mach.params`](https://github.com/mjackson/mach/blob/master/modules/middleware/params.js): Multipart request parsing and handling
+- [`mach.proxy`](https://github.com/mjackson/mach/blob/master/modules/middleware/proxy.js): Proxy request through to an alternate location
+- [`mach.rewrite`](https://github.com/mjackson/mach/blob/master/modules/middleware/rewrite.js): Rewrites request URLs on the fly, similar to [Apache's mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)
+- [`mach.router`](https://github.com/mjackson/mach/blob/master/modules/middleware/router.js): Request routing (ala [Sinatra](http://www.sinatrarb.com/)) based on the URL pathname
+- [`mach.session`](https://github.com/mjackson/mach/blob/master/modules/middleware/session.js): HTTP sessions with pluggable storage including [memory](https://github.com/mjackson/mach/blob/master/modules/middleware/session/MemoryStore.js) (for development and testing), [cookies](https://github.com/mjackson/mach/blob/master/modules/middleware/session/CookieStore.js), and [Redis](https://github.com/mjackson/mach/blob/master/modules/middleware/session/RedisStore.js)
+- [`mach.stack`](https://github.com/mjackson/mach/blob/master/modules/middleware/stack.js): Provides a `use` mechanism for composing applications fronted by middleware
+- [`mach.token`](https://github.com/mjackson/mach/blob/master/modules/middleware/token.js): Cross-site request forgery protection
 
 Please check out the source of a middleware file for detailed documentation on how to use it.
 
