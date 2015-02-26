@@ -6,7 +6,7 @@ function forEach(list, callback) {
 }
 
 function getFieldType(node) {
-  return node.nodeName.toUpperCase() === 'INPUT' ? node.getAttribute('type').toUpperCase() : 'TEXT';
+  return node.nodeName.toUpperCase() === 'INPUT' ? node.type.toUpperCase() : 'TEXT';
 }
 
 function addParam(params, name, value) {
