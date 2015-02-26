@@ -1,6 +1,5 @@
 /* jshint -W058 */
 var Stream = require('bufferedstream');
-var isBinary = require('bodec').isBinary;
 var Promise = require('../utils/Promise');
 var readFile = require('../utils/readFile');
 var File = require('../utils/File');
@@ -26,7 +25,7 @@ function createContent(params, boundary) {
   var content = new Stream;
 
   // Use a promise chain to write all fields to the content
-  // stream in the same order they are listed in the form.
+  // stream in the same order they appear in params.
   var promise = Promise.resolve();
 
   function appendContent(name, value) {
@@ -41,15 +40,11 @@ function createContent(params, boundary) {
           content.write('\r\n');
         });
       });
-    } else if (isBinary(value)) {
+    } else {
       promise = promise.then(function () {
         content.write('--' + boundary + '\r\n' + createHeaders(name));
         content.write(value);
         content.write('\r\n');
-      });
-    } else {
-      promise = promise.then(function () {
-        content.write('--' + boundary + '\r\n' + createHeaders(name) + value + '\r\n');
       });
     }
   }
