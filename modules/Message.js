@@ -36,15 +36,12 @@ Object.defineProperties(Message, {
   PARSERS: d({
     enumerable: true,
     value: {
-
       'application/json': function (message, maxLength) {
         return message.stringifyContent(maxLength).then(JSON.parse);
       },
-
       'application/x-www-form-urlencoded': function (message, maxLength) {
         return message.stringifyContent(maxLength).then(parseQuery);
       }
-
     }
   })
 
