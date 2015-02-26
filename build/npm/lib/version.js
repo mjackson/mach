@@ -1,4 +1,6 @@
+"use strict";
+
 /**
  * The current version of mach.
  */
-module.exports = '1.3.0';
+module.exports = "1.3.0";
