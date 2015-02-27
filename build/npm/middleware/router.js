@@ -128,6 +128,8 @@ function createRouter(app, map) {
       var keys = [];
 
       if (typeof pattern === "string") {
+        var match;
+
         if (match = pattern.match(LEADING_HTTP_METHOD_MATCHER)) {
           methods.push(match[1]);
           pattern = match[2];
