@@ -2,14 +2,14 @@
 
 var package = require('../package');
 
-package.main = package.main.replace('modules', 'lib');
+package.main = package.main.replace('modules/', '');
 package.scripts = undefined;
 package.devDependencies = undefined;
 
 var browser = {};
 
 for (var path in package.browser)
-  browser[path.replace('modules', 'lib')] = package.browser[path].replace('modules', 'lib');
+  browser[path.replace('modules/', '')] = package.browser[path].replace('modules/', '');
 
 package.browser = browser;
 

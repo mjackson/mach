@@ -33,7 +33,7 @@
   },
   "scripts": {
     "build-global": "rm -rf build/global && NODE_ENV=production webpack modules/index.js build/global/mach.js && NODE_ENV=production COMPRESS=1 webpack modules/index.js build/global/mach.min.js && echo \"gzipped, the global build is `gzip -c build/global/mach.min.js | wc -c` bytes\"",
-    "build-npm": "rm -rf build/npm && babel -d build/npm/lib ./modules && cp README.md build/npm && find -X build/npm/lib -type d -name __tests__ | xargs rm -rf && scripts/build-npm-package-json.sh > build/npm/package.json",
+    "build-npm": "rm -rf build/npm && babel -d build/npm ./modules && cp README.md build/npm && find -X build/npm -type d -name __tests__ | xargs rm -rf && scripts/build-npm-package-json.sh > build/npm/package.json",
     "test": "jshint . && mocha --reporter spec 'modules/**/__tests__/*-test.js'",
     "test-browser": "karma start"
   },
