@@ -1,8 +1,8 @@
 {
   "name": "mach",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "HTTP for JavaScript",
-  "main": "lib",
+  "main": "lib/index.js",
   "dependencies": {
     "bodec": "^1.1.0",
     "bufferedstream": "^3.1.1",
@@ -38,10 +38,10 @@
     "url": "https://github.com/mjackson/mach/issues"
   },
   "browser": {
-    "./modules/extensions/default.js": "./modules/extensions/default-browser.js",
-    "./modules/utils/File.js": "./modules/utils/File-browser.js",
-    "./modules/utils/parseURL.js": "./modules/utils/parseURL-browser.js",
-    "./modules/utils/readFile.js": "./modules/utils/readFile-browser.js",
-    "./modules/utils/sendRequest.js": "./modules/utils/sendRequest-browser.js"
+    "./lib/extensions/default.js": "./lib/extensions/default-browser.js",
+    "./lib/utils/File.js": "./lib/utils/File-browser.js",
+    "./lib/utils/parseURL.js": "./lib/utils/parseURL-browser.js",
+    "./lib/utils/readFile.js": "./lib/utils/readFile-browser.js",
+    "./lib/utils/sendRequest.js": "./lib/utils/sendRequest-browser.js"
   }
 }
