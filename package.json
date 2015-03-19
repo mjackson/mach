@@ -9,7 +9,7 @@
     "describe-property": "^1.0.0",
     "object-assign": "^2.0.0",
     "qs": "^2.3.3",
-    "strftime": "^0.8.2",
+    "strftime": "^0.9.0",
     "when": "^3.6.4"
   },
   "optionalDependencies": {
