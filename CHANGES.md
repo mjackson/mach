@@ -1,3 +1,7 @@
+### 1.3.3 / 2015-03-19
+
+  * Fixed a bug in HTTPS detection
+
 ### 1.2.0 / 2015-01-18
 
   * Removed "modules" directory. This makes it easier to require pieces of mach
