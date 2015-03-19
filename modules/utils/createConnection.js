@@ -9,6 +9,10 @@ var STANDARD_PORTS = {
   'https:': '443'
 };
 
+function ensureTrailingColon(string) {
+  return string[string.length - 1] === ':' ? string : string + ':';
+}
+
 /**
  * Creates a new Location object that is reverse-proxy aware.
  */
@@ -16,12 +20,14 @@ function createLocation(nodeRequest) {
   var headers = nodeRequest.headers;
 
   var protocol;
-  if (process.env.HTTPS === 'on' || headers['x-forwarded-ssl'] === 'on') {
+  if (process.env.HTTPS === 'on' || headers['x-forwarded-ssl'] === 'on' || headers['font-end-https'] === 'on') {
     protocol = 'https:';
-  } else if (headers['x-forwarded-scheme']) {
-    protocol = headers['x-forwarded-scheme'];
+  } else if (headers['x-url-scheme']) {
+    protocol = ensureTrailingColon(headers['x-url-scheme']);
+  } else if (headers['x-forwarded-protocol']) {
+    protocol = ensureTrailingColon(headers['x-forwarded-protocol'].split(',')[0]);
   } else if (headers['x-forwarded-proto']) {
-    protocol = headers['x-forwarded-proto'].split(',')[0];
+    protocol = ensureTrailingColon(headers['x-forwarded-proto'].split(',')[0]);
   } else {
     protocol = 'http:';
   }
