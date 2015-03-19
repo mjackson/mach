@@ -95,7 +95,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * The current version of mach.
 	 */
-	module.exports = "1.3.2";
+	module.exports = "1.3.4";
 
 /***/ },
 /* 2 */
@@ -341,7 +341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	var d = __webpack_require__(18);
-	var normalizeHeaderName = __webpack_require__(11);
+	var normalizeHeaderName = __webpack_require__(13);
 
 	function Header(name, value) {
 	  this.name = name;
@@ -371,9 +371,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 
 	var d = __webpack_require__(18);
-	var mergeQuery = __webpack_require__(12);
+	var mergeQuery = __webpack_require__(11);
 	var stringifyQuery = __webpack_require__(9);
-	var parseQuery = __webpack_require__(13);
+	var parseQuery = __webpack_require__(12);
 	var parseURL = __webpack_require__(16);
 
 	/**
@@ -596,9 +596,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var d = __webpack_require__(18);
 	var Stream = __webpack_require__(19);
 	var bufferStream = __webpack_require__(14);
-	var normalizeHeaderName = __webpack_require__(11);
+	var normalizeHeaderName = __webpack_require__(13);
 	var parseCookie = __webpack_require__(15);
-	var parseQuery = __webpack_require__(13);
+	var parseQuery = __webpack_require__(12);
 
 	/**
 	 * The default content to use for new messages.
@@ -895,6 +895,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
+	module.exports = __webpack_require__(26).merge;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	module.exports = __webpack_require__(25).parse;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
 	var IrregularHeaderNames = __webpack_require__(21);
 
 	/**
@@ -911,22 +927,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = normalizeHeaderName;
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	module.exports = __webpack_require__(26).merge;
-
-/***/ },
-/* 13 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-
-	module.exports = __webpack_require__(25).parse;
 
 /***/ },
 /* 14 */
@@ -979,7 +979,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	var parseQuery = __webpack_require__(13);
+	var parseQuery = __webpack_require__(12);
 
 	function parseCookie(cookie) {
 	  return parseQuery(cookie, { delimiter: /[;,] */ });
