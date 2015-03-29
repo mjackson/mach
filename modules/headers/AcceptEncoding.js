@@ -1,4 +1,3 @@
-var d = require('describe-property');
 var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
@@ -16,34 +15,34 @@ function byHighestPrecedence(a, b) {
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
  */
-function AcceptEncoding(value) {
-  Header.call(this, 'Accept-Encoding', value);
-}
+class AcceptEncoding extends Header {
 
-AcceptEncoding.prototype = Object.create(Header.prototype, {
-
-  constructor: d(AcceptEncoding),
+  constructor(value) {
+    super('Accept-Encoding', value);
+  }
 
   /**
    * Returns the value of this header as a string.
    */
-  value: d.gs(function () {
+  get value() {
     return stringifyMediaValues(this._mediaValues) || '';
-  }, function (value) {
+  }
+
+  set value(value) {
     this._mediaValues = value ? parseMediaValues(value) : [];
-  }),
+  }
 
   /**
    * Returns true if the given encoding is acceptable.
    */
-  accepts: d(function (encoding) {
+  accepts(encoding) {
     return this.qualityFactorForEncoding(encoding) !== 0;
-  }),
+  }
 
   /**
    * Returns the quality factor for the given encoding.
    */
-  qualityFactorForEncoding: d(function (encoding) {
+  qualityFactorForEncoding(encoding) {
     var values = this._mediaValues;
 
     var givenValue = parseMediaValue(encoding);
@@ -72,8 +71,8 @@ AcceptEncoding.prototype = Object.create(Header.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  })
+  }
 
-});
+}
 
 module.exports = AcceptEncoding;

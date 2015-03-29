@@ -1,4 +1,3 @@
-var d = require('describe-property');
 var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
@@ -16,9 +15,9 @@ function paramsMatchIgnoringQualityFactor(params, givenParams) {
 
 function byHighestPrecedence(a, b) {
   //   Accept: text/*, text/html, text/html;level=1, */*
-  // 
+  //
   // have the following precedence:
-  // 
+  //
   //   1) text/html;level=1
   //   2) text/html
   //   3) text/*
@@ -32,34 +31,34 @@ function byHighestPrecedence(a, b) {
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  */
-function Accept(value) {
-  Header.call(this, 'Accept', value);
-}
+class Accept extends Header {
 
-Accept.prototype = Object.create(Header.prototype, {
-
-  constructor: d(Accept),
+  constructor(value) {
+    super('Accept', value);
+  }
 
   /**
    * Returns the value of this header as a string.
    */
-  value: d.gs(function () {
+  get value() {
     return stringifyMediaValues(this._mediaValues) || '*/*';
-  }, function (value) {
+  }
+
+  set value(value) {
     this._mediaValues = value ? parseMediaValues(value) : [];
-  }),
+  }
 
   /**
    * Returns true if the given media type is acceptable.
    */
-  accepts: d(function (mediaType) {
+  accepts(mediaType) {
     return this.qualityFactorForMediaType(mediaType) !== 0;
-  }),
+  }
 
   /**
    * Returns the quality factor for the given media type.
    */
-  qualityFactorForMediaType: d(function (mediaType) {
+  qualityFactorForMediaType(mediaType) {
     var values = this._mediaValues;
 
     if (!values.length)
@@ -76,8 +75,8 @@ Accept.prototype = Object.create(Header.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  })
+  }
 
-});
+}
 
 module.exports = Accept;

@@ -1,23 +1,24 @@
-var d = require('describe-property');
 var normalizeHeaderName = require('./utils/normalizeHeaderName');
 
-function Header(name, value) {
-  this.name = name;
-  this.value = value;
-}
+class Header {
 
-Object.defineProperties(Header.prototype, {
+  constructor(name, value) {
+    this.name = name;
+    this.value = value;
+  }
 
-  name: d.gs(function () {
+  get name() {
     return this._name;
-  }, function (value) {
+  }
+
+  set name(value) {
     this._name = normalizeHeaderName(value);
-  }),
+  }
 
-  toString: d(function () {
+  toString() {
     return this.name + ': ' + this.value;
-  })
+  }
 
-});
+}
 
 module.exports = Header;

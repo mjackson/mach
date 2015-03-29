@@ -1,4 +1,3 @@
-var d = require('describe-property');
 var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
@@ -21,34 +20,34 @@ function byMostSpecific(a, b) {
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
  */
-function AcceptLanguage(value) {
-  Header.call(this, 'Accept-Language', value);
-}
+class AcceptLanguage extends Header {
 
-AcceptLanguage.prototype = Object.create(Header.prototype, {
-
-  constructor: d(AcceptLanguage),
+  constructor(value) {
+    super('Accept-Language', value);
+  }
 
   /**
    * Returns the value of this header as a string.
    */
-  value: d.gs(function () {
+  get value() {
     return stringifyMediaValues(this._mediaValues, '-') || '';
-  }, function (value) {
+  }
+
+  set value(value) {
     this._mediaValues = value ? parseMediaValues(value, '-') : [];
-  }),
+  }
 
   /**
    * Returns true if the given language is acceptable.
    */
-  accepts: d(function (language) {
+  accepts(language) {
     return this.qualityFactorForLanguage(language) !== 0;
-  }),
+  }
 
   /**
    * Returns the quality factor for the given language.
    */
-  qualityFactorForLanguage: d(function (language) {
+  qualityFactorForLanguage(language) {
     var values = this._mediaValues;
 
     if (!values.length)
@@ -69,8 +68,8 @@ AcceptLanguage.prototype = Object.create(Header.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  })
+  }
 
-});
+}
 
 module.exports = AcceptLanguage;

@@ -1,4 +1,3 @@
-var d = require('describe-property');
 var parseMediaValue = require('../utils/parseMediaValue');
 var parseMediaValues = require('../utils/parseMediaValues');
 var qualityFactorForMediaValue = require('../utils/qualityFactorForMediaValue');
@@ -16,34 +15,34 @@ function byHighestPrecedence(a, b) {
  *
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.2
  */
-function AcceptCharset(value) {
-  Header.call(this, 'Accept-Charset', value);
-}
+class AcceptCharset extends Header {
 
-AcceptCharset.prototype = Object.create(Header.prototype, {
-
-  constructor: d(AcceptCharset),
+  constructor(value) {
+    super('Accept-Charset', value);
+  }
 
   /**
    * Returns the value of this header as a string.
    */
-  value: d.gs(function () {
+  get value() {
     return stringifyMediaValues(this._mediaValues) || '';
-  }, function (value) {
+  }
+
+  set value(value) {
     this._mediaValues = value ? parseMediaValues(value) : [];
-  }),
+  }
 
   /**
    * Returns true if the given charset is acceptable.
    */
-  accepts: d(function (charset) {
+  accepts(charset) {
     return this.qualityFactorForCharset(charset) !== 0;
-  }),
+  }
 
   /**
    * Returns the quality factor for the given charset.
    */
-  qualityFactorForCharset: d(function (charset) {
+  qualityFactorForCharset(charset) {
     var values = this._mediaValues;
 
     var givenValue = parseMediaValue(charset);
@@ -71,8 +70,8 @@ AcceptCharset.prototype = Object.create(Header.prototype, {
       return 0;
 
     return qualityFactorForMediaValue(matchingValues[0]);
-  })
+  }
 
-});
+}
 
 module.exports = AcceptCharset;
