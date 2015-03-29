@@ -139,6 +139,11 @@ function file(app, options) {
         if (!options.autoIndex)
           return conn.call(app);
 
+        // Redirect /images => /images/
+        if (!(/\/$/).test(pathname))
+          return conn.redirect(pathname + '/');
+
+        // Automatically generate and serve an index file.
         return generateIndex(root, pathname, conn.basename).then(function (html) {
           conn.html(html);
         });

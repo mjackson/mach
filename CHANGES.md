@@ -1,3 +1,8 @@
+### HEAD
+
+  * Fixed a bug in mach.file autoIndex with trailing slashes in the URL
+    when showing a directory (#69)
+
 ### 1.3.3 / 2015-03-19
 
   * Fixed a bug in HTTPS detection
