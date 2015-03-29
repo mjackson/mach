@@ -9,8 +9,9 @@ describe('extensions/multipart', function () {
     mach.extend(require('../multipart'));
   });
 
+  var message;
+
   describe('a multipart message', function () {
-    var message;
     beforeEach(function () {
       message = new mach.Message(
         getFixture('content_type_no_filename'),
