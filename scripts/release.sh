@@ -20,13 +20,10 @@ next_ref="v$next_version"
 npm test -- --single-run
 
 update_version 'package.json' $next_version
-# update_version 'bower.json' $next_version
+#update_version 'bower.json' $next_version
 
-npm run build-global
-git add -A build/global
-
-npm run build-npm
-git add -A build/npm
+npm run build
+git add -A lib
 
 git commit -am "Version $next_version"
 
@@ -37,4 +34,4 @@ git push origin master
 git push origin $next_ref
 git push origin latest -f
 
-npm publish build/npm
+npm publish
