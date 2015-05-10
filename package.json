@@ -2,7 +2,13 @@
   "name": "mach",
   "version": "1.3.5",
   "description": "HTTP for JavaScript",
-  "main": "modules/index.js",
+  "main": "lib",
+  "scripts": {
+    "build": "scripts/build.sh",
+    "test": "jshint . && mocha --require babel/register --reporter spec 'modules/**/__tests__/*-test.js'",
+    "test-browser": "karma start",
+    "prepublish": "npm run build"
+  },
   "dependencies": {
     "bodec": "^1.1.0",
     "bufferedstream": "^3.1.1",
@@ -30,12 +36,6 @@
     "mocha": "^2.0.1",
     "webpack": "^1.4.15",
     "webpack-dev-server": "^1.6.6"
-  },
-  "scripts": {
-    "build-global": "rm -rf build/global && NODE_ENV=production webpack modules/index.js build/global/mach.js && NODE_ENV=production COMPRESS=1 webpack modules/index.js build/global/mach.min.js && echo \"gzipped, the global build is `gzip -c build/global/mach.min.js | wc -c` bytes\"",
-    "build-npm": "rm -rf build/npm && babel -d build/npm ./modules && cp README.md build/npm && find -X build/npm -type d -name __tests__ | xargs rm -rf && scripts/build-npm-package-json.sh > build/npm/package.json",
-    "test": "jshint . && mocha --require babel/register --reporter spec 'modules/**/__tests__/*-test.js'",
-    "test-browser": "karma start"
   },
   "repository": {
     "type": "git",

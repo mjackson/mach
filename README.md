@@ -116,7 +116,7 @@ Using [npm](https://www.npmjs.org/):
 
     $ npm install mach
 
-Or, include [`dist/mach.min.js`](https://github.com/mjackson/mach/blob/master/dist/mach.min.js) in a `<script>` tag:
+Or, include [`lib/umd/mach.min.js`](https://github.com/mjackson/mach/blob/master/lib/umd/mach.min.js) in a `<script>` tag:
 
 ```html
 <script src="mach.min.js"></script>
