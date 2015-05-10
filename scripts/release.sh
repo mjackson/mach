@@ -23,7 +23,7 @@ update_version 'package.json' $next_version
 #update_version 'bower.json' $next_version
 
 npm run build
-git add -A lib/umd
+git add -A lib
 
 git commit -am "Version $next_version"
 

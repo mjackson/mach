@@ -7,7 +7,6 @@
     "build": "scripts/build.sh",
     "test": "jshint . && mocha --require babel/register --reporter spec 'modules/**/__tests__/*-test.js'",
     "test-browser": "karma start",
-    "prepublish": "npm run build",
     "release": "scripts/release.sh"
   },
   "dependencies": {
