@@ -1,3 +1,5 @@
+var webpack = require('webpack');
+
 module.exports = function (config) {
   config.set({
 
