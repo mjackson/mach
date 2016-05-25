@@ -1,3 +1,5 @@
+# Project no longer maintained
+
 [![build status](https://img.shields.io/travis/mjackson/mach.svg?style=flat-square)](https://travis-ci.org/mjackson/mach)
 [![npm package](https://img.shields.io/npm/v/mach.svg?style=flat-square)](https://www.npmjs.org/package/mach)
 
