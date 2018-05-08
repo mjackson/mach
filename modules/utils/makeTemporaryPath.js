@@ -1,5 +1,5 @@
 var path = require('path');
-var TMP_DIR = require('os').tmpDir();
+var TMP_DIR = require('os').tmpdir();
 
 function makeTemporaryPath(prefix) {
   prefix = prefix || '';
